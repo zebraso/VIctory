@@ -901,11 +901,22 @@ struct Batch(Vec<(std::sync::Arc<crate::shadow::Shadow>, usize, usize)>);
 
 impl Batch {
     fn add(&mut self, shadow: &std::sync::Arc<crate::shadow::Shadow>, address: usize, len: usize) {
-        let end = address + len;
-        match self.0.iter_mut().find(|(s, ..)| std::sync::Arc::ptr_eq(s, shadow)) {
-            Some((_, from, to)) => (*from, *to) = ((*from).min(address), (*to).max(end)),
-            None => self.0.push((shadow.clone(), address, end)),
-        }
+        let mut from = address;
+        let mut to = address + len;
+        // Merge only ranges that touch or overlap: two small dirty spots far apart in one buffer must not make the
+        // refresh read everything between them (the world's big buffers took gigabytes per frame that way).
+        self.0.retain(|(s, other_from, other_to)| {
+            if !std::sync::Arc::ptr_eq(s, shadow) {
+                return true;
+            }
+            if *other_to < from || *other_from > to {
+                return true;
+            }
+            from = from.min(*other_from);
+            to = to.max(*other_to);
+            false
+        });
+        self.0.push((shadow.clone(), from, to));
     }
 
     fn flush(&mut self) {
