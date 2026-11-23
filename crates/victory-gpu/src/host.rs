@@ -558,6 +558,26 @@ impl Host {
         first_error
     }
 
+    /// A null render target view (writes to it are discarded), for a slot
+    /// whose texture the host could not make a render target: the slot keeps
+    /// its position, so later targets stay where the pipeline writes them.
+    pub(crate) fn null_rtv(&self) -> D3D12_CPU_DESCRIPTOR_HANDLE {
+        let desc = D3D12_RENDER_TARGET_VIEW_DESC {
+            Format: windows::Win32::Graphics::Dxgi::Common::DXGI_FORMAT_R8G8B8A8_UNORM,
+            ViewDimension: D3D12_RTV_DIMENSION_TEXTURE2D,
+            ..Default::default()
+        };
+        let slot = self.next_rtv.fetch_add(1, Ordering::Relaxed) % RTV_RING;
+        // SAFETY: a slot of our heap; a null resource with a full description.
+        unsafe {
+            let mut handle = self.rtvs.GetCPUDescriptorHandleForHeapStart();
+            handle.ptr += (slot * self.rtv_size) as usize;
+            self.device
+                .CreateRenderTargetView(None::<&ID3D12Resource>, Some(&desc), handle);
+            handle
+        }
+    }
+
     /// A host render target view of `resource`, valid until it is recorded.
     pub(crate) fn rtv(
         &self,
@@ -1359,6 +1379,14 @@ fn title_window() -> Option<HWND> {
 pub(crate) fn legal_state(texture: &ID3D12Resource, state: u32) -> u32 {
     // SAFETY: a plain query.
     legal_for(unsafe { texture.GetDesc() }.Flags.0 as u32, state)
+}
+
+/// Whether the host texture may be a render target (its host copy can lack
+/// the use when the host's format support refuses it; see
+/// `resource::host_texture`).
+pub(crate) fn allows_render_target(texture: &ID3D12Resource) -> bool {
+    // SAFETY: a plain query.
+    unsafe { texture.GetDesc() }.Flags.0 & D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET.0 != 0
 }
 
 /// [`legal_state`] for a texture with resource flags `flags`.
