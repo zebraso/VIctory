@@ -99,6 +99,7 @@ use crate::native::{HwStage, NativeProgram, RootType};
 use crate::{ShaderError, io, ir, resource, structure};
 
 pub use sampler::StaticSampler;
+pub use lower::stride_table_off;
 pub use shader::{ROOT_CBV_SPACE, SAMPLER_SPACE, STRIDE_TABLE_SPACE, USER_DATA_SPACE};
 
 /// A translated shader and what the host binds for it.

@@ -113,6 +113,12 @@ impl Strides {
         values[index as usize] = stride;
         // SAFETY: the slot lies in the mapped table.
         unsafe { self.ptr.add(index as usize).write_unaligned(stride) };
+        if stride % 4 != 0 || stride > 65536 {
+            static ODD: std::sync::Once = std::sync::Once::new();
+            ODD.call_once(|| {
+                tracing::warn!(slot = index, stride, "a buffer view's structure stride is odd");
+            });
+        }
     }
 }
 
@@ -588,21 +594,24 @@ fn unordered_range(base: u64, words: &[u32; 10]) -> Option<(u64, u64)> {
 /// The host resource a slot made by [`make`] views, if any.
 type Kept = Option<ID3D12Resource>;
 
-/// The element count of a buffer view whose `NumElements` is 0: D3D12 says
-/// "to the end of the buffer", and refuses 0 on a buffer view (it removes
-/// the device for it). `first` is already in elements of `element` bytes;
-/// `len` is the buffer's size. Fails when the first element is past the end.
+/// The element count of a buffer view, or `None` when the view is empty:
+/// the title writes `NumElements` 0 on buffer views that hold nothing (a
+/// disabled bindless slot), and the console reads them as 0 and discards
+/// writes. D3D12 refuses the 0, and removes the device for it, so such a
+/// view becomes a null descriptor; filling it to the end of the buffer
+/// instead lets a disabled slot write over whatever the buffer holds (the
+/// screen went black). A count past the end is clamped. `first` is already
+/// in elements of `element` bytes; `len` is the buffer's size.
 fn view_elements(len: u64, element: u64, first: u64, declared: u32) -> Option<u32> {
+    if declared == 0 {
+        return None;
+    }
     let total = len / element;
     if first >= total {
         return None;
     }
     let remaining = (total - first).min(u64::from(u32::MAX)) as u32;
-    Some(if declared == 0 || u64::from(declared) > u64::from(remaining) {
-        remaining
-    } else {
-        declared
-    })
+    Some(declared.min(remaining))
 }
 
 fn buffer_srv(
@@ -625,6 +634,13 @@ fn buffer_srv(
         return None;
     }
     buffer.FirstElement += offset / element;
+    if buffer.NumElements == 0 {
+        once!(
+            first = buffer.FirstElement,
+            "a buffer view with no elements (a disabled slot)"
+        );
+        return None;
+    }
     let Some(elements) = view_elements(len, element, buffer.FirstElement, buffer.NumElements) else {
         once!(
             first = buffer.FirstElement,
@@ -677,6 +693,13 @@ fn buffer_uav(
         return None;
     }
     buffer.FirstElement += offset / element;
+    if buffer.NumElements == 0 {
+        once!(
+            first = buffer.FirstElement,
+            "an unordered buffer view with no elements (a disabled slot)"
+        );
+        return None;
+    }
     let Some(elements) = view_elements(len, element, buffer.FirstElement, buffer.NumElements) else {
         once!(
             first = buffer.FirstElement,
@@ -1016,21 +1039,23 @@ fn null_view(at: D3D12_CPU_DESCRIPTOR_HANDLE) {
 mod tests {
     use super::*;
 
-    /// A buffer view's `NumElements` 0 means "to the end of the buffer":
-    /// D3D12 removes the device for a 0 it is handed (found by the debug
-    /// layer on a world UAV with stride 16).
+    /// A buffer view's `NumElements` 0 is an empty view: D3D12 removes the
+    /// device for the 0 it is handed, and filling it to the end of the
+    /// buffer lets a disabled slot write over what the buffer holds (the
+    /// screen went black). Counts past the end are clamped.
     #[test]
-    fn a_zero_element_count_runs_to_the_end() {
+    fn a_zero_element_count_is_an_empty_view() {
         // 64 bytes, 16-byte elements: 4 in all.
-        assert_eq!(view_elements(64, 16, 0, 0), Some(4));
-        assert_eq!(view_elements(64, 16, 1, 0), Some(3));
+        assert_eq!(view_elements(64, 16, 0, 0), None);
+        assert_eq!(view_elements(64, 16, 1, 0), None);
         assert_eq!(view_elements(64, 16, 2, 1), Some(1));
+        assert_eq!(view_elements(64, 16, 0, 3), Some(3));
         // A count past the end is clamped; one past the last element fails.
         assert_eq!(view_elements(64, 16, 0, 99), Some(4));
-        assert_eq!(view_elements(64, 16, 4, 0), None);
+        assert_eq!(view_elements(64, 16, 4, 1), None);
         assert_eq!(view_elements(64, 16, 5, 1), None);
         // Raw views count 4-byte elements.
-        assert_eq!(view_elements(64, 4, 0, 0), Some(16));
+        assert_eq!(view_elements(64, 4, 0, 16), Some(16));
         // A zero element size never gets here (the views are refused first).
         assert_eq!(view_elements(0, 16, 0, 1), None);
     }
