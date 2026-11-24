@@ -231,6 +231,10 @@ struct Lower<'a> {
     mask_ok: bool,
     /// Ballots of masks read as data, by low dword: (low, high).
     ballots: HashMap<Value, (V, V)>,
+    /// Masks whose ballot is being built: a mask whose lane bit needs its
+    /// own value as a number (an opaque mask keyed by a dword it shares
+    /// with another) would otherwise recurse until the stack overflows.
+    balloting: HashSet<Value>,
     /// Block writing each value.
     def_block: HashMap<Value, usize>,
     /// IR block being lowered.
@@ -800,6 +804,7 @@ impl<'a> Lower<'a> {
             },
             mask_ok: false,
             ballots: HashMap::new(),
+            balloting: HashSet::new(),
             def_block: p
                 .blocks
                 .iter()
@@ -1343,8 +1348,10 @@ impl<'a> Lower<'a> {
     fn find_input(&self, row: u8, channel: u8) -> Option<(usize, u8)> {
         self.s.inputs.iter().enumerate().find_map(|(id, e)| {
             let r = e.row?;
+            // `then`, not `then_some`: the channel is only past `col` when
+            // the condition holds.
             (r == u32::from(row) && channel >= e.col && channel < e.col + e.cols)
-                .then_some((id, channel - e.col))
+                .then(|| (id, channel - e.col))
         })
     }
 
@@ -1496,7 +1503,12 @@ impl<'a> Lower<'a> {
                     Some(&b) if b == self.cur_ir => self.cur,
                     Some(&b) => self.tail[b].ok_or("a lane mask written after its use")?,
                 };
-                let bit = self.boolean(m, at)?;
+                if !self.balloting.insert(lo) {
+                    return Err("a lane mask whose lanes depend on its own value");
+                }
+                let bit = self.boolean(m, at);
+                self.balloting.remove(&lo);
+                let bit = bit?;
                 let i32t = self.s.t.i32;
                 let four = self.s.m.named_struct("dx.types.fouri32", vec![i32t; 4]);
                 let r = self
@@ -1744,12 +1756,15 @@ impl<'a> Lower<'a> {
     /// `a - floor(a)`, which on the hardware never reaches 1.0: where it
     /// would round to it (a tiny negative `a`), the result is `below_one`,
     /// the largest value under 1.0 in the operation's width. Hosts differ
-    /// here (some give 1.0). NaN stays NaN.
-    fn fract(&mut self, a: V, below_one: f32) -> V {
+    /// here (some give 1.0). Comparing against a `threshold` distinct from
+    /// `below_one` prevents drivers (observed on NVIDIA) from folding
+    /// `r > k ? k : r` into `minNum` (`FMNMX`) and swallowing NaN.
+    fn fract(&mut self, a: V, threshold: f32, below_one: f32) -> V {
         let c = self.cur;
         let r = self.unary(22, a);
+        let limit = self.s.m.f32(threshold.to_bits());
         let k = self.s.m.f32(below_one.to_bits());
-        let over = self.s.m.cmp(c, pred::OGT, r, k);
+        let over = self.s.m.cmp(c, pred::OGE, r, limit);
         self.s.m.select(c, over, k, r)
     }
 
@@ -4156,7 +4171,7 @@ impl<'a> Lower<'a> {
                 };
                 let r = match op {
                     12 | 13 => self.trig_turns(a, op == 12),
-                    22 => self.fract(a, f32::from_bits(0x3F7F_FFFF)),
+                    22 => self.fract(a, 1.0, f32::from_bits(0x3F7F_FFFF)),
                     _ => self.unary(op, a),
                 };
                 float(self, r)
@@ -4748,8 +4763,8 @@ impl<'a> Lower<'a> {
                     };
                     match op {
                         12 | 13 => self.trig_turns(a, op == 12),
-                        // 0x3bff as a half: 1 - 2^-11.
-                        22 => self.fract(a, 1.0 - 1.0 / 2048.0),
+                        // Any f16 in (-2^-11, 0) has fract >= 1 - 2^-12; clamp to 0x3bff (1 - 2^-11).
+                        22 => self.fract(a, 1.0 - 1.0 / 4096.0, 1.0 - 1.0 / 2048.0),
                         _ => self.unary(op, a),
                     }
                 }
