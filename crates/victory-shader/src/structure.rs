@@ -308,6 +308,9 @@ pub struct Structured {
     pub guards: Vec<Vec<Option<Bool>>>,
     /// The lane's bit of each lane-mask value, by its low dword's value.
     pub masks: HashMap<Value, Bool>,
+    /// Symbolic select conditions, keyed by the destination SSA value.
+    /// A wave64 condition belongs to the exact pair read by the select.
+    pub(crate) select_masks: HashMap<Value, Bool>,
     /// Wave64 masks: low dword's value by the high dword's.
     pub highs: HashMap<Value, Value>,
     /// Masks (low dwords) set only in lanes whose EXEC bit is set where
@@ -353,6 +356,7 @@ struct Lanes<'a> {
     masks: Map<Key, Bool>,
     /// Other values read as masks: constants, uniform selects, opaque ones.
     other: Map<Key, Bool>,
+    select_masks: HashMap<Value, Bool>,
     /// For branches: SCC of a mask operation ("some lane is set") as the
     /// lane's own bit.
     scc_lane: Map<Value, Bool>,
@@ -422,6 +426,7 @@ impl<'a> Lanes<'a> {
             b: Bools::new(),
             masks: Map::default(),
             other: Map::default(),
+            select_masks: HashMap::new(),
             scc_lane: Map::default(),
             joins: Vec::new(),
             first: vec![Bool::FALSE; blocks.len()],
@@ -434,6 +439,7 @@ impl<'a> Lanes<'a> {
         self.b = Bools::new();
         self.masks.clear();
         self.other.clear();
+        self.select_masks.clear();
         self.scc_lane.clear();
         self.joins.clear();
         self.first.fill(Bool::FALSE);
@@ -583,6 +589,7 @@ impl<'a> Lanes<'a> {
                 .filter(|(lo, hi)| lo != hi)
                 .map(|&(lo, hi)| (hi, lo))
                 .collect(),
+            select_masks: self.select_masks,
             active: self.active,
             bools: self.b,
             exits,
@@ -928,8 +935,12 @@ impl<'a> Lanes<'a> {
                     && let Some(&Operand::Scalar { code, .. }) = v.src.get(2)
                     && code != NULL
                     && let Some(k) = self.key(|r| inst.read(r), code)
+                    && let Some(&(_, dst)) = inst.writes.first()
                 {
-                    self.mask(k);
+                    let (mask, derived) = self.mask(k);
+                    if derived {
+                        self.select_masks.insert(dst, mask);
+                    }
                 }
                 if name.starts_with("v_cmpx") {
                     if let Some(k) = self.key(|r| inst.write(r), EXEC) {
