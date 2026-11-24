@@ -1,8 +1,8 @@
-# Runtime stride for structured buffers (design note)
+# Runtime stride for structured buffers
 
-Status: design. Not implemented in this branch. Closes the translator's
-"a structured buffer of unknown stride" (36 programs in the world run) with
-the descriptor's real stride instead of the loose fallback (raw view at the
+Status: implemented (2026-11-24). Closes the translator's "a structured
+buffer of unknown stride" (36 programs in the world run) with the
+descriptor's real stride instead of the loose fallback (raw view at the
 instruction offset, which reads the wrong element).
 
 ## Why a channel is needed
@@ -39,32 +39,36 @@ address = index * stride + off           // replaces the loose fallback
 
 ## Data flow
 
-1. **Emitter** (`victory-shader`)
-   - `handle()` knows the heap slot value; for a structured access with an
-     unknown stride, emit a load from the stride table (a root SRV in a new
-     space, e.g. `t0, space STRIDE_SPACE`) at `slot * 4`.
-   - `HostShader` gains the stride table as a root SRV (like `root_srvs`).
-2. **Layer** (`victory-gpu`)
-   - when a view is written into a heap slot, store its stride at
-     `slot * 4` in a small upload buffer (updated with the slot);
-   - bind the buffer as the stride-table root SRV for every pipeline whose
-     shader declares it (the pipeline already binds root SRVs).
-3. **Cache**: the table is a binding, not part of the translation, so the
-   shader cache needs no key change.
+1. **Emitter** (`victory-shader`, as built)
+   - `lower.rs::runtime_stride()` takes the slot from `heap_index(load,
+     first)` (loaded descriptors and phis of them), loads `slot * 4` from the
+     table (`rawBufferLoad`, mask 1) and `at_stride()` forms
+     `index * stride + off`; the three access sites (load, store, atomic)
+     then use that byte address on a raw view of the same slot. Only a
+     descriptor that is not a heap descriptor falls back to the old
+     `VICTORY_LOOSE_BUFFERS` path (or fails).
+   - `shader.rs::stride_table_handle()` declares `t0, space 2`; the
+     container's `dx.resources` and `PSV0` list it, and
+     `HostShader::stride_table` tells the layer to bind it.
+2. **Layer** (`victory-gpu`, as built)
+   - `descriptor/host.rs::HostHeap` keeps a 4-byte-per-slot upload buffer
+     (`Strides`) and writes a view's `StructureByteStride`
+     (`View::stride()`, the view description's dword 3) when `mirror()`
+     makes the slot, or 0 when it nulls it.
+   - `pipeline/host.rs` declares the root SRV (`t0, space 2`) for each stage
+     whose shader reads it; `draw.rs::bind()` binds the table of the view
+     heap after the draw's table entries were mirrored.
+3. **Cache**: the table is a binding, not part of the translation; the
+   cached `HostShader` carries the flag (`VSH1` gained one word).
 
 ## Tests
 
-- `victory-shader`: a synthetic program with `buffer_load_dword ... idxen`
-  and an unknown stride emits the table load and `index * stride + off`;
-  `VICTORY_LOOSE_BUFFERS` no longer changes the emitted code for it.
+- `victory-shader` `emit/buffer_tests.rs`: a synthetic program with
+  `buffer_load_dword ... idxen` and an unknown stride emits the table load
+  and `index * stride + off` (validated by dxil.dll); `VICTORY_LOOSE_BUFFERS`
+  no longer changes the emitted code for it; on hardware and WARP the same
+  buffer reads different dwords for table strides 8, 12 and 4.
 - On the AMD iGPU: rerun with `VICTORY_D3D12_ADAPTER=amd` and
   `VICTORY_D3D12_DRED=1`; count `shader does not translate` for this reason
   (was 36 programs) and check the world submission's page fault (was
   `0x3598000`) is gone or moves to a different producer.
-
-## Why not done now
-
-It crosses three modules (emitter DXIL, root signature, heap mirror) and needs
-the heap-slot/stride table kept coherent under the title's dynamic descriptor
-writes; a partial version would leave the tree unbuildable or, worse, read a
-wrong stride silently. The anchors above are the whole change surface.

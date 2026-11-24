@@ -453,6 +453,26 @@ impl State {
         for stage in &p.stages {
             let t = stage.translated();
             let made = self.tables(list, &t.used, compute);
+            if let Some(param) = stage.stride_table {
+                // The runtime stride table of the view heap the shader
+                // indexes (the title's slots, one dword each), after the
+                // slots this draw reads were mirrored.
+                let table = (self.heaps[0] != 0)
+                    .then(|| crate::descriptor::heap(self.heaps[0] as This).host())
+                    .flatten()
+                    .and_then(|h| h.stride_table());
+                match table {
+                    // SAFETY: an open list and a live upload buffer.
+                    Some(gpu) => unsafe {
+                        if compute {
+                            l.SetComputeRootShaderResourceView(param, gpu);
+                        } else {
+                            l.SetGraphicsRootShaderResourceView(param, gpu);
+                        }
+                    },
+                    None => once!("a shader reads the runtime stride table but the bound heap has none"),
+                }
+            }
             if let Some((param, dwords)) = stage.user_data {
                 let mut values = vec![0u32; dwords as usize];
                 for u in &t.host.user_data {

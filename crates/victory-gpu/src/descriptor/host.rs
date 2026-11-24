@@ -30,6 +30,90 @@ pub(crate) struct HostHeap {
     /// Where the search for free dynamic slots starts, and which are taken
     /// (by lists not yet reset).
     next: Mutex<(u32, Vec<bool>)>,
+    /// The runtime stride table the translated shaders read (`t0, space
+    /// 2`), on view heaps: one dword per title slot, the
+    /// `StructureByteStride` of the view the slot was last made from.
+    strides: Option<Strides>,
+}
+
+/// A view heap's runtime stride table: an upload buffer, written on the
+/// CPU as slots change and bound as a root SRV for every draw.
+struct Strides {
+    _resource: ID3D12Resource,
+    gpu: u64,
+    count: u32,
+    ptr: *mut u32,
+    values: Mutex<Vec<u32>>,
+}
+
+// SAFETY: the mapped pointer is read or written only under `values`.
+unsafe impl Send for Strides {}
+unsafe impl Sync for Strides {}
+
+impl Strides {
+    fn new(count: u32) -> Option<Self> {
+        let host = host()?;
+        let desc = D3D12_RESOURCE_DESC {
+            Dimension: D3D12_RESOURCE_DIMENSION_BUFFER,
+            Width: (u64::from(count) * 4).max(4),
+            Height: 1,
+            DepthOrArraySize: 1,
+            MipLevels: 1,
+            SampleDesc: DXGI_SAMPLE_DESC {
+                Count: 1,
+                Quality: 0,
+            },
+            Layout: D3D12_TEXTURE_LAYOUT_ROW_MAJOR,
+            ..Default::default()
+        };
+        let heap = D3D12_HEAP_PROPERTIES {
+            Type: D3D12_HEAP_TYPE_UPLOAD,
+            ..Default::default()
+        };
+        let mut resource: Option<ID3D12Resource> = None;
+        let mut ptr = std::ptr::null_mut();
+        // SAFETY: plain creation; the range stays mapped for the table's
+        // life and is only written under `values`.
+        unsafe {
+            host.device
+                .CreateCommittedResource(
+                    &heap,
+                    D3D12_HEAP_FLAG_NONE,
+                    &desc,
+                    D3D12_RESOURCE_STATE_GENERIC_READ,
+                    None,
+                    &mut resource,
+                )
+                .ok()?;
+            let resource = resource?;
+            resource.Map(0, None, Some(&mut ptr)).ok()?;
+            let gpu = resource.GetGPUVirtualAddress();
+            // Upload memory is not zeroed: a slot no draw has mirrored yet
+            // reads as a raw view (stride 0), not as whatever was there.
+            std::ptr::write_bytes(ptr.cast::<u32>(), 0, count as usize);
+            return Some(Strides {
+                _resource: resource,
+                gpu,
+                count,
+                ptr: ptr.cast(),
+                values: Mutex::new(vec![0; count as usize]),
+            });
+        }
+    }
+
+    /// Records the stride of the view now in slot `index`.
+    fn set(&self, index: u32, stride: u32) {
+        if index >= self.count {
+            return;
+        }
+        let mut values = self.values.lock().unwrap_or_else(|e| e.into_inner());
+        if values[index as usize] == stride {
+            return;
+        }
+        values[index as usize] = stride;
+        // SAFETY: the slot lies in the mapped table.
+        unsafe { self.ptr.add(index as usize).write_unaligned(stride) };
+    }
 }
 
 /// Host heaps' GPU ranges (start, bytes, bytes per slot, sampler), for
@@ -123,6 +207,15 @@ impl HostHeap {
             made: Mutex::new(vec![0; count as usize]),
             kept: Mutex::new(vec![None; (count + extra) as usize]),
             next: Mutex::new((0, vec![false; DYNAMIC as usize])),
+            strides: if sampler {
+                None
+            } else {
+                let table = Strides::new(count);
+                if table.is_none() {
+                    tracing::warn!(count, "no runtime stride table for a view heap");
+                }
+                table
+            },
         };
         // A slot never written is undefined: shaders reading one (a slot
         // the title wrote in a way we do not know, or a table entry no
@@ -336,6 +429,7 @@ impl HostHeap {
             if made[index as usize] != 0 {
                 made[index as usize] = 0;
                 self.make_null(index);
+                self.stride(index, 0);
             }
             return None;
         };
@@ -350,9 +444,26 @@ impl HostHeap {
             if kept.is_none() && !self.sampler {
                 null_for(&view, self.cpu(index));
             }
+            if !later {
+                self.stride(index, if kept.is_some() { view.stride() } else { 0 });
+            }
             self.keep(index, kept.flatten());
         }
         Some(view)
+    }
+
+    /// Records the runtime stride of slot `index` (`0` for a view that is
+    /// not structured).
+    fn stride(&self, index: u32, stride: u32) {
+        if let Some(strides) = &self.strides {
+            strides.set(index, stride);
+        }
+    }
+
+    /// The GPU address of the runtime stride table the translated shaders
+    /// read as `t0, space 2`, if this heap has one.
+    pub(crate) fn stride_table(&self) -> Option<u64> {
+        self.strides.as_ref().map(|s| s.gpu)
     }
 
     /// The view host slot `index` was made from, in a few words, with the

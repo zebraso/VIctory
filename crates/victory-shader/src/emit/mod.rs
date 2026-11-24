@@ -77,6 +77,8 @@
 mod bitcode;
 mod container;
 #[cfg(all(test, windows))]
+mod buffer_tests;
+#[cfg(all(test, windows))]
 mod diff_tests;
 #[cfg(all(windows, any(test, feature = "host")))]
 pub mod host;
@@ -97,7 +99,7 @@ use crate::native::{HwStage, NativeProgram, RootType};
 use crate::{ShaderError, io, ir, resource, structure};
 
 pub use sampler::StaticSampler;
-pub use shader::{ROOT_CBV_SPACE, SAMPLER_SPACE, USER_DATA_SPACE};
+pub use shader::{ROOT_CBV_SPACE, SAMPLER_SPACE, STRIDE_TABLE_SPACE, USER_DATA_SPACE};
 
 /// A translated shader and what the host binds for it.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -118,6 +120,10 @@ pub struct HostShader {
     /// Root SRVs (raw buffers) the shader reads: `t<index>` in
     /// [`ROOT_CBV_SPACE`].
     pub root_srvs: Vec<u8>,
+    /// The shader reads the runtime stride table, `t0` in
+    /// [`STRIDE_TABLE_SPACE`]: a raw buffer of one dword per view-heap
+    /// slot, the `StructureByteStride` of the view the slot holds.
+    pub stride_table: bool,
 }
 
 impl HostShader {
@@ -285,6 +291,7 @@ fn emit_program(
         samplers: l.samplers,
         root_cbvs: l.root_cbvs,
         root_srvs: l.root_srvs,
+        stride_table: l.stride_table,
     })
 }
 
@@ -466,6 +473,7 @@ mod tests {
             static_samplers: Vec::new(),
             root_cbvs: Vec::new(),
             root_srvs: Vec::new(),
+            stride_table: false,
         };
         let file = |var: &str, stage| {
             std::env::var(var).ok().map(|p| super::HostShader {
@@ -476,6 +484,7 @@ mod tests {
                 static_samplers: Vec::new(),
                 root_cbvs: Vec::new(),
                 root_srvs: Vec::new(),
+                stride_table: false,
             })
         };
         let ps = file("VICTORY_REF_PS", crate::HwStage::Ps).unwrap_or(ps);

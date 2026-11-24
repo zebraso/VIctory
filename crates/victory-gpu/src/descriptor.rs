@@ -295,6 +295,17 @@ pub(crate) enum View {
 }
 
 impl View {
+    /// The `StructureByteStride` of a buffer view (0 for raw and typed
+    /// views): the runtime stride the stride table keeps for the slot.
+    #[cfg(windows)]
+    pub(crate) fn stride(&self) -> u32 {
+        match self {
+            View::Shader(_, Some(d)) | View::Unordered(_, _, Some(d)) => d[3],
+            View::Placed(_, desc, _) => desc[3],
+            _ => 0,
+        }
+    }
+
     /// Whether the view reads buffer memory (constant buffers, buffer views
     /// of resources or of memory) or memory the title placed a texture in:
     /// such views get host slots only for draws.

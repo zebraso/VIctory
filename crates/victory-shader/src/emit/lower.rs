@@ -39,12 +39,27 @@ fn loose_masks() -> bool {
 }
 
 /// `VICTORY_LOOSE_BUFFERS`: a structured buffer whose stride the analysis
-/// lost is viewed raw, at the instruction's byte offset, instead of failing
-/// the program.
+/// lost, and whose descriptor does not come from a heap (so the runtime
+/// stride table cannot answer), is viewed raw at the instruction's byte
+/// offset instead of failing the program.
 fn loose_buffers() -> bool {
+    #[cfg(test)]
+    {
+        let forced = LOOSE_FOR_TESTS.load(std::sync::atomic::Ordering::Relaxed);
+        if forced == 0 || forced == 1 {
+            return forced == 1;
+        }
+    }
     static LOOSE: std::sync::OnceLock<bool> = std::sync::OnceLock::new();
     *LOOSE.get_or_init(|| std::env::var_os("VICTORY_LOOSE_BUFFERS").is_some())
 }
+
+/// Whether [`loose_buffers`] answers true, for the test that checks the
+/// runtime stride table makes the fallback irrelevant (tests only; -1
+/// reads the environment).
+#[cfg(test)]
+pub(crate) static LOOSE_FOR_TESTS: std::sync::atomic::AtomicI8 =
+    std::sync::atomic::AtomicI8::new(-1);
 
 /// `VICTORY_WAVE32`: declare 32-lane waves even where the console's lane
 /// layout needs 64 (NVIDIA refuses WaveSize(64) compute pipelines outright;
@@ -77,6 +92,8 @@ pub(crate) struct Lowered {
     pub cmp_samplers: u64,
     pub root_cbvs: Vec<u8>,
     pub root_srvs: Vec<u8>,
+    /// The program reads the runtime stride table (`t0, space 2`).
+    pub stride_table: bool,
     pub user_data: Vec<UserData>,
     pub samplers: Vec<[u32; 4]>,
 }
@@ -1235,10 +1252,12 @@ impl<'a> Lower<'a> {
         let root_cbvs = self.s.root_cbvs.iter().map(|r| r.0).collect();
         let root_srvs = self.s.root_srvs.iter().map(|r| r.0).collect();
         let cmp_samplers = self.s.cmp_samplers;
+        let stride_table = self.s.stride_table.is_some();
         Ok(Lowered {
             cmp_samplers,
             root_cbvs,
             root_srvs,
+            stride_table,
             dxil: self.s.finish(),
             user_data,
             samplers: self.samplers,
@@ -3761,6 +3780,72 @@ impl<'a> Lower<'a> {
         }
         let shift = self.s.m.i32(if sampler { 4 } else { 5 });
         Ok(self.s.m.bin(c, Bin::LShr, addr, shift))
+    }
+
+    /// The stride of the structured buffer `src` reads, from the layer's
+    /// runtime stride table: one dword per view-heap slot, the
+    /// `StructureByteStride` of the view the slot holds. `None` when the
+    /// descriptor does not come from a heap (a root SRV has no stride).
+    fn runtime_stride(&mut self, src: &Source) -> Result<Option<V>, Why> {
+        let slot = match src {
+            Source::Loaded { load, first } => match self.heap_index(*load, *first, false) {
+                Ok(slot) => slot,
+                // Not a heap descriptor (a root view, say): the fallback
+                // below answers as it did before the table existed.
+                Err(_) => return Ok(None),
+            },
+            Source::Phi { block, args } => {
+                // Each predecessor computes its heap index at its end (as
+                // `handle` does); the join takes one with a phi.
+                let mut incoming = Vec::new();
+                for (&q, arg) in self.x.p.blocks[*block].preds.iter().zip(args) {
+                    if self.block[q].is_none() {
+                        continue;
+                    }
+                    let (Some(tail), Source::Loaded { load, first }) = (self.tail[q], arg) else {
+                        return Ok(None);
+                    };
+                    let at = self.edges.get(&(q, *block)).copied().unwrap_or(tail);
+                    let here = std::mem::replace(&mut self.cur, at);
+                    let slot = self.heap_index(*load, *first, false);
+                    self.cur = here;
+                    let Ok(slot) = slot else {
+                        return Ok(None);
+                    };
+                    incoming.push((slot, at));
+                }
+                let join = self.block[*block].ok_or("a descriptor chosen by control flow")?;
+                let phi = self.s.m.phi(join, self.s.t.i32);
+                self.s.m.set_phi(phi, incoming);
+                phi
+            }
+            _ => return Ok(None),
+        };
+        let c = self.cur;
+        let h = self.s.stride_table_handle();
+        let four = self.s.m.i32(4);
+        let at = self.s.m.bin(c, Bin::Mul, slot, four);
+        let iu = self.s.m.undef(self.s.t.i32);
+        let mask = self.s.m.i8(1);
+        let align = self.s.m.i32(4);
+        let r = self.s.op(
+            c,
+            "rawBufferLoad.f32",
+            Attr::ReadOnly,
+            self.s.t.res_ret,
+            139,
+            &[h, at, iu, mask, align],
+        );
+        let stride = self.s.m.extract(c, r, 0);
+        Ok(Some(self.as_int(stride)))
+    }
+
+    /// The byte address of element `index` of a buffer whose stride is
+    /// `stride` bytes, plus the instruction's offset.
+    fn at_stride(&mut self, index: V, stride: V, off: V) -> V {
+        let c = self.cur;
+        let at = self.s.m.bin(c, Bin::Mul, index, stride);
+        self.s.m.bin(c, Bin::Add, at, off)
     }
 
     fn valu(&mut self, inst: &Inst, b: usize, i: usize) -> Result<(), Why> {
@@ -6376,13 +6461,25 @@ impl<'a> Lower<'a> {
                 Some(index) => {
                     let stride = used.map_or(0, |u| u.stride);
                     if stride < 4 || !stride.is_multiple_of(4) {
-                        if !loose_buffers() {
-                            return Err("a structured buffer of unknown stride");
+                        match self.runtime_stride(src)? {
+                            Some(stride) => {
+                                // The table's stride: a raw view of the same
+                                // slot, at the element's byte address.
+                                let byte = self.at_stride(index, stride, off);
+                                let h = self.handle(site, src, false, (11 | u, 0))?;
+                                (h, [byte, iu, iu])
+                            }
+                            None if !loose_buffers() => {
+                                return Err("a structured buffer of unknown stride");
+                            }
+                            None => {
+                                // Unknown stride: a raw buffer view of the
+                                // same resource, at the instruction's byte
+                                // offset.
+                                let h = self.handle(site, src, false, (11 | u, 0))?;
+                                (h, [off, iu, iu])
+                            }
                         }
-                        // Unknown stride: a raw buffer view of the same
-                        // resource, at the instruction's byte offset.
-                        let h = self.handle(site, src, false, (11 | u, 0))?;
-                        (h, [off, iu, iu])
                     } else {
                         let h = self.handle(site, src, false, (12 | u, stride))?;
                         (h, [index, off, iu])
@@ -6466,11 +6563,20 @@ impl<'a> Lower<'a> {
                     Some(index) => {
                         let stride = used.map_or(0, |u| u.stride);
                         if stride < 4 || !stride.is_multiple_of(4) {
-                            if !loose_buffers() {
-                                return Err("a structured buffer of unknown stride");
+                            match self.runtime_stride(src)? {
+                                Some(stride) => {
+                                    let byte = self.at_stride(index, stride, off);
+                                    args.push(self.handle(site, src, false, (11 | u, 0))?);
+                                    args.extend([byte, iu]);
+                                }
+                                None if !loose_buffers() => {
+                                    return Err("a structured buffer of unknown stride");
+                                }
+                                None => {
+                                    args.push(self.handle(site, src, false, (11 | u, 0))?);
+                                    args.extend([off, iu]);
+                                }
                             }
-                            args.push(self.handle(site, src, false, (11 | u, 0))?);
-                            args.extend([off, iu]);
                         } else {
                             args.push(self.handle(site, src, false, (12 | u, stride))?);
                             args.extend([index, off]);
@@ -6532,18 +6638,34 @@ impl<'a> Lower<'a> {
                 Some(index) => {
                     let stride = used.map_or(0, |u| u.stride);
                     if stride < 4 || !stride.is_multiple_of(4) {
-                        if !loose_buffers() {
-                            return Err("a structured buffer of unknown stride");
+                        match self.runtime_stride(src)? {
+                            Some(stride) => {
+                                let byte = self.at_stride(index, stride, off);
+                                let h = self.handle(site, src, false, (11 | u, 0))?;
+                                self.s.op(
+                                    c,
+                                    "rawBufferLoad.f32",
+                                    Attr::ReadOnly,
+                                    self.s.t.res_ret,
+                                    139,
+                                    &[h, byte, iu, mask, align],
+                                )
+                            }
+                            None if !loose_buffers() => {
+                                return Err("a structured buffer of unknown stride");
+                            }
+                            None => {
+                                let h = self.handle(site, src, false, (11 | u, 0))?;
+                                self.s.op(
+                                    c,
+                                    "rawBufferLoad.f32",
+                                    Attr::ReadOnly,
+                                    self.s.t.res_ret,
+                                    139,
+                                    &[h, off, iu, mask, align],
+                                )
+                            }
                         }
-                        let h = self.handle(site, src, false, (11 | u, 0))?;
-                        self.s.op(
-                            c,
-                            "rawBufferLoad.f32",
-                            Attr::ReadOnly,
-                            self.s.t.res_ret,
-                            139,
-                            &[h, off, iu, mask, align],
-                        )
                     } else {
                         let h = self.handle(site, src, false, (12 | u, stride))?;
                         self.s.op(

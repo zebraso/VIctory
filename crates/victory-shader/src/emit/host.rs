@@ -158,6 +158,21 @@ impl Host {
                 ShaderVisibility: D3D12_SHADER_VISIBILITY_ALL,
             });
         }
+        for &(s, vis) in stages {
+            if s.stride_table {
+                params.push(D3D12_ROOT_PARAMETER1 {
+                    ParameterType: D3D12_ROOT_PARAMETER_TYPE_SRV,
+                    Anonymous: D3D12_ROOT_PARAMETER1_0 {
+                        Descriptor: D3D12_ROOT_DESCRIPTOR1 {
+                            ShaderRegister: 0,
+                            RegisterSpace: super::STRIDE_TABLE_SPACE,
+                            Flags: D3D12_ROOT_DESCRIPTOR_FLAG_NONE,
+                        },
+                    },
+                    ShaderVisibility: vis,
+                });
+            }
+        }
         let mut samplers = Vec::new();
         for &(s, vis) in stages {
             for (n, d) in s.static_samplers.iter().enumerate() {
@@ -528,6 +543,7 @@ fn stub(pixel: bool, outputs: Vec<SigElement>) -> HostShader {
         static_samplers: Vec::new(),
         root_cbvs: Vec::new(),
         root_srvs: Vec::new(),
+        stride_table: false,
     }
 }
 
