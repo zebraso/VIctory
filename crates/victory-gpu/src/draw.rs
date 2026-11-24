@@ -136,9 +136,15 @@ pub(crate) fn dispatched() -> u64 {
 /// other views as 1 MiB (both cut at their buffer's end).
 fn root_view(list: &HostList, address: u64, srv: bool) -> Option<u64> {
     let shadow = crate::shadow::find(address, 1)?;
-    let len = shadow
-        .left(address)
-        .min(if srv { 1 << 20 } else { 1 << 16 });
+    // A root SRV spans as much as the shader reads: the refresh copies only
+    // the pages the title wrote since, so the whole extent is free to name
+    // and a cap leaves the data past it stale (the world's vertex data read
+    // as zeros). A root CBV stops at D3D12's 64 KiB.
+    let len = if srv {
+        shadow.left(address)
+    } else {
+        shadow.left(address).min(1 << 16)
+    };
     let gpu = shadow.gpu(address);
     if srv || gpu % 256 == 0 {
         shadow.refresh(list, address, len);
