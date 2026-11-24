@@ -478,9 +478,9 @@ pub(crate) struct CopyLocation {
     footprint: crate::resource::PlacedFootprint,
 }
 
-/// Texture to texture on the GPU; buffer to texture through an upload
-/// buffer filled at submission. Texture to buffer (read back) is not done
-/// yet.
+/// Texture to texture on the GPU, buffer to texture through an upload
+/// buffer filled at submission, and texture to buffer through a readback
+/// buffer copied into title memory once the submission completes.
 extern "system" fn copy_texture_region(
     this: This,
     dst: *const CopyLocation,
@@ -503,9 +503,115 @@ extern "system" fn copy_texture_region(
         else {
             return;
         };
+        const _: () =
+            assert!(size_of::<CopyLocation>() == size_of::<D3D12_TEXTURE_COPY_LOCATION>());
+        let host_box = (!source_box.is_null()).then(|| source_box.cast::<D3D12_BOX>());
+        if dst.kind == FOOTPRINT {
+            if src.kind == FOOTPRINT {
+                return;
+            }
+            let (Some(host), Some(from_tex)) = (
+                crate::host::host(),
+                crate::resource::host_resource(src.resource),
+            ) else {
+                return;
+            };
+            let Some((lines, row_bytes, total)) = dst.footprint.layout() else {
+                return;
+            };
+            let host_format = crate::resource::pc_format(dst.footprint.format);
+            if crate::resource::element(host_format)
+                != crate::resource::element(dst.footprint.format)
+            {
+                // Console formats such as 118..=120 (3-byte D16S8) map to
+                // 4-byte PC substitutes (45..=47): raw readback would mis-size
+                // the staging buffer and write the wrong texel layout.
+                static ONCE: std::sync::Once = std::sync::Once::new();
+                ONCE.call_once(|| {
+                    tracing::warn!(
+                        format = dst.footprint.format,
+                        host_format,
+                        "texture-to-buffer readback skipped: host format has a different texel size",
+                    );
+                });
+                return;
+            }
+            if total == 0 || lines == 0 || row_bytes == 0 {
+                return;
+            }
+            let dst_pitch = u64::from(dst.footprint.row_pitch);
+            if lines > 1 && dst_pitch < row_bytes {
+                return;
+            }
+            let Some(target) = buffer_range(dst.resource, dst.footprint.offset, total) else {
+                return;
+            };
+            let Ok(row_bytes_u32) = u32::try_from(row_bytes) else {
+                return;
+            };
+            // D3D12 requires placed footprints' row pitch to be 256-byte aligned.
+            let host_pitch = dst
+                .footprint
+                .row_pitch
+                .max(row_bytes_u32)
+                .next_multiple_of(256);
+            let Some(staging_bytes) = u64::from(host_pitch)
+                .checked_mul(lines - 1)
+                .and_then(|n| n.checked_add(row_bytes))
+            else {
+                return;
+            };
+            let Some((buffer, staging)) = list.readback(host, staging_bytes) else {
+                return;
+            };
+            crate::texture::upload(list, src.resource, from_tex);
+            ensure_state(list, src.resource, COPY_SOURCE);
+            let mut to_location = dst;
+            to_location.resource = buffer.as_raw().cast_const().cast();
+            to_location.footprint.offset = 0;
+            to_location.footprint.format = host_format;
+            to_location.footprint.row_pitch = host_pitch;
+            let mut from_location = src;
+            from_location.resource = from_tex.as_raw().cast_const().cast();
+            #[cfg(feature = "diagnostics")]
+            list.note_op(|| {
+                // SAFETY: a live texture; the box is the title's or null.
+                let (d, b) = unsafe { (from_tex.GetDesc(), host_box.map(|b| *b)) };
+                format!(
+                    "readback to {:?} footprint {:?} at {x},{y},{z} from {:?} {}x{} f{} sub {} box {b:?}",
+                    dst.resource,
+                    dst.footprint,
+                    src.resource,
+                    d.Width,
+                    d.Height,
+                    d.Format.0,
+                    src.kind,
+                )
+            });
+            // SAFETY: an open list; both locations in the host's layout, naming
+            // live resources; the box is the title's (same layout).
+            unsafe {
+                list.list.CopyTextureRegion(
+                    (&raw const to_location).cast(),
+                    x,
+                    y,
+                    z,
+                    (&raw const from_location).cast(),
+                    host_box,
+                )
+            };
+            list.defer_readback(
+                target,
+                staging,
+                dst_pitch as usize,
+                host_pitch as usize,
+                lines as usize,
+                row_bytes as usize,
+                total as usize,
+            );
+            return;
+        }
         let Some(to) = crate::resource::host_resource(dst.resource) else {
-            static ONCE: std::sync::Once = std::sync::Once::new();
-            ONCE.call_once(|| tracing::warn!("texture to buffer copies not implemented"));
             return;
         };
         let mut from = src;
@@ -542,7 +648,6 @@ extern "system" fn copy_texture_region(
         crate::texture::host_written(dst.resource);
         let mut to_location = dst;
         to_location.resource = to.as_raw().cast_const().cast();
-        let host_box = (!source_box.is_null()).then(|| source_box.cast::<D3D12_BOX>());
         #[cfg(feature = "diagnostics")]
         {
             let text = || {
@@ -565,8 +670,6 @@ extern "system" fn copy_texture_region(
                 None => list.note_op(text),
             }
         }
-        const _: () =
-            assert!(size_of::<CopyLocation>() == size_of::<D3D12_TEXTURE_COPY_LOCATION>());
         // SAFETY: an open list; both locations in the host's layout, naming
         // live resources; the box is the title's (same layout).
         unsafe {

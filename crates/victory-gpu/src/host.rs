@@ -335,13 +335,27 @@ enum Step {
     GpuWrite(std::sync::Arc<crate::shadow::Shadow>, usize, usize),
 }
 
+/// A texture-to-buffer readback copied from a mapped readback buffer into
+/// title memory once the GPU submission completes.
+struct Readback {
+    dst: usize,
+    src: usize,
+    dst_pitch: usize,
+    src_pitch: usize,
+    lines: usize,
+    row_bytes: usize,
+    total: usize,
+}
+
 /// What a list does on the CPU when it is submitted: copies between host
 /// memory regions (title buffers, upload buffers and buffer copies), and
-/// the upload buffers its GPU commands read, kept until the list is reset.
+/// the upload/readback buffers its GPU commands name, kept until reset.
 #[derive(Default)]
 struct Deferred {
     /// Destination, source, bytes.
     copies: Vec<Step>,
+    /// Post-submission readbacks from GPU textures into title buffers.
+    readbacks: Vec<Readback>,
     uploads: Vec<ID3D12Resource>,
     /// Host objects the list's commands name (pipelines, root signatures,
     /// descriptor heaps): the title may release its objects before it
@@ -542,6 +556,26 @@ impl Host {
             let (address, len) = (*address, *len);
             let written = shadow.copy_back(address, len);
             COPY_BACK[1].fetch_add(written as u64, Ordering::Relaxed);
+        }
+        for list in runs {
+            for rb in &list.deferred().readbacks {
+                let written = if rb.dst_pitch == rb.src_pitch {
+                    crate::watch::writing(rb.dst, rb.total);
+                    write_mapped(rb.dst as *mut u8, rb.src as *const u8, rb.total);
+                    rb.total
+                } else {
+                    let mut n = 0;
+                    for line in 0..rb.lines {
+                        let to = rb.dst + line * rb.dst_pitch;
+                        let from = rb.src + line * rb.src_pitch;
+                        crate::watch::writing(to, rb.row_bytes);
+                        write_mapped(to as *mut u8, from as *const u8, rb.row_bytes);
+                        n += rb.row_bytes;
+                    }
+                    n
+                };
+                COPY_BACK[1].fetch_add(written as u64, Ordering::Relaxed);
+            }
         }
         COPY_BACK[0].fetch_add(copying.elapsed().as_micros() as u64, Ordering::Relaxed);
         for list in runs {
@@ -1031,6 +1065,30 @@ impl HostList {
         self.deferred().writes.push((dst as usize, what, bytes));
     }
 
+    /// Copies a GPU texture readback from `src` into title memory at `dst`
+    /// once the list has finished running on the host GPU.
+    #[allow(clippy::too_many_arguments)]
+    pub(crate) fn defer_readback(
+        &self,
+        dst: *mut u8,
+        src: *const u8,
+        dst_pitch: usize,
+        src_pitch: usize,
+        lines: usize,
+        row_bytes: usize,
+        total: usize,
+    ) {
+        self.deferred().readbacks.push(Readback {
+            dst: dst as usize,
+            src: src as usize,
+            dst_pitch,
+            src_pitch,
+            lines,
+            row_bytes,
+            total,
+        });
+    }
+
     /// A mapped upload buffer of `size` bytes, alive until the list is
     /// reset.
     ///
@@ -1038,6 +1096,15 @@ impl HostList {
     pub(crate) fn upload(&self, host: &Host, size: u64) -> Option<(ID3D12Resource, *mut u8)> {
         let (buffer, data) = host.upload_buffer(size)?;
         name(&buffer, || format!("list upload {size:#x}"));
+        self.deferred().uploads.push(buffer.clone());
+        Some((buffer, data))
+    }
+
+    /// A mapped readback buffer of `size` bytes, alive until the list is
+    /// reset.
+    pub(crate) fn readback(&self, host: &Host, size: u64) -> Option<(ID3D12Resource, *const u8)> {
+        let (buffer, data) = host.readback_buffer(size)?;
+        name(&buffer, || format!("list readback {size:#x}"));
         self.deferred().uploads.push(buffer.clone());
         Some((buffer, data))
     }
@@ -1361,6 +1428,52 @@ impl Host {
             Ok(()) => Some((buffer?, data.cast())),
             Err(e) => {
                 tracing::warn!(error = %e, size, "no upload buffer");
+                None
+            }
+        }
+    }
+
+    /// A buffer in the readback heap, mapped for reading.
+    pub(crate) fn readback_buffer(&self, size: u64) -> Option<(ID3D12Resource, *const u8)> {
+        let heap = D3D12_HEAP_PROPERTIES {
+            Type: D3D12_HEAP_TYPE_READBACK,
+            ..Default::default()
+        };
+        let desc = D3D12_RESOURCE_DESC {
+            Dimension: D3D12_RESOURCE_DIMENSION_BUFFER,
+            Width: size.max(1),
+            Height: 1,
+            DepthOrArraySize: 1,
+            MipLevels: 1,
+            SampleDesc: DXGI_SAMPLE_DESC {
+                Count: 1,
+                Quality: 0,
+            },
+            Layout: D3D12_TEXTURE_LAYOUT_ROW_MAJOR,
+            ..Default::default()
+        };
+        let mut buffer: Option<ID3D12Resource> = None;
+        let mut data = std::ptr::null_mut();
+        // SAFETY: plain creation and mapping of a readback buffer.
+        let made = unsafe {
+            self.device
+                .CreateCommittedResource(
+                    &heap,
+                    D3D12_HEAP_FLAG_NONE,
+                    &desc,
+                    D3D12_RESOURCE_STATE_COPY_DEST,
+                    None,
+                    &mut buffer,
+                )
+                .and_then(|()| {
+                    let b = buffer.as_ref().ok_or_else(windows::core::Error::empty)?;
+                    b.Map(0, None, Some(&mut data))
+                })
+        };
+        match made {
+            Ok(()) => Some((buffer?, data.cast())),
+            Err(e) => {
+                tracing::warn!(error = %e, size, "no readback buffer");
                 None
             }
         }
