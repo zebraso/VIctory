@@ -3207,7 +3207,8 @@ impl<'a> Lower<'a> {
             Some("x4") => 4,
             Some("x8") => 8,
             Some("x16") => 16,
-            _ => return Err("a scalar memory read as data"),
+            _ if loose() => 1,
+            _ => return Err("an s_load of an unsupported width read as data"),
         };
         // How the program uses the descriptor tells the view's kind.
         let use_at = self
@@ -3269,6 +3270,15 @@ impl<'a> Lower<'a> {
                     return Err("a constant buffer's descriptor read as data");
                 }
                 (props, None)
+            }
+            _ if loose() => {
+                // The consumer is not a view access: read the descriptor's
+                // dwords as zeros (an empty view) instead of dropping the program.
+                for k in 0..count {
+                    let zero = self.s.m.i32(0);
+                    self.write(inst, Reg::S(code + k as u8), zero, None);
+                }
+                return Ok(());
             }
             _ => return Err("a scalar memory read as data"),
         };
@@ -6943,10 +6953,15 @@ impl<'a> Lower<'a> {
             for (n, &q) in p.blocks[b].preds.iter().enumerate() {
                 let Some(qb) = self.tail[q] else { continue };
                 let qb = self.edges.get(&(q, b)).copied().unwrap_or(qb);
-                let m =
-                    *self.x.st.masks.get(&phi.args[n]).ok_or_else(|| {
-                        unsupported(offset, "a lane-mask join of an untracked mask")
-                    })?;
+                let Some(&m) = self.x.st.masks.get(&phi.args[n]) else {
+                    if !loose() {
+                        return Err(unsupported(offset, "a lane-mask join of an untracked mask"));
+                    }
+                    // An incoming mask the tracking lost: all lanes, so the
+                    // program runs rather than being dropped.
+                    incoming.push((self.s.m.bool(true), qb));
+                    continue;
+                };
                 let x = self.boolean(m, qb).map_err(|w| unsupported(offset, w))?;
                 incoming.push((x, qb));
             }
