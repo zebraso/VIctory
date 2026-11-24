@@ -597,22 +597,29 @@ impl Host {
         };
         #[cfg(not(feature = "diagnostics"))]
         let groups = [&lists[..]];
-        #[cfg(feature = "diagnostics")]
-        let in_flight = {
-            let mut names: Vec<String> = Vec::new();
-            let mut notes: Vec<String> = Vec::new();
-            for l in runs.iter().take(6) {
-                names.extend(l.pipelines.lock().unwrap_or_else(|e| e.into_inner()).iter().cloned());
-                let n = l.notes.lock().unwrap_or_else(|e| e.into_inner());
-                notes.extend(n.iter().rev().take(3).map(|(text, _)| text.clone()));
-            }
-            format!("submission still running, pipelines {names:?}, last ops {notes:?}")
-        };
         for (i, group) in groups.iter().enumerate() {
             *submitted += 1;
             let started = std::time::Instant::now();
             #[cfg(feature = "diagnostics")]
-            watch_start(in_flight.clone());
+            {
+                // The runs this submission is made of: one per group when
+                // each run is submitted on its own, else the whole batch.
+                let selected: Vec<&HostList> = if groups.len() == runs.len() {
+                    runs.get(i).into_iter().copied().collect()
+                } else {
+                    runs.iter().take(6).copied().collect()
+                };
+                let mut names: Vec<String> = Vec::new();
+                let mut notes: Vec<String> = Vec::new();
+                for l in selected {
+                    names.extend(l.pipelines.lock().unwrap_or_else(|e| e.into_inner()).iter().cloned());
+                    let n = l.notes.lock().unwrap_or_else(|e| e.into_inner());
+                    notes.extend(n.iter().rev().take(3).map(|(text, _)| text.clone()));
+                }
+                watch_start(format!(
+                    "submission still running, pipelines {names:?}, last ops {notes:?}"
+                ));
+            }
             // SAFETY: closed lists; the fence and event are ours.
             unsafe {
                 self.queue.ExecuteCommandLists(group);
