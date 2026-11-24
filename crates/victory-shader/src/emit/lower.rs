@@ -22,6 +22,15 @@ use crate::structure::{Atom, Bool, LaneExit, Structured};
 
 type Why = &'static str;
 
+/// `VICTORY_LOOSE_TRANSLATE`: values a program only reads as data (a
+/// descriptor with no view use, a lane mask live in another block) become
+/// zeros instead of failing the program: the draw runs with an empty
+/// resource instead of being dropped.
+fn loose() -> bool {
+    static LOOSE: std::sync::OnceLock<bool> = std::sync::OnceLock::new();
+    *LOOSE.get_or_init(|| std::env::var_os("VICTORY_LOOSE_TRANSLATE").is_some())
+}
+
 #[derive(Debug, Clone, Copy)]
 enum Val {
     I32(V),
@@ -1447,6 +1456,11 @@ impl<'a> Lower<'a> {
         };
         let &m = self.x.st.masks.get(&lo).ok_or(LANE_MASK)?;
         if !self.x.st.active.contains(&lo) {
+            if loose() {
+                // The mask is live in another block: read as no lanes set
+                // rather than dropping the program.
+                return Ok(self.s.m.i32(0));
+            }
             return Err("a lane mask holding lanes elsewhere read as data");
         }
         let (x, y) = match self.ballots.get(&lo) {
@@ -3209,7 +3223,16 @@ impl<'a> Lower<'a> {
                 })
             });
         let Some((at, first)) = use_at else {
-            return Err("a descriptor read only as data");
+            if !loose() {
+                return Err("a descriptor read only as data");
+            }
+            // No view use tells the descriptor's kind: the dwords the code
+            // reads as numbers (sizes, counts) come out zero, an empty view.
+            for k in 0..count {
+                let zero = self.s.m.i32(0);
+                self.write(inst, Reg::S(code + k as u8), zero, None);
+            }
+            return Ok(());
         };
         let src = Source::Loaded { load: site, first };
         let used = self.used_kind(&src);

@@ -30,9 +30,13 @@ RWByteAddressBuffer args : register(u0);
 // The list's work so far (vertex instances, threads): past the budget,
 // records run empty.
 RWByteAddressBuffer budget : register(u1);
-static const uint BUDGET = 1u << 27;
+static const uint BUDGET = 1u << 26;
 // Groups of one dispatch; more run empty.
 static const uint GROUPS = 1u << 20;
+// Mesh groups of one dispatch (one-dimensional on the console): a single
+// record past this is garbage often enough (its compute pass was dropped),
+// and 128 lanes a group make a 65535-group record run for seconds.
+static const uint MESH_GROUPS = 1u << 12;
 [RootSignature(RS)]
 [numthreads(64, 1, 1)]
 void main(uint3 id : SV_DispatchThreadID) {
@@ -56,7 +60,7 @@ void main(uint3 id : SV_DispatchThreadID) {
     } else {
         // Mesh dispatches: the console's are one-dimensional.
         uint3 g = args.Load3(at);
-        g = uint3(min(g.x, 65535u), min(g.y, 1u), min(g.z, 1u));
+        g = uint3(min(g.x, MESH_GROUPS), min(g.y, 1u), min(g.z, 1u));
         cost = g.x * g.y * g.z * 128;
         args.Store3(at, g);
     }
