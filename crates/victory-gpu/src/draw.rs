@@ -155,6 +155,28 @@ fn root_view(list: &HostList, address: u64, srv: bool) -> Option<u64> {
     Some(gpu)
 }
 
+/// A permanently zeroed 4 MiB upload buffer bound where a root view has no
+/// host copy: a shader reads zeros instead of a wild address (upstream #294
+/// binds the same). Upload memory is not zeroed by the host, so it is
+/// written once here.
+fn zero_root_view() -> Option<u64> {
+    const SIZE: usize = 4 << 20;
+    static ZERO: std::sync::OnceLock<Option<(ID3D12Resource, u64)>> = std::sync::OnceLock::new();
+    ZERO.get_or_init(|| {
+        let host = crate::host::host()?;
+        let (buffer, data) = host.upload_buffer(SIZE as u64)?;
+        // SAFETY: `data` maps the buffer's `SIZE` bytes.
+        let gpu = unsafe {
+            std::ptr::write_bytes(data, 0, SIZE);
+            buffer.GetGPUVirtualAddress()
+        };
+        crate::host::name(&buffer, || "fallback zero root view".into());
+        Some((buffer, gpu))
+    })
+    .as_ref()
+    .map(|&(_, gpu)| gpu)
+}
+
 macro_rules! once {
     ($($arg:tt)*) => {{
         static ONCE: std::sync::Once = std::sync::Once::new();
@@ -506,8 +528,23 @@ impl State {
                         once!(slot, "a shader reads a root view the title did not set");
                         continue;
                     };
-                    let Some(gpu) = root_view(list, *address, srv) else {
-                        continue;
+                    // A root view whose address has no host copy (zero, or
+                    // outside title memory) binds a zeroed buffer instead of
+                    // keeping whatever the parameter held: a shader reading
+                    // an unset parameter read a wild address (upstream #294).
+                    let gpu = match root_view(list, *address, srv) {
+                        Some(gpu) => gpu,
+                        None => {
+                            once!(
+                                address = format_args!("{address:#x}"),
+                                srv,
+                                "a root view outside title memory reads zeros"
+                            );
+                            let Some(fallback) = zero_root_view() else {
+                                continue;
+                            };
+                            fallback
+                        }
                     };
                     // SAFETY: an open list; the address is in live memory.
                     unsafe {

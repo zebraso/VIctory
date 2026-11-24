@@ -191,8 +191,7 @@ fn create() -> windows::core::Result<Host> {
         // is an access violation in this process (a crash report with the
         // address and instruction) instead of a GPU fault and driver reset.
         if cfg!(feature = "diagnostics") && std::env::var_os("VICTORY_D3D12_WARP").is_some() {
-            let factory: IDXGIFactory4 = CreateDXGIFactory2(DXGI_CREATE_FACTORY_FLAGS(0))?;
-            let adapter: IDXGIAdapter = factory.EnumWarpAdapter()?;
+            let adapter = warp_adapter()?;
             D3D12CreateDevice(&adapter, D3D_FEATURE_LEVEL_12_0, &mut device)?;
             tracing::info!("host device on the software adapter (WARP)");
         } else if let Some(want) = std::env::var_os("VICTORY_D3D12_ADAPTER") {
@@ -286,6 +285,56 @@ fn create() -> windows::core::Result<Host> {
             next_rtv: AtomicU32::new(0),
             presenter: Mutex::new(None),
         })
+    }
+}
+
+/// DXGI may return hardware for `EnumWarpAdapter` (notably under Proton).
+/// Reject it before creating a device in diagnostics' software-only mode.
+fn warp_adapter() -> windows::core::Result<IDXGIAdapter> {
+    // SAFETY: plain DXGI adapter queries.
+    unsafe {
+        let factory: IDXGIFactory4 = CreateDXGIFactory2(DXGI_CREATE_FACTORY_FLAGS(0))?;
+        let adapter: IDXGIAdapter = factory.EnumWarpAdapter()?;
+        let desc = adapter.cast::<IDXGIAdapter1>()?.GetDesc1()?;
+        if desc.Flags & DXGI_ADAPTER_FLAG_SOFTWARE.0 as u32 == 0 {
+            tracing::warn!(
+                vendor = format_args!("{:#x}", desc.VendorId),
+                flags = format_args!("{:#x}", desc.Flags),
+                "DXGI did not identify the WARP adapter as software; refusing device"
+            );
+            return Err(windows::core::Error::from_hresult(
+                windows::Win32::Foundation::E_FAIL,
+            ));
+        }
+        Ok(adapter)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn warp_adapter_accepts_only_software() {
+        // This probes DXGI without creating a D3D12 device or running a title.
+        // SAFETY: plain DXGI adapter queries.
+        let raw = unsafe {
+            let Ok(factory) = CreateDXGIFactory2::<IDXGIFactory4>(DXGI_CREATE_FACTORY_FLAGS(0))
+            else {
+                return;
+            };
+            factory.EnumWarpAdapter::<IDXGIAdapter>()
+        };
+        let Ok(raw) = raw else { return };
+        let desc = unsafe { raw.cast::<IDXGIAdapter1>().unwrap().GetDesc1().unwrap() };
+        eprintln!(
+            "EnumWarpAdapter: vendor={:#x}, flags={:#x}",
+            desc.VendorId, desc.Flags
+        );
+        assert_eq!(
+            warp_adapter().is_ok(),
+            desc.Flags & DXGI_ADAPTER_FLAG_SOFTWARE.0 as u32 != 0,
+        );
     }
 }
 
@@ -2125,7 +2174,7 @@ fn pump() {
 }
 
 #[cfg(test)]
-mod tests {
+mod batch {   // Batch::texture_due lives here; `mod tests` is already taken at the top of this file
     use super::Batch;
     use std::sync::Arc;
 

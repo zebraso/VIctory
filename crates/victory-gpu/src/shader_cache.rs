@@ -36,20 +36,27 @@ pub(crate) fn counts() -> (u64, u64) {
     (HITS.load(Ordering::Relaxed), MISSES.load(Ordering::Relaxed))
 }
 
-/// What identifies this build: the BLAKE3 of our executable file and the
+/// What identifies this build: the BLAKE3 of our executable file, of the
 /// host's wave size (a translation declaring `WaveSize(64)` must not be
-/// reused on a device that refuses it).
+/// reused on a device that refuses it) and of the translation settings
+/// (the loop limit, which a diagnostics build can change at run time).
 fn build() -> &'static [u8; 32] {
     static BUILD: OnceLock<[u8; 32]> = OnceLock::new();
     BUILD.get_or_init(|| {
         let exe = std::env::current_exe().and_then(std::fs::read);
         let wave = victory_shader::host_wave_lanes().to_le_bytes();
+        let limit = victory_shader::emit::loop_limit();
+        if limit != victory_shader::emit::DEFAULT_LOOP_LIMIT {
+            tracing::warn!(
+                limit,
+                "VICTORY_SHADER_LOOP_LIMIT: translated loops stop sooner"
+            );
+        }
         match exe {
-            Ok(bytes) => {
-                let mut hasher = blake3::Hasher::new();
-                hasher.update(&bytes);
-                hasher.update(&wave);
-                *hasher.finalize().as_bytes()
+            Ok(mut bytes) => {
+                bytes.extend_from_slice(&wave);
+                bytes.extend_from_slice(&limit.to_le_bytes());
+                *blake3::hash(&bytes).as_bytes()
             }
             Err(e) => {
                 // Without it no entry can be trusted: a fresh key per run.
@@ -60,6 +67,7 @@ fn build() -> &'static [u8; 32] {
                 let mut hasher = blake3::Hasher::new();
                 hasher.update(&now.as_nanos().to_le_bytes());
                 hasher.update(&wave);
+                hasher.update(&limit.to_le_bytes());
                 *hasher.finalize().as_bytes()
             }
         }
