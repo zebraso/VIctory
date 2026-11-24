@@ -195,6 +195,33 @@ fn create() -> windows::core::Result<Host> {
             let adapter: IDXGIAdapter = factory.EnumWarpAdapter()?;
             D3D12CreateDevice(&adapter, D3D_FEATURE_LEVEL_12_0, &mut device)?;
             tracing::info!("host device on the software adapter (WARP)");
+        } else if let Some(want) = std::env::var_os("VICTORY_D3D12_ADAPTER") {
+            // A chosen adapter (`VICTORY_D3D12_ADAPTER=amd`, `radeon`, a card
+            // name): an AMD iGPU runs the console's wave64 natively, where
+            // NVIDIA and WARP need the emulation.
+            use windows::Win32::Graphics::Dxgi::{IDXGIAdapter1, IDXGIFactory1};
+            let want = want.to_string_lossy().to_lowercase();
+            let factory: IDXGIFactory4 = CreateDXGIFactory2(DXGI_CREATE_FACTORY_FLAGS(0))?;
+            let factory: IDXGIFactory1 = factory.cast()?;
+            let mut chosen: Option<IDXGIAdapter1> = None;
+            let mut i = 0;
+            while let Ok(adapter) = factory.EnumAdapters1(i) {
+                i += 1;
+                let desc = adapter.GetDesc1()?;
+                let name = String::from_utf16_lossy(&desc.Description);
+                let name = name.trim_end_matches('\0');
+                tracing::info!(adapter = name, "display adapter");
+                if chosen.is_none() && name.to_lowercase().contains(&want) {
+                    chosen = Some(adapter);
+                }
+            }
+            let Some(adapter) = chosen else {
+                tracing::warn!(want = %want, "no display adapter matches");
+                return Err(windows::core::Error::empty());
+            };
+            let adapter: IDXGIAdapter = adapter.cast()?;
+            D3D12CreateDevice(&adapter, D3D_FEATURE_LEVEL_12_0, &mut device)?;
+            tracing::info!(want = %want, "host device on the chosen adapter");
         } else {
             D3D12CreateDevice(None, D3D_FEATURE_LEVEL_12_0, &mut device)?;
         }

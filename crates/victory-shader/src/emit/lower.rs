@@ -55,6 +55,15 @@ fn force_wave32() -> bool {
     *FORCE.get_or_init(|| std::env::var_os("VICTORY_WAVE32").is_some())
 }
 
+/// `VICTORY_WAVE64_EMULATE`: 64-lane waves are emulated on the host's
+/// smaller waves (docs/wave64-emulation.md). Until the cross-half exchange
+/// lands, it keeps the clamp below, so the pipelines are created at the
+/// host's size.
+fn emulate_wave64() -> bool {
+    static EMULATE: std::sync::OnceLock<bool> = std::sync::OnceLock::new();
+    *EMULATE.get_or_init(|| std::env::var_os("VICTORY_WAVE64_EMULATE").is_some())
+}
+
 #[derive(Debug, Clone, Copy)]
 enum Val {
     I32(V),
@@ -708,7 +717,11 @@ impl<'a> Lower<'a> {
                 // A group of at most 32 lanes leaves lanes 32..63 inactive on
                 // a Wave64 console, so a 32-lane host wave matches bit for bit
                 // and lets Wave32-only GPUs (e.g. NVIDIA) accept the pipeline.
-                s.wave_size = Some(if force_wave32() || threads <= 32 { 32 } else { wave });
+                s.wave_size = Some(if force_wave32() || emulate_wave64() || threads <= 32 {
+                    32
+                } else {
+                    wave
+                });
                 // The host's own limit (NVIDIA 32, WARP 4): declaring more is
                 // a pipeline the device refuses. Emulation (docs/wave64-emulation.md)
                 // replaces this clamp once it lands.

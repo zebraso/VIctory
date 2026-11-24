@@ -49,3 +49,21 @@ pub fn set_host_wave_lanes(lanes: u32) {
 pub fn host_wave_lanes() -> u32 {
     HOST_WAVE_LANES.load(std::sync::atomic::Ordering::Relaxed)
 }
+
+#[cfg(test)]
+mod host_wave_tests {
+    /// The probe the host GPU feeds the translator (milestone 1 of
+    /// docs/wave64-emulation.md): a 32-lane host makes the emitter declare
+    /// 32, and translations are keyed by it in `shader_cache`.
+    #[test]
+    fn host_wave_roundtrips() {
+        super::set_host_wave_lanes(32);
+        assert_eq!(super::host_wave_lanes(), 32);
+        super::set_host_wave_lanes(4);
+        assert_eq!(super::host_wave_lanes(), 4);
+        super::set_host_wave_lanes(64);
+        assert_eq!(super::host_wave_lanes(), 64);
+        super::set_host_wave_lanes(0); // 0 means unknown, stored as 1
+        assert_eq!(super::host_wave_lanes(), 1);
+    }
+}
