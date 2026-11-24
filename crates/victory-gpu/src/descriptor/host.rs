@@ -419,6 +419,32 @@ impl HostHeap {
         }
         // SAFETY: the handle is a descriptor slot in title memory.
         let [tag, i, generation] = unsafe { (handle as *const [u32; 3]).read_unaligned() };
+        if tag != VIEW_TAG {
+            // Diagnostic: the slot is not one of our view records. The title
+            // may have written a console T#/V#/S# there as memory (titles copy
+            // descriptors that way); report the first such slot once, with
+            // whether its page is committed and the words it holds.
+            static ONCE: std::sync::Once = std::sync::Once::new();
+            ONCE.call_once(|| {
+                // SAFETY: reading a descriptor slot's 32 bytes through the
+                // kernel; unmapped pages read as zeros.
+                let mut words = [0u32; 8];
+                crate::host::copy_mapped(
+                    words.as_mut_ptr().cast(),
+                    handle as *const u8,
+                    std::mem::size_of_val(&words),
+                    false,
+                );
+                let committed = crate::texture::committed(handle as *const u8, 32);
+                tracing::warn!(
+                    handle = format_args!("{handle:#x}"),
+                    index,
+                    committed,
+                    ?words,
+                    "a descriptor slot holds no view record (console descriptor in memory?)"
+                );
+            });
+        }
         // Generations start at 1, so a made slot's key is never 0.
         let key = u64::from(generation) << 32 | u64::from(i);
         let mut made = self.made.lock().unwrap_or_else(|e| e.into_inner());
