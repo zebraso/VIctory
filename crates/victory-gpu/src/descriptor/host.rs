@@ -534,22 +534,24 @@ fn element_size(desc: &D3D12_SHADER_RESOURCE_VIEW_DESC) -> u64 {
 /// The title memory a buffer shader or unordered access view reads: its
 /// address and length.
 pub(crate) fn buffer_range(view: &View) -> Option<(u64, u64)> {
-    let (base, words): (u64, &[u32; 10]) = match view {
-        View::Shader(r, Some(desc)) => (
-            crate::resource::buffer_bytes(*r as crate::object::This)?.0 as u64,
-            desc,
-        ),
+    let (base, total, words): (u64, u64, &[u32; 10]) = match view {
+        View::Shader(r, Some(desc)) => {
+            let (data, len) = crate::resource::buffer_bytes(*r as crate::object::This)?;
+            (data as u64, len, desc)
+        }
         View::Placed(false, resource, desc) if resource[0] == 1 => (
             u64::from(desc[10]) | u64::from(desc[11]) << 32,
+            u64::from(resource[4]) | u64::from(resource[5]) << 32,
             desc[..10].try_into().ok()?,
         ),
         View::Unordered(r, _, Some(desc)) => {
-            let base = crate::resource::buffer_bytes(*r as crate::object::This)?.0 as u64;
-            return unordered_range(base, desc);
+            let (data, len) = crate::resource::buffer_bytes(*r as crate::object::This)?;
+            return unordered_range(data as u64, len, desc);
         }
         View::Placed(true, resource, desc) if resource[0] == 1 => {
             let base = u64::from(desc[10]) | u64::from(desc[11]) << 32;
-            return unordered_range(base, desc[..10].try_into().ok()?);
+            let total = u64::from(resource[4]) | u64::from(resource[5]) << 32;
+            return unordered_range(base, total, desc[..10].try_into().ok()?);
         }
         _ => return None,
     };
@@ -557,14 +559,24 @@ pub(crate) fn buffer_range(view: &View) -> Option<(u64, u64)> {
     let element = element_size(&desc);
     // SAFETY: a buffer view's union member.
     let buffer = unsafe { desc.Anonymous.Buffer };
-    Some((
-        base + buffer.FirstElement * element,
-        u64::from(buffer.NumElements) * element,
-    ))
+    let (start, len) = range_bytes(total, buffer.FirstElement, element, buffer.NumElements);
+    Some((base + start, len))
+}
+
+/// A buffer view's byte offset and length; `NumElements` 0 means "to the
+/// end of the buffer" (the same reading [`view_elements`] gives the host).
+fn range_bytes(total: u64, first: u64, element: u64, declared: u32) -> (u64, u64) {
+    let start = first * element;
+    let len = if declared == 0 {
+        total.saturating_sub(start)
+    } else {
+        u64::from(declared) * element
+    };
+    (start, len)
 }
 
 /// [`buffer_range`] of an unordered access view of memory at `base`.
-fn unordered_range(base: u64, words: &[u32; 10]) -> Option<(u64, u64)> {
+fn unordered_range(base: u64, total: u64, words: &[u32; 10]) -> Option<(u64, u64)> {
     let desc = uav_desc(words);
     // SAFETY: a buffer view's union member.
     let buffer = unsafe { desc.Anonymous.Buffer };
@@ -575,14 +587,29 @@ fn unordered_range(base: u64, words: &[u32; 10]) -> Option<(u64, u64)> {
     } else {
         crate::resource::element(desc.Format.0 as u32)?.0
     };
-    Some((
-        base + buffer.FirstElement * element,
-        u64::from(buffer.NumElements) * element,
-    ))
+    let (start, len) = range_bytes(total, buffer.FirstElement, element, buffer.NumElements);
+    Some((base + start, len))
 }
 
 /// The host resource a slot made by [`make`] views, if any.
 type Kept = Option<ID3D12Resource>;
+
+/// The element count of a buffer view whose `NumElements` is 0: D3D12 says
+/// "to the end of the buffer", and refuses 0 on a buffer view (it removes
+/// the device for it). `first` is already in elements of `element` bytes;
+/// `len` is the buffer's size. Fails when the first element is past the end.
+fn view_elements(len: u64, element: u64, first: u64, declared: u32) -> Option<u32> {
+    let total = len / element;
+    if first >= total {
+        return None;
+    }
+    let remaining = (total - first).min(u64::from(u32::MAX)) as u32;
+    Some(if declared == 0 || u64::from(declared) > u64::from(remaining) {
+        remaining
+    } else {
+        declared
+    })
+}
 
 fn buffer_srv(
     address: u64,
@@ -604,6 +631,16 @@ fn buffer_srv(
         return None;
     }
     buffer.FirstElement += offset / element;
+    let Some(elements) = view_elements(len, element, buffer.FirstElement, buffer.NumElements) else {
+        once!(
+            first = buffer.FirstElement,
+            len,
+            element,
+            "buffer view starting past its host copy"
+        );
+        return None;
+    };
+    buffer.NumElements = elements;
     let host = host()?;
     // SAFETY: a live buffer and a slot of our heap.
     unsafe {
@@ -646,6 +683,16 @@ fn buffer_uav(
         return None;
     }
     buffer.FirstElement += offset / element;
+    let Some(elements) = view_elements(len, element, buffer.FirstElement, buffer.NumElements) else {
+        once!(
+            first = buffer.FirstElement,
+            len,
+            element,
+            "unordered buffer view starting past its host copy"
+        );
+        return None;
+    };
+    buffer.NumElements = elements;
     buffer.CounterOffsetInBytes = 0;
     let host = host()?;
     // SAFETY: a live buffer and a slot of our heap.
@@ -974,6 +1021,25 @@ fn null_view(at: D3D12_CPU_DESCRIPTOR_HANDLE) {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    /// A buffer view's `NumElements` 0 means "to the end of the buffer":
+    /// D3D12 removes the device for a 0 it is handed (found by the debug
+    /// layer on a world UAV with stride 16).
+    #[test]
+    fn a_zero_element_count_runs_to_the_end() {
+        // 64 bytes, 16-byte elements: 4 in all.
+        assert_eq!(view_elements(64, 16, 0, 0), Some(4));
+        assert_eq!(view_elements(64, 16, 1, 0), Some(3));
+        assert_eq!(view_elements(64, 16, 2, 1), Some(1));
+        // A count past the end is clamped; one past the last element fails.
+        assert_eq!(view_elements(64, 16, 0, 99), Some(4));
+        assert_eq!(view_elements(64, 16, 4, 0), None);
+        assert_eq!(view_elements(64, 16, 5, 1), None);
+        // Raw views count 4-byte elements.
+        assert_eq!(view_elements(64, 4, 0, 0), Some(16));
+        // A zero element size never gets here (the views are refused first).
+        assert_eq!(view_elements(0, 16, 0, 1), None);
+    }
 
     /// Dynamic slots stay taken until given back, and runs do not wrap.
     #[test]
