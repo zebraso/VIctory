@@ -34,6 +34,8 @@ pub(crate) struct HostHeap {
     /// 2`), on view heaps: one dword per title slot, the
     /// `StructureByteStride` of the view the slot was last made from.
     strides: Option<Strides>,
+    /// The title heap's first descriptor address (diagnostics).
+    start: u64,
 }
 
 /// A view heap's runtime stride table: an upload buffer, written on the
@@ -146,10 +148,10 @@ const PORTABLE_VIEWS: u32 = 1_000_000;
 /// Slots past the title's in a view heap, for tables a draw needs made
 /// afresh (constant buffers copied per draw). A list holds the slots it
 /// took until it is reset (its submissions have run) or released.
-const DYNAMIC: u32 = 1 << 16;
+const DYNAMIC: u32 = 1 << 18;
 
 impl HostHeap {
-    pub(crate) fn new(sampler: bool, count: u32) -> Option<Self> {
+    pub(crate) fn new(sampler: bool, count: u32, start: u64) -> Option<Self> {
         let host = host()?;
         let kind = if sampler {
             D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER
@@ -216,6 +218,7 @@ impl HostHeap {
                 }
                 table
             },
+            start,
         };
         // A slot never written is undefined: shaders reading one (a slot
         // the title wrote in a way we do not know, or a table entry no
@@ -450,6 +453,21 @@ impl HostHeap {
         let mut made = self.made.lock().unwrap_or_else(|e| e.into_inner());
         let view = (tag == VIEW_TAG).then(|| view_at(i, generation)).flatten();
         let Some(view) = view else {
+            if tag == VIEW_TAG {
+                // Diagnostic: the slot holds one of our records but its view
+                // is gone (the title released the resource while keeping the
+                // descriptor, as console memory outlives the object).
+                static GONE: std::sync::Once = std::sync::Once::new();
+                GONE.call_once(|| {
+                    tracing::warn!(
+                        handle = format_args!("{handle:#x}"),
+                        index,
+                        i = format_args!("{i:#x}"),
+                        generation,
+                        "a descriptor slot names a view that is gone"
+                    );
+                });
+            }
             // Not a view of ours (never written, or of a resource the
             // title released): nothing to read.
             if made[index as usize] != 0 {
@@ -499,7 +517,21 @@ impl HostHeap {
     pub(crate) fn describe_slot(&self, index: u32) -> Option<String> {
         let key = *self.made.lock().unwrap_or_else(|e| e.into_inner()).get(index as usize)?;
         if key == 0 {
-            return Some("null".into());
+            // Diagnostic: what the title's memory holds at this slot (a
+            // console T#/V# the title wrote as memory reads non-zero here).
+            let step = if self.sampler { 16u64 } else { 32 };
+            let at = self.start + u64::from(index) * step;
+            let mut words = [0u32; 8];
+            crate::host::copy_mapped(
+                words.as_mut_ptr().cast(),
+                at as *const u8,
+                std::mem::size_of_val(&words),
+                false,
+            );
+            let committed = crate::texture::committed(at as *const u8, 32);
+            return Some(format!(
+                "null [at {at:#x} committed={committed} words={words:x?}]"
+            ));
         }
         let view = view_at(key as u32, (key >> 32) as u32)?;
         let mut text: String = format!("{view:?}").chars().take(120).collect();
