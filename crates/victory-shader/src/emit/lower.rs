@@ -774,7 +774,7 @@ impl<'a> Lower<'a> {
                 {
                     emulate64 = true;
                     exchange = s.lds_dwords;
-                    s.lds_dwords += 64;
+                    s.lds_dwords += 72;
                 }
             }
         }
@@ -1551,6 +1551,30 @@ impl<'a> Lower<'a> {
 
     /// A dword of a lane mask as a number: the ballot of the lanes' bits,
     /// taken in the block that writes the mask (see [`MaskData`]).
+    /// Wave64 emulation: `v_readlane` from the console's 64 lanes. Every
+    /// lane publishes its value; the reader takes the slot of the lane it
+    /// names (the half that owns it wins). Uniform control flow only: the
+    /// caller is gated by `emulate64`.
+    fn exchange_lane(&mut self, value: V, lane: V) -> Result<V, Why> {
+        let c = self.cur;
+        let i32t = self.s.t.i32;
+        let flat = self.s.op(c, "flattenedThreadIdInGroup.i32", Attr::ReadNone, i32t, 96, &[]);
+        let mask = self.s.m.i32(63);
+        let me = self.s.m.bin(c, Bin::And, flat, mask);
+        let base = self.s.m.i32(self.exchange + 8);
+        let at = self.s.m.bin(c, Bin::Add, base, me);
+        let lds = self.s.lds();
+        let p = self.s.m.element(c, lds, at);
+        self.s.m.store(c, p, value);
+        self.s.barrier(c);
+        let want = self.s.m.bin(c, Bin::And, lane, mask);
+        let rd = self.s.m.bin(c, Bin::Add, base, want);
+        let q = self.s.m.element(c, lds, rd);
+        let r = self.s.m.load(c, q);
+        self.s.barrier(c);
+        Ok(r)
+    }
+
     fn mask_dword(&mut self, v: Value) -> Result<V, Why> {
         let (lo, high) = match self.x.st.highs.get(&v) {
             Some(&lo) => (lo, true),
@@ -4540,6 +4564,11 @@ impl<'a> Lower<'a> {
                         .or_insert(Val::Missing("a lane mask read as data"));
                 }
                 Ok(())
+            }
+            "v_readlane_b32" if self.emulate64 => {
+                let (a, lane) = (s(self, 0)?, s(self, 1)?);
+                let r = self.exchange_lane(a, lane)?;
+                int(self, r)
             }
             "v_readlane_b32" => {
                 if let Some(&spill) = self.resolved_reads.get(&site) {
