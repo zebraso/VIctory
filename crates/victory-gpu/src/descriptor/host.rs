@@ -151,7 +151,7 @@ const PORTABLE_VIEWS: u32 = 1_000_000;
 const DYNAMIC: u32 = 1 << 18;
 
 impl HostHeap {
-    pub(crate) fn new(sampler: bool, count: u32, start: u64) -> Option<Self> {
+    pub(crate) fn new(sampler: bool, count: u32, start: u64, slots: u32) -> Option<Self> {
         let host = host()?;
         let kind = if sampler {
             D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER
@@ -212,7 +212,7 @@ impl HostHeap {
             strides: if sampler {
                 None
             } else {
-                let table = Strides::new(count);
+                let table = Strides::new(slots.max(count));
                 if table.is_none() {
                     tracing::warn!(count, "no runtime stride table for a view heap");
                 }
@@ -642,6 +642,14 @@ fn unordered_range(base: u64, words: &[u32; 10]) -> Option<(u64, u64)> {
 /// The host resource a slot made by [`make`] views, if any.
 type Kept = Option<ID3D12Resource>;
 
+/// Whether a console buffer view is empty. A view with no elements is an
+/// empty view on the console, and the host refuses its dimensions (the
+/// debug layer removes the device); the slot is made null instead, which
+/// reads zeros.
+fn empty_buffer<T>(view: &T, fields: impl FnOnce(&T) -> u32) -> bool {
+    fields(view) == 0
+}
+
 fn buffer_srv(
     address: u64,
     len: u64,
@@ -662,6 +670,9 @@ fn buffer_srv(
         return None;
     }
     buffer.FirstElement += offset / element;
+    if empty_buffer(buffer, |b| b.NumElements) {
+        return None;
+    }
     let host = host()?;
     // SAFETY: a live buffer and a slot of our heap.
     unsafe {
@@ -705,6 +716,9 @@ fn buffer_uav(
     }
     buffer.FirstElement += offset / element;
     buffer.CounterOffsetInBytes = 0;
+    if empty_buffer(buffer, |b| b.NumElements) {
+        return None;
+    }
     let host = host()?;
     // SAFETY: a live buffer and a slot of our heap.
     unsafe {
@@ -1036,7 +1050,7 @@ mod tests {
     /// Dynamic slots stay taken until given back, and runs do not wrap.
     #[test]
     fn dynamic_slots_are_held_until_released() {
-        let Some(heap) = HostHeap::new(false, 4) else {
+        let Some(heap) = HostHeap::new(false, 4, 0, 4) else {
             return; // no host GPU
         };
         let a = heap.dynamic(DYNAMIC - 100).unwrap();

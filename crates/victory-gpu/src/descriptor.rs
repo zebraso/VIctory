@@ -87,7 +87,7 @@ impl Heap {
         let mut pending = self.pending.lock().unwrap_or_else(|e| e.into_inner());
         let h = self
             .host
-            .get_or_init(|| host::HostHeap::new(self.samplers(), self.desc.count, self.start))
+            .get_or_init(|| host::HostHeap::new(self.samplers(), self.desc.count, self.start, self.desc.count))
             .as_ref()?;
         let step = u64::from(increment(self.desc.kind)?);
         for i in pending.drain(..) {

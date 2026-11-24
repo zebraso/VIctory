@@ -51,25 +51,52 @@ pub(crate) fn take_present_target() -> Option<std::sync::Arc<crate::resource::Ho
         std::sync::Mutex::new(None);
     let (w, h) = present_size()?;
     let targets = std::mem::take(&mut *TARGETS.lock().unwrap_or_else(|e| e.into_inner()));
-    let mut found = None;
-    static LOGGED: std::sync::Once = std::sync::Once::new();
-    LOGGED.call_once(|| {
-        let targets = TARGETS.lock().unwrap_or_else(|e| e.into_inner());
-        let mut sizes = Vec::new();
-        for (_, copy) in targets.iter() {
-            // SAFETY: a live host texture.
-            let d = unsafe { copy.texture.GetDesc() };
-            sizes.push(format!("{}x{} f{}", d.Width, d.Height, d.Format.0));
-        }
-        tracing::info!(want = ?present_size(), ?sizes, "present target sizes");
-    });
-    for (_, copy) in targets {
+    {
+        static LOGGED: std::sync::Once = std::sync::Once::new();
+        LOGGED.call_once(|| {
+            let mut sizes = Vec::new();
+            for (_, copy, hits) in targets.iter() {
+                // SAFETY: a live host texture.
+                let d = unsafe { copy.texture.GetDesc() };
+                sizes.push(format!("{}x{} f{} x{}", d.Width, d.Height, d.Format.0, hits));
+            }
+            tracing::info!(want = ?present_size(), ?sizes, "present target sizes");
+        });
+    }
+    // The target drawn to the most: the world over its UI, depth or post
+    // passes of the same size. Only formats the swap chain can take.
+    let mut found: Option<(u32, usize, std::sync::Arc<crate::resource::HostTexture>)> = None;
+    for (resource, copy, hits) in targets {
         // SAFETY: a live host texture.
         let d = unsafe { copy.texture.GetDesc() };
-        if d.Width == u64::from(w) && d.Height == h && found.is_none() {
-            found = Some(copy);
+        if d.Width == u64::from(w)
+            && d.Height == h
+            && crate::host::swap_format(d.Format).is_some()
+            && found.as_ref().is_none_or(|(n, _, _)| *n < hits)
+        {
+            found = Some((hits, resource, copy));
         }
     }
+    let found = {
+        if let Some((hits, resource, copy)) = found.as_ref() {
+            static SHOWN: std::sync::Mutex<usize> = std::sync::Mutex::new(0);
+            let mut shown = SHOWN.lock().unwrap_or_else(|e| e.into_inner());
+            if *shown != *resource {
+                *shown = *resource;
+                // SAFETY: a live host texture.
+                let d = unsafe { copy.texture.GetDesc() };
+                tracing::info!(
+                    want = ?present_size(),
+                    width = d.Width,
+                    height = d.Height,
+                    format = d.Format.0,
+                    hits,
+                    "presenting a frame target"
+                );
+            }
+        }
+        found.map(|(_, _, copy)| copy)
+    };
     let mut last = LAST.lock().unwrap_or_else(|e| e.into_inner());
     if found.is_some() {
         *last = found.clone();
@@ -254,7 +281,7 @@ pub(crate) fn save_read_back(
 /// structure: floats scaled by their largest value, depth by its range).
 /// The host copies are held: the title may release a target before the
 /// frame is presented.
-static TARGETS: std::sync::Mutex<Vec<(usize, std::sync::Arc<crate::resource::HostTexture>)>> =
+static TARGETS: std::sync::Mutex<Vec<(usize, std::sync::Arc<crate::resource::HostTexture>, u32)>> =
     std::sync::Mutex::new(Vec::new());
 
 fn dump_on() -> bool {
@@ -269,10 +296,12 @@ pub(crate) fn note_target(resource: crate::object::This) {
         return;
     }
     let mut targets = TARGETS.lock().unwrap_or_else(|e| e.into_inner());
-    if !targets.iter().any(|&(r, _)| r == resource as usize)
-        && let Some(copy) = crate::resource::host_copy(resource)
-    {
-        targets.push((resource as usize, copy));
+    if let Some(target) = targets.iter_mut().find(|(r, _, _)| *r == resource as usize) {
+        target.2 = target.2.saturating_add(1);
+        return;
+    }
+    if let Some(copy) = crate::resource::host_copy(resource) {
+        targets.push((resource as usize, copy, 1));
     }
 }
 
@@ -281,7 +310,7 @@ pub(crate) fn dump_targets(frame: u64) {
     use std::sync::atomic::Ordering::Relaxed;
     let targets = std::mem::take(&mut *TARGETS.lock().unwrap_or_else(|e| e.into_inner()));
     let Some(host) = crate::host::host() else { return };
-    for (i, (resource, copy)) in targets.iter().enumerate() {
+    for (i, (resource, copy, _)) in targets.iter().enumerate() {
         let texture = &copy.texture;
         // SAFETY: a live resource.
         let d = unsafe { texture.GetDesc() };
