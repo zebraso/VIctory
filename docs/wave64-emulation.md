@@ -138,3 +138,25 @@ Mapping here: `mask_dword()` / `sections()` publish and combine the ballot words
 (replace the single `waveActiveBallot` with the two-half exchange); `v_readlane`
 uses the one-word slot; `Fields::Ds`/DPP keep `& 31`; `lds_dwords` needs the slot
 space (64 lanes x 4 bytes per wave plus a counter). Milestone 2 of this note.
+
+## Implementation anchors found in this tree
+
+The emitter already has the two inputs the exchange needs, but not the barrier:
+
+- **thread id**: `Input::ThreadIdInGroup` -> `Lower::thread_id()` (lower.rs), which uses
+  `threadIdInGroup.i32` (op 95) or `flattenedThreadIdInGroup.i32` (op 96) with the wave base.
+  Console lane = `flat % 64`, half = bit 5; both available.
+- **workgroup memory**: `lds_dwords` and the `ds_*` lowering already address LDS.
+- **barrier: missing**. The emitter never emits `dx.op.barrier` (op 80); `s_barrier` is only
+  tracked (`no_barrier` for mesh) and barriers appear only in DXC-compared tests
+  (diff_tests.rs). The exchange cannot be emitted before adding `Shader::barrier()` (op 80,
+  `Attr::NoDuplicate`, mode for group sync + group memory) and a test that validates the
+  module with dxil.dll.
+- **mask path**: `mask_dword()` (lower.rs) calls `dx.op.waveActiveBallot` (op 116); under
+  emulation it becomes: publish the half's 32-bit ballot to LDS, barrier, combine both words.
+- `sections()` (emit/wave.rs) models whole-wave sections per console wave; the rendezvous for
+  several waves per group needs a per-wave slot and counter in the same LDS block.
+
+Order of work: (1) barrier intrinsic + validation test, (2) ballot exchange for one console
+wave per group, (3) readlane/readfirstlane, (4) ds_bpermute, (5) several waves per group,
+(6) mesh.
