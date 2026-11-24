@@ -387,6 +387,10 @@ static FUNCTIONS: Table<160> = {
     f[70] = descriptor::create_placed_srv as *const (); // 0x230
     f[71] = descriptor::create_placed_uav as *const (); // 0x238
     f[73] = list::create_list_x as *const (); // 0x248
+    // Console device slots the title calls and we have not mapped yet:
+    // report their arguments so the method can be identified.
+    f[57] = probe_57 as *const (); // 0x1c8
+    f[67] = probe_67 as *const (); // 0x218
     f[74] = resource::register_page_pool as *const (); // 0x250
     f[75] = resource::unregister_page_pool as *const (); // 0x258
     // CreateCommittedResourceX: its description is PC's plus DCC options,
@@ -403,6 +407,18 @@ static FUNCTIONS: Table<160> = {
     Table(f)
 };
 
+
+/// Console device slot 0x1c8: logs its arguments (diagnostics).
+extern "system" fn probe_57(a: usize, b: usize, c: usize, d: usize) -> HRESULT {
+    tracing::warn!(a = format_args!("{a:#x}"), b = format_args!("{b:#x}"), c = format_args!("{c:#x}"), d = format_args!("{d:#x}"), "device slot 0x1c8");
+    E_NOTIMPL
+}
+
+/// Console device slot 0x218: logs its arguments (diagnostics).
+extern "system" fn probe_67(a: usize, b: usize, c: usize, d: usize) -> HRESULT {
+    tracing::warn!(a = format_args!("{a:#x}"), b = format_args!("{b:#x}"), c = format_args!("{c:#x}"), d = format_args!("{d:#x}"), "device slot 0x218");
+    E_NOTIMPL
+}
 #[cfg(test)]
 mod tests {
     use super::*;
