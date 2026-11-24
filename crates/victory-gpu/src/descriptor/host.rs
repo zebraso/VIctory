@@ -535,6 +535,16 @@ impl HostHeap {
         }
         let view = view_at(key as u32, (key >> 32) as u32)?;
         let mut text: String = format!("{view:?}").chars().take(120).collect();
+        // The title's resource pointer, to match it with a dumped target.
+        match &view {
+            View::Shader(resource, _) => text.push_str(&format!(" obj {resource:#x}")),
+            View::Unordered(resource, _, _) => text.push_str(&format!(" obj {resource:#x}")),
+            View::Placed(_, desc, _) => text.push_str(&format!(
+                " obj {:#x}",
+                u64::from(desc[10]) | u64::from(desc[11]) << 32
+            )),
+            _ => {}
+        }
         if let Some((address, len)) = buffer_range(&view) {
             let host = crate::shadow::find(address, len.max(1)).map(|s| s.gpu(address));
             text.push_str(&format!(" title {address:#x}+{len:#x} host {host:#x?}"));

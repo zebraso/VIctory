@@ -827,7 +827,9 @@ impl State {
                 let key = self.pipeline as usize;
                 if !seen.contains(&key) {
                     seen.push(key);
-                    let text = self.op_text(format!("{kind} to 3840"), false);
+                    let targets: Vec<String> =
+                        self.targets.iter().map(|&t| format!("{t:#x}")).collect();
+                    let text = self.op_text(format!("{kind} to 3840 targets {targets:?}"), false);
                     tracing::warn!(pipeline = format_args!("{:#x}", self.pipeline), "{text}");
                 }
             }

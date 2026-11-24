@@ -242,9 +242,25 @@ extern "system" fn modes(
         return MORE_DATA;
     }
     *count = 1;
+    // `VICTORY_DISPLAY=WxH`: the display the title believes it has. A
+    // smaller one makes it render a smaller frame (the mesh work scales with
+    // the pixels), which is what keeps a console 4K frame under the
+    // watchdog's ~30 s.
+    let (width, height) = {
+        static SIZE: std::sync::OnceLock<(u32, u32)> = std::sync::OnceLock::new();
+        *SIZE.get_or_init(|| {
+            std::env::var("VICTORY_DISPLAY")
+                .ok()
+                .and_then(|text| {
+                    let (w, h) = text.split_once('x')?;
+                    Some((w.trim().parse().ok()?, h.trim().parse().ok()?))
+                })
+                .unwrap_or((3840, 2160))
+        })
+    };
     let mode = Mode {
-        width: 3840,
-        height: 2160,
+        width,
+        height,
         refresh: [60, 1],
         format: 0,
         scanlines: 1, // progressive
