@@ -148,6 +148,14 @@ impl Shader {
         g
     }
 
+    /// The thread-group barrier that also orders shared memory
+    /// (`GroupMemoryBarrierWithGroupSync`): `dx.op.barrier(2)`.
+    pub fn barrier(&mut self, block: usize) {
+        let void = self.m.void();
+        let mode = self.m.i32(2);
+        self.op(block, "barrier", Attr::NoDuplicate, void, 80, &[mode]);
+    }
+
     /// Calls `dx.op.<name>` (class and overload) with `opcode` and `args`.
     pub fn op(
         &mut self,

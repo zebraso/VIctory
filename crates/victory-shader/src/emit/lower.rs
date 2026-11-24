@@ -255,6 +255,10 @@ struct Lower<'a> {
     mask_data: MaskData,
     /// The instruction being lowered may read lane masks as data.
     mask_ok: bool,
+    /// Wave64 emulation: one console wave per group, exchanging through the
+    /// slot at `exchange` in the group's shared memory.
+    emulate64: bool,
+    exchange: u32,
     /// Ballots of masks read as data, by low dword: (low, high).
     ballots: HashMap<Value, (V, V)>,
     /// Masks whose ballot is being built: a mask whose lane bit needs its
@@ -676,6 +680,8 @@ impl<'a> Lower<'a> {
         });
         let (resolved_reads, pure_spill_writes) = resolve_spills(p, x.st);
         let mut console_lanes = false;
+    let mut emulate64 = false;
+    let mut exchange = 0u32;
         if let StageIo::Cs(cs) = x.native.io {
             s.threads = Some(cs.threads);
             s.lds_dwords = cs.lds_bytes() / 4;
@@ -749,6 +755,23 @@ impl<'a> Lower<'a> {
                     && host < size
                 {
                     s.wave_size = Some(host);
+                }
+                // Wave64 emulation (docs/wave64-emulation.md): one console
+                // wave per group (<= 64 threads) exchanges ballots, lane
+                // values and predicates through a slot at the end of the
+                // group's shared memory. The exchange is only emitted when
+                // VICTORY_WAVE64_EMULATE is set; otherwise the clamped wave
+                // above keeps today's behaviour.
+                if emulate_wave64()
+                    && host > 0
+                    && host < 64
+                    && x.native.wave64
+                    && threads > 32
+                    && threads <= 64
+                {
+                    emulate64 = true;
+                    exchange = s.lds_dwords;
+                    s.lds_dwords += 64;
                 }
             }
         }
@@ -844,6 +867,8 @@ impl<'a> Lower<'a> {
                 _ => MaskData::None,
             },
             mask_ok: false,
+            emulate64,
+            exchange,
             ballots: HashMap::new(),
             balloting: HashSet::new(),
             def_block: p
@@ -1558,7 +1583,38 @@ impl<'a> Lower<'a> {
                     .s
                     .op(at, "waveActiveBallot", Attr::NoUnwind, four, 116, &[bit]);
                 self.s.flags |= flags::WAVE_OPS;
-                let xy = (self.s.m.extract(at, r, 0), self.s.m.extract(at, r, 1));
+                let xy = if self.emulate64 {
+                    // Each half ballots its own lanes; both halves rebuild the
+                    // 64-bit mask from the two words (docs/wave64-emulation.md).
+                    let w = self.s.m.extract(at, r, 0);
+                    let flat = self.s.op(
+                        at,
+                        "flattenedThreadIdInGroup.i32",
+                        Attr::ReadNone,
+                        i32t,
+                        96,
+                        &[],
+                    );
+                    let five = self.s.m.i32(5);
+                    let one = self.s.m.i32(1);
+                    let half = self.s.m.bin(at, Bin::LShr, flat, five);
+                    let half = self.s.m.bin(at, Bin::And, half, one);
+                    let base = self.s.m.i32(self.exchange);
+                    let slot = self.s.m.bin(at, Bin::Add, base, half);
+                    let lds = self.s.lds();
+                    let p = self.s.m.element(at, lds, slot);
+                    self.s.m.store(at, p, w);
+                    self.s.barrier(at);
+                    let p0 = self.s.m.element(at, lds, base);
+                    let w0 = self.s.m.load(at, p0);
+                    let at1 = self.s.m.bin(at, Bin::Add, base, one);
+                    let p1 = self.s.m.element(at, lds, at1);
+                    let w1 = self.s.m.load(at, p1);
+                    self.s.barrier(at);
+                    (w0, w1)
+                } else {
+                    (self.s.m.extract(at, r, 0), self.s.m.extract(at, r, 1))
+                };
                 self.ballots.insert(lo, xy);
                 xy
             }
