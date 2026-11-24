@@ -846,31 +846,113 @@ fn host_texture(
         Type: D3D12_HEAP_TYPE_DEFAULT,
         ..Default::default()
     };
-    let mut texture: Option<ID3D12Resource> = None;
-    // SAFETY: the description has the host layout (checked size, same
-    // fields); the out pointer is ours.
-    let made = unsafe {
-        host.device.CreateCommittedResource(
-            &heap,
-            D3D12_HEAP_FLAG_NONE,
-            (&raw const d).cast(),
-            D3D12_RESOURCE_STATES(
-                crate::host::legal_for(d.flags, crate::host::texture_state(state)) as i32,
-            ),
-            // The same layout: format, then color or depth and stencil.
-            clear_value.as_ref().map(|v| std::ptr::from_ref(v).cast()),
-            &mut texture,
-        )
+    let create = |d: &ResourceDesc, clear: Option<&[u32; 5]>| {
+        let mut texture: Option<ID3D12Resource> = None;
+        // SAFETY: the description has the host layout (checked size, same
+        // fields); the out pointer is ours.
+        let made = unsafe {
+            host.device.CreateCommittedResource(
+                &heap,
+                D3D12_HEAP_FLAG_NONE,
+                std::ptr::from_ref(d).cast(),
+                D3D12_RESOURCE_STATES(crate::host::legal_for(
+                    d.flags,
+                    crate::host::texture_state(state),
+                ) as i32),
+                // The same layout: format, then color or depth and stencil.
+                clear.map(|v| std::ptr::from_ref(v).cast()),
+                &mut texture,
+            )
+        };
+        made.map(|()| texture)
     };
-    if let Err(e) = made {
-        tracing::warn!(error = %e, desc = ?d, "no host texture");
-    }
+    let texture = match create(&d, clear_value.as_ref()) {
+        Ok(t) => t,
+        Err(e) => {
+            // Some hosts lack uses of a format the console has (NVIDIA:
+            // B5G5R5A1 unordered access, B4G4R4A4 render targets). The
+            // texture is made without them, so it still exists for sampling
+            // and copies; render targets without the use bind as null views
+            // and are not cleared.
+            let (without, kept) = unsupported_uses(&host.device, &d);
+            if without == 0 {
+                tracing::warn!(error = %e, desc = ?d, "no host texture");
+                None
+            } else {
+                static SEEN: std::sync::Mutex<Vec<(u32, u32)>> = std::sync::Mutex::new(Vec::new());
+                let mut seen = SEEN.lock().unwrap_or_else(|e| e.into_inner());
+                if !seen.contains(&(d.format, d.flags)) {
+                    seen.push((d.format, d.flags));
+                    tracing::warn!(
+                        format = d.format,
+                        flags = format_args!("{:#x}", d.flags),
+                        dropped = format_args!("{without:#x}"),
+                        "the host's format support lacks uses of this texture; made without them"
+                    );
+                }
+                drop(seen);
+                let mut fallback = d;
+                fallback.flags = kept;
+                let clear = clear_value.as_ref().filter(|_| kept & 0x3 != 0);
+                match create(&fallback, clear) {
+                    Ok(t) => {
+                        d = fallback;
+                        t
+                    }
+                    Err(e) => {
+                        tracing::warn!(error = %e, desc = ?fallback, "no host texture");
+                        None
+                    }
+                }
+            }
+        }
+    };
     if let Some(t) = &texture {
         crate::host::name(t, || {
             format!("texture {}x{} f{} flags {:#x}", d.width, d.height, d.format, d.flags)
         });
     }
     texture
+}
+
+/// The render-target and unordered-access uses in `d.flags` the host's
+/// format support refuses for `d.format`, and the flags without them.
+#[cfg(windows)]
+fn unsupported_uses(
+    device: &windows::Win32::Graphics::Direct3D12::ID3D12Device,
+    d: &ResourceDesc,
+) -> (u32, u32) {
+    use windows::Win32::Graphics::Direct3D12::*;
+    use windows::Win32::Graphics::Dxgi::Common::DXGI_FORMAT;
+    const RENDER_TARGET: u32 = 0x1;
+    const UNORDERED: u32 = 0x4;
+    let mut support = D3D12_FEATURE_DATA_FORMAT_SUPPORT {
+        Format: DXGI_FORMAT(d.format as i32),
+        ..Default::default()
+    };
+    // SAFETY: the structure the query names, with its size.
+    let asked = unsafe {
+        device.CheckFeatureSupport(
+            D3D12_FEATURE_FORMAT_SUPPORT,
+            (&raw mut support).cast(),
+            std::mem::size_of_val(&support) as u32,
+        )
+    };
+    if asked.is_err() {
+        return (0, d.flags);
+    }
+    let mut without = 0;
+    if d.flags & RENDER_TARGET != 0
+        && support.Support1.0 & D3D12_FORMAT_SUPPORT1_RENDER_TARGET.0 == 0
+    {
+        without |= RENDER_TARGET;
+    }
+    if d.flags & UNORDERED != 0
+        && support.Support1.0 & D3D12_FORMAT_SUPPORT1_TYPED_UNORDERED_ACCESS_VIEW.0 == 0
+    {
+        without |= UNORDERED;
+    }
+    (without, d.flags & !without)
 }
 
 /// A texture's console memory and description; `None` for buffers.

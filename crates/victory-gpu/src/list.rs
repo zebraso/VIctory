@@ -686,6 +686,10 @@ extern "system" fn clear_rtv(
         ) else {
             return;
         };
+        // A host copy that cannot be a render target has nothing to clear.
+        if !crate::host::allows_render_target(texture) {
+            return;
+        }
         // SAFETY: the title passes four floats (null is tolerated).
         let Some(color) = (unsafe { color.as_ref() }) else {
             return;

@@ -291,8 +291,9 @@ fn staging(resource: This, texture: &ID3D12Resource) -> Option<Arc<Staging>> {
         return None;
     };
     if layout.desc.swizzle.xor() {
-        once!(?desc, "texture contents in an XOR mode not uploaded");
-        return None;
+        // The format reader's detiler handles the XOR modes it lists as addressable (21, 24..=27); refusing every
+        // XOR mode here kept the 2560x1440 B4G4R4A4 video texture from ever being uploaded. Let detile() decide.
+        once!(?desc, "texture contents in an XOR mode: uploaded through the detiler");
     }
     let host = host()?;
     // SAFETY: a live resource.

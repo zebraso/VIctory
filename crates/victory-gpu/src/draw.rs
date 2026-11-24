@@ -252,15 +252,21 @@ impl State {
         };
         self.targets.clear();
         let mut rtvs = Vec::new();
+        // A slot whose texture the host lacks (or could not make a render
+        // target) takes a null view, so the targets after it keep their slots.
         for &h in handles {
             let Some(record) = crate::descriptor::rtv_record(h) else {
                 once!(
                     handle = format_args!("{h:#x}"),
                     "render target without a recorded view"
                 );
+                rtvs.push(host.null_rtv());
                 continue;
             };
-            let Some(texture) = crate::resource::host_resource(record.resource) else {
+            let Some(texture) = crate::resource::host_resource(record.resource)
+                .filter(|t| crate::host::allows_render_target(t))
+            else {
+                rtvs.push(host.null_rtv());
                 continue;
             };
             self.targets.push(record.resource as usize);
