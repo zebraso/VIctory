@@ -100,3 +100,41 @@ Port the Leonida fixtures as `victory-shader` emit tests plus a WARP run:
   program.
 - WARP: max 4 lanes, same refusal class, cannot be used as a wave64 reference.
 - Issue `Marvisak/VIctory#71` (comment 7118434961) has the same conclusion.
+
+## Appendix: exchange rules from XCL (`docs/wave64-on-wave32.md`)
+
+XCL implements the same emulation in HLSL (RDNA2 -> HLSL -> DXIL through DXC). Its
+rules port to this emitter's structures; the text here is a paraphrase of the
+technical facts, not copied code (XCL is GPL-2.0, this tree is not).
+
+One console wave64 = two hardware wave32 halves of the same thread group. Console
+lane = console thread % 64, half = bit 5. Per-lane code is unchanged; the halves
+meet only where a value must be whole-wave:
+
+| operation | exchange |
+|---|---|
+| any `ballot()` (`v_cmp*`, `v_cmpx*`, carries, EXEC at entry) | one 32-bit word per half; both halves rebuild the 64-bit mask (skip when the mask is only read lane by lane) |
+| `v_readlane_b32`, `v_readfirstlane_b32` (uniform lane index) | one word: each half publishes lane `l & 31`, the half owning `l` wins |
+| `ds_bpermute_b32` | 32 words (the whole half) |
+| DPP16, DPP8, `ds_swizzle`, `v_permlane(x)16` | none: the ISA keeps them inside a 32-lane half (`WaveReadLaneAt(v, l & 31)`) |
+| `s_load*` / `s_buffer_load*` with GLC/DLC | up to 16 words: half 0's values for both halves |
+
+So both halves hold the full 64-bit EXEC/VCC and identical SGPRs, and every
+branch is taken the same way: the existing scalar lowering (`s_bcnt1_i32_b64`,
+`s_ff1`, `s_cbranch_execz`, `v_mbcnt_hi`, ...) needs no change.
+
+Synchronisation:
+- one console wave per group (<= 64 threads): `GroupMemoryBarrierWithGroupSync`
+  between publishing and reading the slot; both halves run the same exchange
+  sequence, so both reach the barrier;
+- several console waves per group (mesh 128 threads, compute > 64): a group
+  barrier would also wait for other console waves with different control flow,
+  so each wave gets its own slot and a per-wave rendezvous (counter in LDS);
+- threads are assigned to halves from a groupshared counter (`xcl_x_thread`):
+  a group's threads are interchangeable, but console waves are consecutive
+  thread indices, which is not guaranteed per hardware wave (e.g. 8x8x4 groups).
+
+Mapping here: `mask_dword()` / `sections()` publish and combine the ballot words
+(replace the single `waveActiveBallot` with the two-half exchange); `v_readlane`
+uses the one-word slot; `Fields::Ds`/DPP keep `& 31`; `lds_dwords` needs the slot
+space (64 lanes x 4 bytes per wave plus a counter). Milestone 2 of this note.
