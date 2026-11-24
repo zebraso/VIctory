@@ -92,6 +92,20 @@ pub fn on_failure(report: fn(&str) -> !) {
     let _ = ON_FAILURE.set(report);
 }
 
+/// The device's removal reason as text (`0x887a0006` and the like), empty
+/// when the device is fine: put beside a failing call's error, since a
+/// removed device reports the call's own error, not the removal's.
+pub(crate) fn removal_reason() -> String {
+    let Some(host) = host() else {
+        return String::new();
+    };
+    // SAFETY: a plain query.
+    match unsafe { host.device.GetDeviceRemovedReason() } {
+        Ok(()) => String::new(),
+        Err(e) => format!("{:#x}", e.code().0),
+    }
+}
+
 /// Ends the run on a host GPU failure: what failed, the removal reason and
 /// the debug layer's first error, if any (`VICTORY_D3D12_DEBUG=1` in a
 /// diagnostics build names the command).
@@ -1468,13 +1482,7 @@ impl Host {
         match made {
             Ok(()) => Some((buffer?, data.cast())),
             Err(e) => {
-                // The creation's error is often the generic "device suspended":
-                // ask why it was removed.
-                // SAFETY: a plain query.
-                let reason = unsafe { self.device.GetDeviceRemovedReason() }
-                    .err()
-                    .map_or(0, |r| r.code().0);
-                tracing::warn!(error = %e, reason = format_args!("{reason:#x}"), size, "no upload buffer");
+                tracing::warn!(error = %e, device = %crate::host::removal_reason(), size, "no upload buffer");
                 None
             }
         }
@@ -1520,11 +1528,7 @@ impl Host {
         match made {
             Ok(()) => Some((buffer?, data.cast())),
             Err(e) => {
-                // SAFETY: a plain query.
-                let reason = unsafe { self.device.GetDeviceRemovedReason() }
-                    .err()
-                    .map_or(0, |r| r.code().0);
-                tracing::warn!(error = %e, reason = format_args!("{reason:#x}"), size, "no readback buffer");
+                tracing::warn!(error = %e, device = %crate::host::removal_reason(), size, "no readback buffer");
                 None
             }
         }

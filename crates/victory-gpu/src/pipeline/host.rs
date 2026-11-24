@@ -435,7 +435,7 @@ impl HostPipeline {
             let pso = match made {
                 Ok(pso) => pso,
                 Err(e) => {
-                    tracing::warn!(error = %e, ?shaders, "host pipeline refused");
+                    tracing::warn!(error = %e, ?shaders, device = %crate::host::removal_reason(), "host pipeline refused");
                     host.log_messages();
                     return None;
                 }
@@ -528,7 +528,7 @@ impl HostPipeline {
         let pso = match made {
             Ok(pso) => pso,
             Err(e) => {
-                tracing::warn!(error = %e, ?shaders, "host pipeline refused");
+                tracing::warn!(error = %e, ?shaders, device = %crate::host::removal_reason(), "host pipeline refused");
                 host.log_messages();
                 return None;
             }

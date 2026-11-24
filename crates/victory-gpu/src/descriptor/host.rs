@@ -90,7 +90,7 @@ impl HostHeap {
             Err(e) if !sampler && count + extra > PORTABLE_VIEWS => {
                 // shortcut: descriptors past the host's limit are left out;
                 // a title that reaches them needs remapping.
-                tracing::warn!(error = %e, count, "host view heap capped at {PORTABLE_VIEWS}");
+                tracing::warn!(error = %e, count, device = %crate::host::removal_reason(), "host view heap capped at {PORTABLE_VIEWS}");
                 (make(PORTABLE_VIEWS).ok()?, PORTABLE_VIEWS - extra)
             }
             Err(e) => {

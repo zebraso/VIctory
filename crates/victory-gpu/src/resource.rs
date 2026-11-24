@@ -978,7 +978,7 @@ fn host_texture(
         }
     }
     if let Err(e) = made {
-        tracing::warn!(error = %e, desc = ?d, "no host texture");
+        tracing::warn!(error = %e, desc = ?d, device = %crate::host::removal_reason(), "no host texture");
     }
     if let Some(t) = &texture {
         crate::host::name(t, || {

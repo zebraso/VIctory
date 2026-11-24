@@ -6509,7 +6509,7 @@ impl<'a> Lower<'a> {
                 Some(index) => {
                     let stride = used.map_or(0, |u| u.stride);
                     if stride < 4 || !stride.is_multiple_of(4) {
-                        if !loose() {
+                        if !loose_buffers() {
                             return Err("a structured buffer of unknown stride");
                         }
                         let h = self.handle(site, src, false, (11 | u, 0))?;
@@ -7017,7 +7017,7 @@ impl<'a> Lower<'a> {
                 let Some(qb) = self.tail[q] else { continue };
                 let qb = self.edges.get(&(q, b)).copied().unwrap_or(qb);
                 let Some(&m) = self.x.st.masks.get(&phi.args[n]) else {
-                    if !loose() {
+                    if !loose_masks() {
                         return Err(unsupported(offset, "a lane-mask join of an untracked mask"));
                     }
                     // An incoming mask the tracking lost: all lanes, so the
