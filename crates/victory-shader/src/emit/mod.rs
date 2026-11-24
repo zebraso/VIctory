@@ -50,10 +50,9 @@
 //!   descriptors (1,024 world compute programs, ray-tracing material
 //!   resolves) read raw views this way.
 //!
-//! * **Texture atomics** (added 2026-11-23): a texture UAV the shader uses
-//!   atomically is declared a 32-bit unsigned single-channel view; the
-//!   host's view at that index must be an R32 integer view (64-bit atomics
-//!   stop the translation). Global loads from a root SRV read it raw.
+//! * **Texture atomics** use a scalar integer UAV. The host binds R32_UINT
+//!   for 32-bit operations and R32G32_UINT for 64-bit operations. The latter
+//!   require SM 6.6 atomic support on typed and descriptor-heap resources.
 //!
 //! Entry points: [`translate`] (container bytes as the title passes them
 //! at pipeline creation → [`HostShader`]), [`emit`] (the same with the
@@ -84,6 +83,7 @@ pub mod host;
 mod lower;
 mod sampler;
 mod shader;
+mod threading;
 #[cfg(windows)]
 pub mod validator;
 mod wave;
@@ -173,6 +173,31 @@ pub fn translate(container: &[u8]) -> Result<HostShader, ShaderError> {
 
 /// Emits a program whose earlier stages already ran.
 pub fn emit(
+    c: &Container,
+    native: &NativeProgram,
+    p: &ir::Program,
+    st: &structure::Structured,
+    io: &io::Io,
+    res: &resource::Resources,
+) -> Result<HostShader, ShaderError> {
+    let original = emit_program(c, native, p, st, io, res);
+    // Retry unsupported programs only. Threading can separate an unknown
+    // register value from its apparent use on a mutually exclusive path.
+    if !matches!(original, Err(ShaderError::Unsupported { .. })) {
+        return original;
+    }
+    let edges = threading::constant_edges(p, st);
+    if edges.is_empty() {
+        return original;
+    }
+    let p = ir::thread_edges(p, &edges)?;
+    let st = structure::structure(&p)?;
+    let io = io::raise(&p, native)?;
+    let res = resource::track(&p, &native.layout, native.stage)?;
+    emit_program(c, native, &p, &st, &io, &res)
+}
+
+fn emit_program(
     c: &Container,
     native: &NativeProgram,
     p: &ir::Program,
@@ -450,5 +475,88 @@ mod tests {
         let ours = c[4..20].to_vec();
         v.validate(&mut c).unwrap();
         assert_eq!(c[4..20], ours[..], "our hash differs from the validator's");
+    }
+}
+
+#[cfg(test)]
+mod atomic_tests {
+    use super::*;
+    use crate::native::{ComputeIo, RootParam, StageIo};
+
+    #[test]
+    fn heap_texture_atomic_widths() {
+        // A synthetic compute shader loads a 2D UAV from a root table,
+        // compares or adds at (0, 0), then uses the returned register(s).
+        for (opcode, mask, wide) in [
+            (16u32, 3, false),
+            (16, 15, true),
+            (17, 1, false),
+            (17, 3, true),
+        ] {
+            let words = [
+                0xBE81_0380, // s_mov_b32 s1, 0 (table address high)
+                0xF40C_0200,
+                0xFA00_0000, // s_load_dwordx8 s[8:15], s[0:1], 0
+                0x7E00_0280,
+                0x7E02_0280, // v0, v1 = coordinates
+                0x7E04_0281,
+                0x7E06_0282,
+                0x7E08_0283,
+                0x7E0A_0284, // v2..v5 = 1..4
+                0xF000_2008 | opcode << 18 | mask << 8,
+                0x0002_0200,
+                // Use the old value in a second atomic at the same location.
+                0xF044_0008 | (if wide { 3 } else { 1 }) << 8,
+                0x0002_0200,
+                0xBF81_0000,
+            ];
+            let native = NativeProgram {
+                stage: HwStage::Cs,
+                wave64: false,
+                vgprs: 6,
+                layout: vec![RootParam {
+                    root: RootType::Table,
+                    table_offset_dwords: 0,
+                    sgprs: 1,
+                    base_register: 0,
+                    user_data: 0,
+                    slot: 0,
+                }],
+                used: vec![],
+                io: StageIo::Cs(ComputeIo {
+                    rsrc2: 2,
+                    threads: [32, 1, 1],
+                }),
+                code: words.iter().flat_map(|w| w.to_le_bytes()).collect(),
+            };
+            let p = ir::build(&native.code, false, native.vgprs).unwrap();
+            let bytes = crate::dxbc::build(&[]);
+            let shader = emit(
+                &Container::parse(&bytes).unwrap(),
+                &native,
+                &p,
+                &structure::structure(&p).unwrap(),
+                &io::raise(&p, &native).unwrap(),
+                &resource::track(&p, &native.layout, native.stage).unwrap(),
+            )
+            .unwrap();
+            let container = Container::parse(&shader.dxil).unwrap();
+            let features = u64::from_le_bytes(
+                container
+                    .part(FourCC::SFI0)
+                    .unwrap()
+                    .data
+                    .try_into()
+                    .unwrap(),
+            );
+            let required = 0x1040_8000; // heap atomics, typed atomics, Int64Ops
+            assert_eq!(features & required, if wide { required } else { 0 });
+            #[cfg(windows)]
+            if let Ok(mut v) =
+                validator::Validator::load(validator::Validator::default_path().as_deref())
+            {
+                v.validate(&mut shader.dxil.clone()).unwrap();
+            }
+        }
     }
 }
