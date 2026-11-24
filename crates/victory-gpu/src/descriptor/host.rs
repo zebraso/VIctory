@@ -533,25 +533,27 @@ fn element_size(desc: &D3D12_SHADER_RESOURCE_VIEW_DESC) -> u64 {
 
 /// The title memory a buffer shader or unordered access view reads: its
 /// address and length.
+/// shortcut: a view with `NumElements` 0 (D3D12: to the end of the buffer)
+/// keeps a zero-length range here: the views the title makes that way span
+/// hundreds of MB, and refreshing that per draw is not affordable; the host
+/// view itself still covers to the end ([`view_elements`]).
 pub(crate) fn buffer_range(view: &View) -> Option<(u64, u64)> {
-    let (base, total, words): (u64, u64, &[u32; 10]) = match view {
-        View::Shader(r, Some(desc)) => {
-            let (data, len) = crate::resource::buffer_bytes(*r as crate::object::This)?;
-            (data as u64, len, desc)
-        }
+    let (base, words): (u64, &[u32; 10]) = match view {
+        View::Shader(r, Some(desc)) => (
+            crate::resource::buffer_bytes(*r as crate::object::This)?.0 as u64,
+            desc,
+        ),
         View::Placed(false, resource, desc) if resource[0] == 1 => (
             u64::from(desc[10]) | u64::from(desc[11]) << 32,
-            u64::from(resource[4]) | u64::from(resource[5]) << 32,
             desc[..10].try_into().ok()?,
         ),
         View::Unordered(r, _, Some(desc)) => {
-            let (data, len) = crate::resource::buffer_bytes(*r as crate::object::This)?;
-            return unordered_range(data as u64, len, desc);
+            let base = crate::resource::buffer_bytes(*r as crate::object::This)?.0 as u64;
+            return unordered_range(base, desc);
         }
         View::Placed(true, resource, desc) if resource[0] == 1 => {
             let base = u64::from(desc[10]) | u64::from(desc[11]) << 32;
-            let total = u64::from(resource[4]) | u64::from(resource[5]) << 32;
-            return unordered_range(base, total, desc[..10].try_into().ok()?);
+            return unordered_range(base, desc[..10].try_into().ok()?);
         }
         _ => return None,
     };
@@ -559,24 +561,14 @@ pub(crate) fn buffer_range(view: &View) -> Option<(u64, u64)> {
     let element = element_size(&desc);
     // SAFETY: a buffer view's union member.
     let buffer = unsafe { desc.Anonymous.Buffer };
-    let (start, len) = range_bytes(total, buffer.FirstElement, element, buffer.NumElements);
-    Some((base + start, len))
-}
-
-/// A buffer view's byte offset and length; `NumElements` 0 means "to the
-/// end of the buffer" (the same reading [`view_elements`] gives the host).
-fn range_bytes(total: u64, first: u64, element: u64, declared: u32) -> (u64, u64) {
-    let start = first * element;
-    let len = if declared == 0 {
-        total.saturating_sub(start)
-    } else {
-        u64::from(declared) * element
-    };
-    (start, len)
+    Some((
+        base + buffer.FirstElement * element,
+        u64::from(buffer.NumElements) * element,
+    ))
 }
 
 /// [`buffer_range`] of an unordered access view of memory at `base`.
-fn unordered_range(base: u64, total: u64, words: &[u32; 10]) -> Option<(u64, u64)> {
+fn unordered_range(base: u64, words: &[u32; 10]) -> Option<(u64, u64)> {
     let desc = uav_desc(words);
     // SAFETY: a buffer view's union member.
     let buffer = unsafe { desc.Anonymous.Buffer };
@@ -587,8 +579,10 @@ fn unordered_range(base: u64, total: u64, words: &[u32; 10]) -> Option<(u64, u64
     } else {
         crate::resource::element(desc.Format.0 as u32)?.0
     };
-    let (start, len) = range_bytes(total, buffer.FirstElement, element, buffer.NumElements);
-    Some((base + start, len))
+    Some((
+        base + buffer.FirstElement * element,
+        u64::from(buffer.NumElements) * element,
+    ))
 }
 
 /// The host resource a slot made by [`make`] views, if any.
