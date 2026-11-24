@@ -532,6 +532,32 @@ impl State {
                     // outside title memory) binds a zeroed buffer instead of
                     // keeping whatever the parameter held: a shader reading
                     // an unset parameter read a wild address (upstream #294).
+                    // Diagnostic: a draw to a 3840-wide target reading a root
+                    // view: log the view address and the target texture's title
+                    // memory, to see whether the shader reads the scene target.
+                    {
+                        static ONCE: std::sync::Once = std::sync::Once::new();
+                        ONCE.call_once(|| {
+                            for &t in &self.targets {
+                                let Some(tex) = crate::resource::host_resource(t as This) else {
+                                    continue;
+                                };
+                                // SAFETY: a live resource.
+                                let d = unsafe { tex.GetDesc() };
+                                if d.Width == 3840 {
+                                    let scene = crate::resource::texture_memory(t as This)
+                                        .map(|(m, _)| m as usize);
+                                    tracing::warn!(
+                                        view = format_args!("{address:#x}"),
+                                        srv,
+                                        target = format_args!("{t:#x}"),
+                                        scene = ?scene,
+                                        "a draw to a 3840-wide target reads a root view"
+                                    );
+                                }
+                            }
+                        });
+                    }
                     let gpu = match root_view(list, *address, srv) {
                         Some(gpu) => gpu,
                         None => {
