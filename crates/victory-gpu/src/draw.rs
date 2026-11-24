@@ -588,6 +588,21 @@ impl State {
         }
         self.bind(list, p, true);
         #[cfg(feature = "diagnostics")]
+        {
+            // `4a05640ec16718ad` stalls the GPU: log what it binds (its
+            // constants index the descriptor heap) the first time it runs.
+            if p.stages
+                .iter()
+                .any(|s| s.shader.hash == "4a05640ec16718ad")
+            {
+                static ONCE: std::sync::Once = std::sync::Once::new();
+                ONCE.call_once(|| {
+                    let text = self.op_text(format!("dispatch {x}x{y}x{z}"), true);
+                    tracing::warn!("{text}");
+                });
+            }
+        }
+        #[cfg(feature = "diagnostics")]
         list.note_op(|| self.op_text(format!("dispatch {x}x{y}x{z}"), true));
         // SAFETY: an open list with everything set.
         unsafe { list.list.Dispatch(x, y, z) };
@@ -1239,11 +1254,20 @@ fn describe(view: Option<&View>) -> String {
         ),
         // The first four values, as a colour rectangle's constants are.
         Some(View::Constant(address, size))
-            if *size >= 16 && crate::texture::committed(*address as *const u8, 16) =>
+            if *size >= 32 && crate::texture::committed(*address as *const u8, 32) =>
         {
-            // SAFETY: 16 committed bytes of title memory.
+            // SAFETY: 32 committed bytes of title memory.
             let v = unsafe { (*address as *const [f32; 4]).read_unaligned() };
-            format!("Constant({address:#x}, {size}) {v:?}")
+            // The dwords too: a shader that indexes the descriptor heap from
+            // a constant (createHandleFromHeap) is read from here.
+            let mut words = [0u32; 8];
+            crate::host::copy_mapped(
+                words.as_mut_ptr().cast(),
+                *address as *const u8,
+                32,
+                false,
+            );
+            format!("Constant({address:#x}, {size}) {v:?} dw={words:x?}")
         }
         Some(v) => format!("{v:?}").chars().take(60).collect(),
     }
