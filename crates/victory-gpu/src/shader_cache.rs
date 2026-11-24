@@ -36,20 +36,31 @@ pub(crate) fn counts() -> (u64, u64) {
     (HITS.load(Ordering::Relaxed), MISSES.load(Ordering::Relaxed))
 }
 
-/// What identifies this build: the BLAKE3 of our executable file.
+/// What identifies this build: the BLAKE3 of our executable file and the
+/// host's wave size (a translation declaring `WaveSize(64)` must not be
+/// reused on a device that refuses it).
 fn build() -> &'static [u8; 32] {
     static BUILD: OnceLock<[u8; 32]> = OnceLock::new();
     BUILD.get_or_init(|| {
         let exe = std::env::current_exe().and_then(std::fs::read);
+        let wave = victory_shader::host_wave_lanes().to_le_bytes();
         match exe {
-            Ok(bytes) => *blake3::hash(&bytes).as_bytes(),
+            Ok(bytes) => {
+                let mut hasher = blake3::Hasher::new();
+                hasher.update(&bytes);
+                hasher.update(&wave);
+                *hasher.finalize().as_bytes()
+            }
             Err(e) => {
                 // Without it no entry can be trusted: a fresh key per run.
                 tracing::warn!(error = %e, "cannot read our executable; shader cache unused");
                 let now = std::time::SystemTime::now()
                     .duration_since(std::time::UNIX_EPOCH)
                     .unwrap_or_default();
-                *blake3::hash(&now.as_nanos().to_le_bytes()).as_bytes()
+                let mut hasher = blake3::Hasher::new();
+                hasher.update(&now.as_nanos().to_le_bytes());
+                hasher.update(&wave);
+                *hasher.finalize().as_bytes()
             }
         }
     })

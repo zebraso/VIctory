@@ -199,6 +199,27 @@ fn create() -> windows::core::Result<Host> {
             D3D12CreateDevice(None, D3D_FEATURE_LEVEL_12_0, &mut device)?;
         }
         let device = device.ok_or_else(windows::core::Error::empty)?;
+        // The host's wave size: the translator declares the console's wave
+        // (64) only when the device can run it; translations are keyed by it.
+        {
+            use windows::Win32::Graphics::Direct3D12::{
+                D3D12_FEATURE_D3D12_OPTIONS1, D3D12_FEATURE_DATA_D3D12_OPTIONS1,
+            };
+            let mut options = D3D12_FEATURE_DATA_D3D12_OPTIONS1::default();
+            let asked = device.CheckFeatureSupport(
+                D3D12_FEATURE_D3D12_OPTIONS1,
+                (&raw mut options).cast(),
+                std::mem::size_of_val(&options) as u32,
+            );
+            if asked.is_ok() {
+                victory_shader::set_host_wave_lanes(options.WaveLaneCountMax);
+                tracing::info!(
+                    min = options.WaveLaneCountMin,
+                    max = options.WaveLaneCountMax,
+                    "host wave lanes"
+                );
+            }
+        }
         let messages = debug
             .then(|| device.cast::<ID3D12InfoQueue>().ok())
             .flatten();

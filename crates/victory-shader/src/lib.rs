@@ -34,3 +34,18 @@ pub enum ShaderError {
     #[error("GFX10 code at {offset:#x}: {what} is not supported")]
     Unsupported { offset: usize, what: &'static str },
 }
+
+/// The host GPU's largest wave (`D3D12_OPTIONS1::WaveLaneCountMax`), 0 while
+/// unknown (translation then declares the console's own wave size).
+static HOST_WAVE_LANES: std::sync::atomic::AtomicU32 = std::sync::atomic::AtomicU32::new(0);
+
+/// Tells the translator how many lanes the host's waves have (32 on NVIDIA,
+/// 4 on WARP, 64 on RDNA); translations are keyed by it.
+pub fn set_host_wave_lanes(lanes: u32) {
+    HOST_WAVE_LANES.store(lanes.max(1), std::sync::atomic::Ordering::Relaxed);
+}
+
+/// The host's largest wave, 0 while unknown.
+pub fn host_wave_lanes() -> u32 {
+    HOST_WAVE_LANES.load(std::sync::atomic::Ordering::Relaxed)
+}

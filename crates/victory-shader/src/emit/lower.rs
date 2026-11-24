@@ -709,6 +709,16 @@ impl<'a> Lower<'a> {
                 // a Wave64 console, so a 32-lane host wave matches bit for bit
                 // and lets Wave32-only GPUs (e.g. NVIDIA) accept the pipeline.
                 s.wave_size = Some(if force_wave32() || threads <= 32 { 32 } else { wave });
+                // The host's own limit (NVIDIA 32, WARP 4): declaring more is
+                // a pipeline the device refuses. Emulation (docs/wave64-emulation.md)
+                // replaces this clamp once it lands.
+                let host = crate::host_wave_lanes();
+                if let Some(size) = s.wave_size
+                    && host > 0
+                    && host < size
+                {
+                    s.wave_size = Some(host);
+                }
             }
         }
         let mut no_barrier = HashSet::new();
