@@ -2785,6 +2785,20 @@ impl<'a> Lower<'a> {
                     }
                     Ok(())
                 }
+                "s_cmov_b64" => {
+                    // Keeps the old destination when SCC is clear.
+                    let cond = self.scc_in(inst)?;
+                    for (h, v) in [(0, lo), (1, hi)] {
+                        let a = half(self, 0, h)?;
+                        let old = dst_code
+                            .and_then(|d| inst.read(Reg::S(d + h)))
+                            .ok_or("an unread destination")?;
+                        let old = self.i32_of(old)?;
+                        let r = self.s.m.select(c, cond, a, old);
+                        self.set(v, Val::I32(r));
+                    }
+                    Ok(())
+                }
                 _ => Err(name),
             };
         }
@@ -2793,6 +2807,18 @@ impl<'a> Lower<'a> {
         let (r, carry): (V, Option<V>) = match name {
             "s_mov_b32" => (src32(self, 0)?, None),
             "s_movk_i32" => (sext16(self), None),
+            "s_cmov_b32" | "s_cmovk_i32" => {
+                // Keeps the old destination when SCC is clear.
+                let cond = self.scc_in(inst)?;
+                let a = if name == "s_cmovk_i32" {
+                    sext16(self)
+                } else {
+                    src32(self, 0)?
+                };
+                let d = dst.as_ref().ok_or("a missing operand")?;
+                let old = self.operand(inst, d)?;
+                (self.s.m.select(c, cond, a, old), None)
+            }
             "s_cselect_b32" => {
                 let cond = self.scc_in(inst)?;
                 let (a, b) = (src32(self, 0)?, src32(self, 1)?);
@@ -2972,6 +2998,8 @@ impl<'a> Lower<'a> {
                     name,
                     "s_mov_b32"
                         | "s_movk_i32"
+                        | "s_cmov_b32"
+                        | "s_cmovk_i32"
                         | "s_cselect_b32"
                         | "s_brev_b32"
                         | "s_mul_i32"
@@ -6908,7 +6936,81 @@ impl<'a> Lower<'a> {
 
 #[cfg(test)]
 mod tests {
-    use super::{Numeric, buffer_format};
+    use super::{Numeric, Parts, buffer_format, lower};
+    use crate::native::{ComputeIo, HwStage, NativeProgram, StageIo};
+    use crate::{io, ir, resource, structure};
+
+    const S_ENDPGM: u32 = 0xBF81_0000;
+
+    /// Lowers a compute program of constants: whether it translates.
+    fn lowers(words: &[u32]) -> Result<(), crate::ShaderError> {
+        let code: Vec<u8> = words.iter().flat_map(|w| w.to_le_bytes()).collect();
+        let native = NativeProgram {
+            stage: HwStage::Cs,
+            wave64: false,
+            vgprs: 256,
+            layout: vec![],
+            used: vec![],
+            io: StageIo::Cs(ComputeIo {
+                rsrc2: 0,
+                threads: [1, 1, 1],
+            }),
+            code,
+        };
+        let p = ir::build(&native.code, false, 256).unwrap();
+        let res = resource::track(&p, &native.layout, native.stage).unwrap();
+        let io = io::raise(&p, &native).unwrap();
+        let st = structure::structure(&p).unwrap();
+        lower(&Parts {
+            native: &native,
+            p: &p,
+            st: &st,
+            io: &io,
+            res: &res,
+            inputs: vec![],
+            outputs: vec![],
+            prims: vec![],
+            mesh_stride: 0,
+        })
+        .map(|_| ())
+    }
+
+    #[test]
+    fn scalar_conditional_moves_lower() {
+        // Each sets SCC, moves under it into a destination that already has a
+        // value, and branches on the result (only code with an effect needs
+        // its operands).
+        let tail = [
+            0xBF07_8002, // s_cmp_lg_u32 s2, 0
+            0xBF85_0001, // s_cbranch_scc1 -> s_endpgm
+            0xBE84_0380, // s_mov_b32 s4, 0
+            S_ENDPGM,
+        ];
+        let b32 = [
+            0xBE82_0387, // s_mov_b32 s2, 7
+            0xBE81_0381, // s_mov_b32 s1, 1
+            0xBF07_8001, // s_cmp_lg_u32 s1, 0
+            0xBE82_0501, // s_cmov_b32 s2, s1
+        ];
+        let k32 = [
+            0xBE82_0387, // s_mov_b32 s2, 7
+            0xBE81_0381, // s_mov_b32 s1, 1
+            0xBF07_8001, // s_cmp_lg_u32 s1, 0
+            0xB102_0005, // s_cmovk_i32 s2, 5
+        ];
+        let b64 = [
+            0xBE82_0387, // s_mov_b32 s2, 7
+            0xBE83_0387, // s_mov_b32 s3, 7
+            0xBE80_0381, // s_mov_b32 s0, 1
+            0xBE81_0381, // s_mov_b32 s1, 1
+            0xBF07_8000, // s_cmp_lg_u32 s0, 0
+            0xBE82_0600, // s_cmov_b64 s[2:3], s[0:1]
+        ];
+        for head in [&b32[..], &k32[..], &b64[..]] {
+            let words: Vec<u32> = head.iter().chain(&tail).copied().collect();
+            lowers(&words).unwrap();
+        }
+    }
 
     #[test]
     fn buffer_formats_by_number() {
