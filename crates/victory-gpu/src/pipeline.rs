@@ -109,13 +109,28 @@ impl Shader {
             .get_or_init(|| {
                 let done = translate(&self.container);
                 match &done {
-                    Ok(t) => tracing::info!(
-                        stage = self.stage,
-                        hash = %self.hash,
-                        user_data = t.host.user_data.len(),
-                        samplers = t.host.samplers.len(),
-                        "shader translated"
-                    ),
+                    Ok(t) => {
+                        tracing::info!(
+                            stage = self.stage,
+                            hash = %self.hash,
+                            user_data = t.host.user_data.len(),
+                            samplers = t.host.samplers.len(),
+                            "shader translated"
+                        );
+                        // `VICTORY_DUMP_SHADER=<hash>[,<hash>]`: write the
+                        // translated DXIL of those shaders, to disassemble
+                        // them (dxc -dumpbin) when one stalls the GPU.
+                        if let Ok(want) = std::env::var("VICTORY_DUMP_SHADER")
+                            && want.split(',').any(|h| h.trim() == self.hash)
+                        {
+                            let dir = std::env::var("TEMP").unwrap_or_default();
+                            let path = format!("{dir}\\victory-{}.dxil", self.hash);
+                            match std::fs::write(&path, &t.host.dxil) {
+                                Ok(()) => tracing::warn!(path, "translated shader written"),
+                                Err(e) => tracing::warn!(error = %e, "cannot write shader"),
+                            }
+                        }
+                    }
                     Err(e) => tracing::warn!(
                         stage = self.stage,
                         hash = %self.hash,
