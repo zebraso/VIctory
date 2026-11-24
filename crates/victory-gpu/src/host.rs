@@ -1773,6 +1773,14 @@ impl Host {
     /// as frame `frame` (saved if captures are on). `None` if nothing was
     /// shown; else, in diagnostics builds, whether the frame was black.
     pub(crate) fn present(&self, texture: &ID3D12Resource, state: u32, frame: u64) -> Option<bool> {
+        // `VICTORY_PRESENT_TARGET=WxH`: present a render target of that size
+        // from this frame instead of the title's (diagnostics: shows a scene
+        // target while the title's composite is missing).
+        let override_target = crate::capture::take_present_target();
+        let (texture, state) = match &override_target {
+            Some(t) => (&t.texture, 0x4),
+            None => (texture, state),
+        };
         // SAFETY: a live resource.
         let desc = unsafe { texture.GetDesc() };
         let Some(format) = swap_format(desc.Format) else {

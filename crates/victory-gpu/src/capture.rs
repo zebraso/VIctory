@@ -29,6 +29,55 @@ pub(crate) fn listed(n: u64) -> bool {
     .contains(&n)
 }
 
+/// `VICTORY_PRESENT_TARGET=WxH`: present this frame's render target of that
+/// size instead of the title's (diagnostics: shows a scene target while the
+/// title's composite is missing).
+pub(crate) fn present_size() -> Option<(u32, u32)> {
+    static SIZE: std::sync::OnceLock<Option<(u32, u32)>> = std::sync::OnceLock::new();
+    *SIZE.get_or_init(|| {
+        let text = std::env::var("VICTORY_PRESENT_TARGET").ok()?;
+        let (w, h) = text.split_once('x')?;
+        Some((w.trim().parse().ok()?, h.trim().parse().ok()?))
+    })
+}
+
+/// At the present: the noted target of `VICTORY_PRESENT_TARGET`'s size, if
+/// the frame drew one (and the targets are cleared).
+pub(crate) fn take_present_target() -> Option<std::sync::Arc<crate::resource::HostTexture>> {
+    // The last target found: frames that do not draw one keep showing it (a
+    // fallback to the title's texture would resize the swap chain back and
+    // forth).
+    static LAST: std::sync::Mutex<Option<std::sync::Arc<crate::resource::HostTexture>>> =
+        std::sync::Mutex::new(None);
+    let (w, h) = present_size()?;
+    let targets = std::mem::take(&mut *TARGETS.lock().unwrap_or_else(|e| e.into_inner()));
+    let mut found = None;
+    static LOGGED: std::sync::Once = std::sync::Once::new();
+    LOGGED.call_once(|| {
+        let targets = TARGETS.lock().unwrap_or_else(|e| e.into_inner());
+        let mut sizes = Vec::new();
+        for (_, copy) in targets.iter() {
+            // SAFETY: a live host texture.
+            let d = unsafe { copy.texture.GetDesc() };
+            sizes.push(format!("{}x{} f{}", d.Width, d.Height, d.Format.0));
+        }
+        tracing::info!(want = ?present_size(), ?sizes, "present target sizes");
+    });
+    for (_, copy) in targets {
+        // SAFETY: a live host texture.
+        let d = unsafe { copy.texture.GetDesc() };
+        if d.Width == u64::from(w) && d.Height == h && found.is_none() {
+            found = Some(copy);
+        }
+    }
+    let mut last = LAST.lock().unwrap_or_else(|e| e.into_inner());
+    if found.is_some() {
+        *last = found.clone();
+        return found;
+    }
+    last.clone()
+}
+
 /// Whether frame `n` is saved.
 pub(crate) fn wanted(n: u64) -> bool {
     folder().is_some() && (n.is_power_of_two() || listed(n))
@@ -215,7 +264,8 @@ fn dump_on() -> bool {
 
 /// Notes a title texture the frame being built renders to or writes.
 pub(crate) fn note_target(resource: crate::object::This) {
-    if resource.is_null() || !dump_on() || !listed(crate::queue::presented() + 1) {
+    let listed_now = dump_on() && listed(crate::queue::presented() + 1);
+    if resource.is_null() || !(listed_now || present_size().is_some()) {
         return;
     }
     let mut targets = TARGETS.lock().unwrap_or_else(|e| e.into_inner());
