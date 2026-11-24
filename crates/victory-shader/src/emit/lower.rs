@@ -768,6 +768,9 @@ impl<'a> Lower<'a> {
                     && x.native.wave64
                     && threads > 32
                     && threads <= 64
+                    // A barrier is only legal where every lane arrives: the exchange is
+                    // emitted only for uniform control flow (no per-lane guard).
+                    && x.st.guards.iter().flatten().all(|g| g.is_none())
                 {
                     emulate64 = true;
                     exchange = s.lds_dwords;
