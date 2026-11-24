@@ -6975,7 +6975,6 @@ mod tests {
     }
 
     #[test]
-<<<<<<< HEAD
     fn scalar_conditional_moves_lower() {
         // Each sets SCC, moves under it into a destination that already has a
         // value, and branches on the result (only code with an effect needs
