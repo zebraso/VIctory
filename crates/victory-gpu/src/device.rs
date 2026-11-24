@@ -389,8 +389,8 @@ static FUNCTIONS: Table<160> = {
     f[73] = list::create_list_x as *const (); // 0x248
     // Console device slots the title calls and we have not mapped yet:
     // report their arguments so the method can be identified.
-    f[57] = probe_57 as *const (); // 0x1c8
-    f[67] = probe_67 as *const (); // 0x218
+    f[57] = deserialize_graphics_pso as *const (); // 0x1c8
+    f[67] = deserialize_compute_pso as *const (); // 0x218
     f[74] = resource::register_page_pool as *const (); // 0x250
     f[75] = resource::unregister_page_pool as *const (); // 0x258
     // CreateCommittedResourceX: its description is PC's plus DCC options,
@@ -409,16 +409,58 @@ static FUNCTIONS: Table<160> = {
 
 
 /// Console device slot 0x1c8: logs its arguments (diagnostics).
-extern "system" fn probe_57(a: usize, b: usize, c: usize, d: usize) -> HRESULT {
-    tracing::warn!(a = format_args!("{a:#x}"), b = format_args!("{b:#x}"), c = format_args!("{c:#x}"), d = format_args!("{d:#x}"), "device slot 0x1c8");
+/// Console device #57: `DeserializeGraphicsPipelineStateX(state, riid,
+/// pipeline)`.
+///
+/// The serialised form is the console driver's, so a host cannot load it: the
+/// title creates the pipeline from its description instead (as XCL does).
+/// `pipeline` is cleared so the caller cannot read a stale pointer.
+extern "system" fn deserialize_graphics_pso(
+    _this: This,
+    state: *const u8,
+    _riid: *const Iid,
+    pipeline: *mut This,
+) -> HRESULT {
+    static ONCE: std::sync::Once = std::sync::Once::new();
+    ONCE.call_once(|| {
+        tracing::warn!(
+            state = format_args!("{state:p}"),
+            "DeserializeGraphicsPipelineStateX: console pipeline caches are not supported"
+        );
+    });
+    // SAFETY: the caller passes an out pointer (or null).
+    unsafe {
+        if let Some(out) = pipeline.as_mut() {
+            *out = std::ptr::null_mut();
+        }
+    }
     E_NOTIMPL
 }
 
-/// Console device slot 0x218: logs its arguments (diagnostics).
-extern "system" fn probe_67(a: usize, b: usize, c: usize, d: usize) -> HRESULT {
-    tracing::warn!(a = format_args!("{a:#x}"), b = format_args!("{b:#x}"), c = format_args!("{c:#x}"), d = format_args!("{d:#x}"), "device slot 0x218");
+/// Console device #67: `DeserializeComputePipelineStateX(state, riid,
+/// pipeline)`, as [`deserialize_graphics_pso`].
+extern "system" fn deserialize_compute_pso(
+    _this: This,
+    state: *const u8,
+    _riid: *const Iid,
+    pipeline: *mut This,
+) -> HRESULT {
+    static ONCE: std::sync::Once = std::sync::Once::new();
+    ONCE.call_once(|| {
+        tracing::warn!(
+            state = format_args!("{state:p}"),
+            "DeserializeComputePipelineStateX: console pipeline caches are not supported"
+        );
+    });
+    // SAFETY: the caller passes an out pointer (or null).
+    unsafe {
+        if let Some(out) = pipeline.as_mut() {
+            *out = std::ptr::null_mut();
+        }
+    }
     E_NOTIMPL
 }
+
 #[cfg(test)]
 mod tests {
     use super::*;
