@@ -3844,6 +3844,12 @@ impl<'a> Lower<'a> {
     /// `StructureByteStride` of the view the slot holds. `None` when the
     /// descriptor does not come from a heap (a root SRV has no stride).
     fn runtime_stride(&mut self, src: &Source) -> Result<Option<V>, Why> {
+        // `VICTORY_STRIDE_TABLE=0`: the table is off (it crashes the loading
+        // screen of the retail title; the old fallback answers instead).
+        static ON: std::sync::OnceLock<bool> = std::sync::OnceLock::new();
+        if !*ON.get_or_init(|| std::env::var_os("VICTORY_STRIDE_TABLE") != Some("0".into())) {
+            return Ok(None);
+        }
         let slot = match src {
             Source::Loaded { load, first } => match self.heap_index(*load, *first, false) {
                 Ok(slot) => slot,
