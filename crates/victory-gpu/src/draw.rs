@@ -532,32 +532,10 @@ impl State {
                     // outside title memory) binds a zeroed buffer instead of
                     // keeping whatever the parameter held: a shader reading
                     // an unset parameter read a wild address (upstream #294).
-                    // Diagnostic: a draw to a 3840-wide target reading a root
-                    // view: log the view address and the target texture's title
-                    // memory, to see whether the shader reads the scene target.
-                    {
-                        static ONCE: std::sync::Once = std::sync::Once::new();
-                        ONCE.call_once(|| {
-                            for &t in &self.targets {
-                                let Some(tex) = crate::resource::host_resource(t as This) else {
-                                    continue;
-                                };
-                                // SAFETY: a live resource.
-                                let d = unsafe { tex.GetDesc() };
-                                if d.Width == 3840 {
-                                    let scene = crate::resource::texture_memory(t as This)
-                                        .map(|(m, _)| m as usize);
-                                    tracing::warn!(
-                                        view = format_args!("{address:#x}"),
-                                        srv,
-                                        target = format_args!("{t:#x}"),
-                                        scene = ?scene,
-                                        "a draw to a 3840-wide target reads a root view"
-                                    );
-                                }
-                            }
-                        });
-                    }
+                    // Diagnostic: once per pipeline, what a draw to a
+                    // 3840-wide target binds (tables included), to see how the
+                    // title composes the presented frame.
+
                     let gpu = match root_view(list, *address, srv) {
                         Some(gpu) => gpu,
                         None => {
@@ -833,6 +811,27 @@ impl State {
     /// (diagnostics builds).
     #[cfg(feature = "diagnostics")]
     fn trace(&self, kind: &str, count: u32, first: u32) {
+        // Diagnostic: once per pipeline, what a draw to a 3840-wide target
+        // binds (tables included), to see how the title composes the frame
+        // it presents.
+        {
+            static SEEN: std::sync::Mutex<Vec<usize>> = std::sync::Mutex::new(Vec::new());
+            let wide = self.targets.iter().any(|&t| {
+                crate::resource::host_resource(t as This).is_some_and(|tex| {
+                    // SAFETY: a live resource.
+                    unsafe { tex.GetDesc() }.Width == 3840
+                })
+            });
+            if wide {
+                let mut seen = SEEN.lock().unwrap_or_else(|e| e.into_inner());
+                let key = self.pipeline as usize;
+                if !seen.contains(&key) {
+                    seen.push(key);
+                    let text = self.op_text(format!("{kind} to 3840"), false);
+                    tracing::warn!(pipeline = format_args!("{:#x}", self.pipeline), "{text}");
+                }
+            }
+        }
         static TRACED: AtomicU64 = AtomicU64::new(0);
         if !tracing::enabled!(tracing::Level::DEBUG) {
             return;

@@ -564,8 +564,7 @@ impl Host {
     }
 
     /// Runs closed lists and waits for them.
-    pub(crate) fn execute(&self, runs: &[&HostList]) {
-        // One submission at a time from preparation to copy-back: snapshots
+    pub(crate) fn execute(&self, runs: &[&HostList]) {        // One submission at a time from preparation to copy-back: snapshots
         // and the ranges shaders write are per host copy, not per submission.
         let mut submitted = self.submitted.lock().unwrap_or_else(|e| e.into_inner());
         let started = std::time::Instant::now();
@@ -598,9 +597,22 @@ impl Host {
         };
         #[cfg(not(feature = "diagnostics"))]
         let groups = [&lists[..]];
+        #[cfg(feature = "diagnostics")]
+        let in_flight = {
+            let mut names: Vec<String> = Vec::new();
+            let mut notes: Vec<String> = Vec::new();
+            for l in runs.iter().take(6) {
+                names.extend(l.pipelines.lock().unwrap_or_else(|e| e.into_inner()).iter().cloned());
+                let n = l.notes.lock().unwrap_or_else(|e| e.into_inner());
+                notes.extend(n.iter().rev().take(3).map(|(text, _)| text.clone()));
+            }
+            format!("submission still running, pipelines {names:?}, last ops {notes:?}")
+        };
         for (i, group) in groups.iter().enumerate() {
             *submitted += 1;
             let started = std::time::Instant::now();
+            #[cfg(feature = "diagnostics")]
+            watch_start(in_flight.clone());
             // SAFETY: closed lists; the fence and event are ours.
             unsafe {
                 self.queue.ExecuteCommandLists(group);
@@ -615,6 +627,8 @@ impl Host {
                     Err(e) => tracing::warn!(error = %e, "host submission not waited for"),
                 }
             }
+            #[cfg(feature = "diagnostics")]
+            watch_end();
             #[cfg(feature = "diagnostics")]
             if groups.len() > 1 && started.elapsed() > std::time::Duration::from_millis(50) {
                 // SAFETY: a plain query.
@@ -1766,6 +1780,41 @@ impl Meter {
                 });
         });
     }
+}
+
+/// Diagnostics: the submission in flight, logged while it runs long (the
+/// title's own watchdog ends the process when a stall passes ~30 s, before
+/// the host's device removal reports it).
+#[cfg(feature = "diagnostics")]
+static IN_FLIGHT: std::sync::Mutex<Option<(std::time::Instant, String)>> =
+    std::sync::Mutex::new(None);
+
+#[cfg(feature = "diagnostics")]
+fn watch_start(text: String) {
+    static START: std::sync::Once = std::sync::Once::new();
+    START.call_once(|| {
+        std::thread::spawn(|| {
+            let mut last = 0u128;
+            loop {
+                std::thread::sleep(std::time::Duration::from_secs(5));
+                let guard = IN_FLIGHT.lock().unwrap_or_else(|e| e.into_inner());
+                if let Some((at, text)) = guard.as_ref() {
+                    let ms = at.elapsed().as_millis();
+                    if ms >= 5_000 && ms / 5_000 != last {
+                        last = ms / 5_000;
+                        tracing::warn!(ms, "{text}");
+                    }
+                }
+            }
+        });
+    });
+    *IN_FLIGHT.lock().unwrap_or_else(|e| e.into_inner()) =
+        Some((std::time::Instant::now(), text));
+}
+
+#[cfg(feature = "diagnostics")]
+fn watch_end() {
+    *IN_FLIGHT.lock().unwrap_or_else(|e| e.into_inner()) = None;
 }
 
 impl Host {

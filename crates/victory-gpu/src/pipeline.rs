@@ -235,6 +235,14 @@ fn parse_skip_hashes(value: &str) -> Vec<String> {
 
 #[cfg(all(windows, feature = "diagnostics"))]
 fn skipped_shader(p: &Pipeline) -> Option<&str> {
+    // `VICTORY_SKIP_MESH`: leave out pipelines with a mesh stage (they are
+    // the ones that stall the host GPU for tens of seconds).
+    static MESH: OnceLock<bool> = OnceLock::new();
+    if *MESH.get_or_init(|| std::env::var_os("VICTORY_SKIP_MESH").is_some())
+        && p.shaders.iter().any(|s| s.stage == "mesh")
+    {
+        return Some("mesh stage");
+    }
     static HASHES: OnceLock<Vec<String>> = OnceLock::new();
     let hashes = HASHES.get_or_init(|| {
         let value = std::env::var("VICTORY_SKIP_PIPELINES").unwrap_or_default();
