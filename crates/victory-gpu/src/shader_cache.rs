@@ -44,15 +44,11 @@ fn build() -> &'static [u8; 32] {
     BUILD.get_or_init(|| {
         let exe = std::env::current_exe().and_then(std::fs::read);
         let wave = victory_shader::host_wave_lanes().to_le_bytes();
-        // The translation the diagnostic switch selects never mixes with the
-        // other form in one cache.
-        let table = [u8::from(victory_shader::emit::stride_table_off())];
         match exe {
             Ok(bytes) => {
                 let mut hasher = blake3::Hasher::new();
                 hasher.update(&bytes);
                 hasher.update(&wave);
-                hasher.update(&table);
                 *hasher.finalize().as_bytes()
             }
             Err(e) => {
@@ -64,7 +60,6 @@ fn build() -> &'static [u8; 32] {
                 let mut hasher = blake3::Hasher::new();
                 hasher.update(&now.as_nanos().to_le_bytes());
                 hasher.update(&wave);
-                hasher.update(&table);
                 *hasher.finalize().as_bytes()
             }
         }

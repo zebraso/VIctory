@@ -79,15 +79,6 @@ fn emulate_wave64() -> bool {
     *EMULATE.get_or_init(|| std::env::var_os("VICTORY_WAVE64_EMULATE").is_some())
 }
 
-/// `VICTORY_NO_STRIDE_TABLE`: the runtime stride table is not read (the
-/// diagnostic A/B switch): a structured buffer whose analysis lost its
-/// stride fails, or takes the loose fallback, as before the table existed.
-/// The shader cache is keyed by it, so the two forms never mix.
-pub fn stride_table_off() -> bool {
-    static OFF: std::sync::OnceLock<bool> = std::sync::OnceLock::new();
-    *OFF.get_or_init(|| std::env::var_os("VICTORY_NO_STRIDE_TABLE").is_some())
-}
-
 #[derive(Debug, Clone, Copy)]
 enum Val {
     I32(V),
@@ -3796,9 +3787,6 @@ impl<'a> Lower<'a> {
     /// `StructureByteStride` of the view the slot holds. `None` when the
     /// descriptor does not come from a heap (a root SRV has no stride).
     fn runtime_stride(&mut self, src: &Source) -> Result<Option<V>, Why> {
-        if stride_table_off() {
-            return Ok(None);
-        }
         let slot = match src {
             Source::Loaded { load, first } => match self.heap_index(*load, *first, false) {
                 Ok(slot) => slot,
