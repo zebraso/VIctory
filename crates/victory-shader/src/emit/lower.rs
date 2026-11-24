@@ -31,6 +31,30 @@ fn loose() -> bool {
     *LOOSE.get_or_init(|| std::env::var_os("VICTORY_LOOSE_TRANSLATE").is_some())
 }
 
+/// `VICTORY_LOOSE_MASKS`: a lane mask joined from an untracked source
+/// becomes every lane instead of failing the program.
+fn loose_masks() -> bool {
+    static LOOSE: std::sync::OnceLock<bool> = std::sync::OnceLock::new();
+    *LOOSE.get_or_init(|| std::env::var_os("VICTORY_LOOSE_MASKS").is_some())
+}
+
+/// `VICTORY_LOOSE_BUFFERS`: a structured buffer whose stride the analysis
+/// lost is viewed raw, at the instruction's byte offset, instead of failing
+/// the program.
+fn loose_buffers() -> bool {
+    static LOOSE: std::sync::OnceLock<bool> = std::sync::OnceLock::new();
+    *LOOSE.get_or_init(|| std::env::var_os("VICTORY_LOOSE_BUFFERS").is_some())
+}
+
+/// `VICTORY_WAVE32`: declare 32-lane waves even where the console's lane
+/// layout needs 64 (NVIDIA refuses WaveSize(64) compute pipelines outright;
+/// the dispatches then run with the wrong lane layout rather than being
+/// dropped, which leaves their outputs stale).
+fn force_wave32() -> bool {
+    static FORCE: std::sync::OnceLock<bool> = std::sync::OnceLock::new();
+    *FORCE.get_or_init(|| std::env::var_os("VICTORY_WAVE32").is_some())
+}
+
 #[derive(Debug, Clone, Copy)]
 enum Val {
     I32(V),
@@ -680,7 +704,7 @@ impl<'a> Lower<'a> {
                 // A group of at most 32 lanes leaves lanes 32..63 inactive on
                 // a Wave64 console, so a 32-lane host wave matches bit for bit
                 // and lets Wave32-only GPUs (e.g. NVIDIA) accept the pipeline.
-                s.wave_size = Some(if threads <= 32 { 32 } else { wave });
+                s.wave_size = Some(if force_wave32() || threads <= 32 { 32 } else { wave });
             }
         }
         let mut no_barrier = HashSet::new();
@@ -6314,10 +6338,17 @@ impl<'a> Lower<'a> {
                 Some(index) => {
                     let stride = used.map_or(0, |u| u.stride);
                     if stride < 4 || !stride.is_multiple_of(4) {
-                        return Err("a structured buffer of unknown stride");
+                        if !loose_buffers() {
+                            return Err("a structured buffer of unknown stride");
+                        }
+                        // Unknown stride: a raw buffer view of the same
+                        // resource, at the instruction's byte offset.
+                        let h = self.handle(site, src, false, (11 | u, 0))?;
+                        (h, [off, iu, iu])
+                    } else {
+                        let h = self.handle(site, src, false, (12 | u, stride))?;
+                        (h, [index, off, iu])
                     }
-                    let h = self.handle(site, src, false, (12 | u, stride))?;
-                    (h, [index, off, iu])
                 }
                 None => (self.handle(site, src, false, (11 | u, 0))?, [off, iu, iu]),
             };
@@ -6397,10 +6428,15 @@ impl<'a> Lower<'a> {
                     Some(index) => {
                         let stride = used.map_or(0, |u| u.stride);
                         if stride < 4 || !stride.is_multiple_of(4) {
-                            return Err("a structured buffer of unknown stride");
+                            if !loose_buffers() {
+                                return Err("a structured buffer of unknown stride");
+                            }
+                            args.push(self.handle(site, src, false, (11 | u, 0))?);
+                            args.extend([off, iu]);
+                        } else {
+                            args.push(self.handle(site, src, false, (12 | u, stride))?);
+                            args.extend([index, off]);
                         }
-                        args.push(self.handle(site, src, false, (12 | u, stride))?);
-                        args.extend([index, off]);
                     }
                     None => {
                         args.push(self.handle(site, src, false, (11 | u, 0))?);
@@ -6458,17 +6494,29 @@ impl<'a> Lower<'a> {
                 Some(index) => {
                     let stride = used.map_or(0, |u| u.stride);
                     if stride < 4 || !stride.is_multiple_of(4) {
-                        return Err("a structured buffer of unknown stride");
+                        if !loose() {
+                            return Err("a structured buffer of unknown stride");
+                        }
+                        let h = self.handle(site, src, false, (11 | u, 0))?;
+                        self.s.op(
+                            c,
+                            "rawBufferLoad.f32",
+                            Attr::ReadOnly,
+                            self.s.t.res_ret,
+                            139,
+                            &[h, off, iu, mask, align],
+                        )
+                    } else {
+                        let h = self.handle(site, src, false, (12 | u, stride))?;
+                        self.s.op(
+                            c,
+                            "rawBufferLoad.f32",
+                            Attr::ReadOnly,
+                            self.s.t.res_ret,
+                            139,
+                            &[h, index, off, mask, align],
+                        )
                     }
-                    let h = self.handle(site, src, false, (12 | u, stride))?;
-                    self.s.op(
-                        c,
-                        "rawBufferLoad.f32",
-                        Attr::ReadOnly,
-                        self.s.t.res_ret,
-                        139,
-                        &[h, index, off, mask, align],
-                    )
                 }
                 None => {
                     let h = self.handle(site, src, false, (11 | u, 0))?;

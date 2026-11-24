@@ -1427,7 +1427,13 @@ impl Host {
         match made {
             Ok(()) => Some((buffer?, data.cast())),
             Err(e) => {
-                tracing::warn!(error = %e, size, "no upload buffer");
+                // The creation's error is often the generic "device suspended":
+                // ask why it was removed.
+                // SAFETY: a plain query.
+                let reason = unsafe { self.device.GetDeviceRemovedReason() }
+                    .err()
+                    .map_or(0, |r| r.code().0);
+                tracing::warn!(error = %e, reason = format_args!("{reason:#x}"), size, "no upload buffer");
                 None
             }
         }
@@ -1473,7 +1479,11 @@ impl Host {
         match made {
             Ok(()) => Some((buffer?, data.cast())),
             Err(e) => {
-                tracing::warn!(error = %e, size, "no readback buffer");
+                // SAFETY: a plain query.
+                let reason = unsafe { self.device.GetDeviceRemovedReason() }
+                    .err()
+                    .map_or(0, |r| r.code().0);
+                tracing::warn!(error = %e, reason = format_args!("{reason:#x}"), size, "no readback buffer");
                 None
             }
         }
