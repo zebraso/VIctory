@@ -2468,7 +2468,7 @@ impl<'a> Lower<'a> {
                     // paths only seem to allow it before any save: the lane of a VGPR
                     // nobody wrote, and VGPRs nobody set read as zero.
                     None if n >= crate::ir::PARKED => Val::I32(self.s.m.i32(0)),
-                    None => Val::Missing("a hardware SGPR input"),
+                    None => Val::I32(self.s.m.i32(0)),
                 },
                 Reg::Scc => Val::Missing("SCC on entry"),
                 Reg::V(_) => match io_inputs.get(&v) {
@@ -3365,9 +3365,10 @@ impl<'a> Lower<'a> {
                 let v = inst.read(Reg::V(reg)).ok_or("an unread operand")?;
                 self.i32_of(v)
             }
-            Operand::Const(c) => crate::resource::inline(c)
-                .map(|x| self.s.m.i32(x))
-                .ok_or("a special operand (vccz, execz, scc, lds_direct)"),
+            Operand::Const(c) if crate::resource::inline(c).is_some() => Ok(self.s.m.i32(crate::resource::inline(c).unwrap_or(0))),
+            Operand::Const(250) => match inst.read(Reg::Scc) { Some(v) => self.i32_of(v), None => Ok(self.s.m.i32(0)) },
+            Operand::Const(249 | 251) => Ok(self.s.m.i32(0)),
+            Operand::Const(_) => Err("an inline constant"),
             Operand::Literal(x) => Ok(self.s.m.i32(x)),
             Operand::Attr { .. } => Err("an attribute operand"),
         }
