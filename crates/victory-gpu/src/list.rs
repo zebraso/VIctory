@@ -1300,6 +1300,108 @@ extern "system" fn clear_rtv(
     let _ = (this, handle, color, count, rects);
 }
 
+/// Console list slots 53/54: `ClearUnorderedAccessViewUint(handle, values,
+/// count, rects)` and its float form, with the console's descriptor handle
+/// (the fix XCL #1291 covers). The host's clear takes a view with a GPU handle
+/// and a CPU handle, and the heap holding it is bound for the call.
+extern "system" fn clear_uav_uint(
+    this: This,
+    handle: u64,
+    values: *const u32,
+    count: u32,
+    rects: *const Rect,
+) -> crate::object::HRESULT {
+    clear_uav(this, handle, values.cast(), count, rects, false)
+}
+
+/// Console list slot 54: as [`clear_uav_uint`], for floats.
+extern "system" fn clear_uav_float(
+    this: This,
+    handle: u64,
+    values: *const f32,
+    count: u32,
+    rects: *const Rect,
+) -> crate::object::HRESULT {
+    clear_uav(this, handle, values.cast(), count, rects, true)
+}
+
+#[cfg(windows)]
+fn clear_uav(
+    this: This,
+    handle: u64,
+    values: *const f32,
+    count: u32,
+    rects: *const Rect,
+    float: bool,
+) -> crate::object::HRESULT {
+    use windows::Win32::Graphics::Direct3D12::D3D12_RESOURCE_STATES as State;
+    const UNORDERED_ACCESS: u32 = 0x8;
+    let (Some(list), Some(crate::descriptor::View::Unordered(resource, _, _))) =
+        (host_list(this), crate::descriptor::view(handle))
+    else {
+        return crate::object::E_INVALIDARG;
+    };
+    let (Some(texture), Some(host)) = (
+        crate::resource::host_resource(resource as This),
+        crate::host::host(),
+    ) else {
+        return crate::object::E_INVALIDARG;
+    };
+    let rects: Option<Vec<windows::Win32::Foundation::RECT>> = (count > 0 && !rects.is_null())
+        .then(|| {
+            // SAFETY: the title passes `count` rectangles.
+            unsafe { std::slice::from_raw_parts(rects, count as usize) }
+                .iter()
+                .map(|r| windows::Win32::Foundation::RECT {
+                    left: r.left,
+                    top: r.top,
+                    right: r.right,
+                    bottom: r.bottom,
+                })
+                .collect()
+        });
+    let Some((heap, gpu, cpu)) = host.uav_clear_view(texture) else {
+        return crate::object::E_INVALIDARG;
+    };
+    // SAFETY: an open list, a live texture and a fresh view of it. The heap
+    // holding the view is bound for the clear; the next draw or dispatch of
+    // ours binds the title's again.
+    unsafe {
+        list.list.SetDescriptorHeaps(&[Some(heap)]);
+        if let Some((_, before)) = list.transition(resource as This, UNORDERED_ACCESS) {
+            list.list.ResourceBarrier(&[crate::host::transition(
+                texture,
+                State(before as i32),
+                State(UNORDERED_ACCESS as i32),
+            )]);
+        }
+        if float {
+            // SAFETY: the title passes four floats.
+            let v = *values.cast::<[f32; 4]>();
+            list.list
+                .ClearUnorderedAccessViewFloat(gpu, cpu, texture, &v, rects.as_deref().unwrap_or(&[]));
+        } else {
+            // SAFETY: the title passes four dwords.
+            let v = *values.cast::<[u32; 4]>();
+            list.list
+                .ClearUnorderedAccessViewUint(gpu, cpu, texture, &v, rects.as_deref().unwrap_or(&[]));
+        }
+    }
+    crate::object::S_OK
+}
+
+#[cfg(not(windows))]
+fn clear_uav(
+    _this: This,
+    _handle: u64,
+    _values: *const f32,
+    _count: u32,
+    _rects: *const Rect,
+    _float: bool,
+) -> crate::object::HRESULT {
+    crate::object::E_NOTIMPL
+}
+
 /// `ClearDepthStencilView(handle, flags, depth, stencil, count, rects)`;
 /// flags: 1 depth, 2 stencil.
 extern "system" fn clear_dsv(
@@ -2113,7 +2215,7 @@ fn defer_write(this: This, address: u64, what: Written, bytes: usize) {
 /// layout): IUnknown 3, object 4, device child 1, list 1, graphics list 96
 /// (59 as on PC, then console ones), then versions 1-6 (6 + 1 + 1 + 11 + 3
 /// + 13): 140 slots.
-const METHODS: [(usize, *const ()); 52] = [
+const METHODS: [(usize, *const ()); 54] = [
     (0, list_query as *const ()),
     (2, list_release as *const ()),
     (7, object::parent_device as *const ()),      // 0x38
@@ -2154,6 +2256,8 @@ const METHODS: [(usize, *const ()); 52] = [
     (50, state::targets as *const ()),            // 0x190
     (51, clear_dsv as *const ()),                 // 0x198
     (52, clear_rtv as *const ()),                 // 0x1a0
+    (53, clear_uav_uint as *const ()),            // 0x1a8
+    (54, clear_uav_float as *const ()),           // 0x1b0
     (59, execute_indirect as *const ()),          // 0x1d8 indirect
     (60, copy_memory as *const ()),               // 0x1e0
     (68, state::depth_bounds as *const ()),       // 0x220 depth bounds

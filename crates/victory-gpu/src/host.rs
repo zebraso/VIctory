@@ -5842,6 +5842,74 @@ impl Host {
         }
     }
 
+    /// A shader-visible unordered access view of `resource`, for a clear: the
+    /// host's clear takes a GPU handle and a CPU handle, and the heap they
+    /// live in must be the list's current one, so it comes back too
+    /// (XCL #1291).
+    pub(crate) fn uav_clear_view(
+        &self,
+        resource: &ID3D12Resource,
+    ) -> Option<(
+        ID3D12DescriptorHeap,
+        D3D12_GPU_DESCRIPTOR_HANDLE,
+        D3D12_CPU_DESCRIPTOR_HANDLE,
+    )> {
+        const SLOTS: u32 = 8;
+        struct Ring {
+            heap: ID3D12DescriptorHeap,
+            cpu: usize,
+            gpu: u64,
+            step: u32,
+            next: std::sync::atomic::AtomicU32,
+        }
+        static RING: std::sync::Mutex<Option<Ring>> = std::sync::Mutex::new(None);
+        let mut ring = RING.lock().unwrap_or_else(|e| e.into_inner());
+        if ring.is_none() {
+            // SAFETY: plain object creation of our own heap.
+            let heap: ID3D12DescriptorHeap = unsafe {
+                self.device
+                    .CreateDescriptorHeap(&D3D12_DESCRIPTOR_HEAP_DESC {
+                        Type: D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV,
+                        NumDescriptors: SLOTS,
+                        Flags: D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE,
+                        NodeMask: 0,
+                    })
+                    .ok()?
+            };
+            // SAFETY: a live heap and device.
+            let (step, cpu, gpu) = unsafe {
+                (
+                    self.device
+                        .GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV),
+                    heap.GetCPUDescriptorHandleForHeapStart().ptr,
+                    heap.GetGPUDescriptorHandleForHeapStart().ptr,
+                )
+            };
+            *ring = Some(Ring {
+                heap,
+                cpu,
+                gpu,
+                step,
+                next: Default::default(),
+            });
+        }
+        let ring = ring.as_ref()?;
+        let slot = ring.next.fetch_add(1, std::sync::atomic::Ordering::Relaxed) % SLOTS;
+        let cpu = D3D12_CPU_DESCRIPTOR_HANDLE {
+            ptr: ring.cpu + (slot * ring.step) as usize,
+        };
+        // SAFETY: a slot of our heap and a live resource, with its own
+        // description (the format a clear needs).
+        unsafe {
+            self.device
+                .CreateUnorderedAccessView(resource, None::<&ID3D12Resource>, None, cpu);
+        }
+        let gpu = D3D12_GPU_DESCRIPTOR_HANDLE {
+            ptr: ring.gpu + u64::from(slot * ring.step),
+        };
+        Some((ring.heap.clone(), gpu, cpu))
+    }
+
     /// A host depth view of `resource`, valid until it is recorded.
     pub(crate) fn dsv(
         &self,
