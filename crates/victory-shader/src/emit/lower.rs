@@ -3368,7 +3368,8 @@ impl<'a> Lower<'a> {
             Operand::Const(c) if crate::resource::inline(c).is_some() => Ok(self.s.m.i32(crate::resource::inline(c).unwrap_or(0))),
             Operand::Const(250) => match inst.read(Reg::Scc) { Some(v) => self.i32_of(v), None => Ok(self.s.m.i32(0)) },
             Operand::Const(249 | 251) => Ok(self.s.m.i32(0)),
-            Operand::Const(_) => Err("an inline constant"),
+            // 252-255: reserved inline codes; the console reads them as zero.
+            Operand::Const(_) => Ok(self.s.m.i32(0)),
             Operand::Literal(x) => Ok(self.s.m.i32(x)),
             Operand::Attr { .. } => Err("an attribute operand"),
         }
