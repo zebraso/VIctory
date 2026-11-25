@@ -12,6 +12,14 @@
 //! `VICTORY_AMBIENT=<level>` sets it (0.6 by default, 0 for none); `off`
 //! keeps the title's own output. `VICTORY_AMBIENT_TINT=r,g,b` sets the tint,
 //! and `VICTORY_AMBIENT_SHADE=s,r,n,t` sets depth-occlusion shading.
+//!
+//! After the program that writes the title's reflections for the last time in
+//! a frame, the same pass holds them to a part of that light
+//! (`VICTORY_AMBIENT_REFLECT`, 0.5 by default, 0 leaves them alone). Without
+//! rays every glossy surface reflects the sky, unoccluded: indoors a wooden
+//! floor and a counter wore a white glaze five to ten times brighter than the
+//! room (Belobug, runs ciel1/refl1, 2026-11-25), and at night the lamp-lit sky
+//! reflected on skin reads as a golden rim.
 
 use std::sync::OnceLock;
 use std::sync::atomic::{AtomicU32, Ordering};
@@ -81,6 +89,32 @@ static LIVE: std::sync::Mutex<Option<(f32, [f32; 3])>> = std::sync::Mutex::new(N
 /// root parameter and place in its table.
 pub(crate) const DEPTH: (u8, u32) = (0, 464);
 
+/// The program that writes the title's reflections for the last time in a
+/// frame, by the start of its name, and where it writes them (R9G9B9E5 as
+/// 32-bit integers): root parameter and place in its table. The lighting
+/// programs read that image next.
+pub(crate) const REFLECTED: &[u8] = b"CS_UpdateHistory";
+pub(crate) const REFLECTIONS: (u8, u32) = (1, 40);
+
+/// The most a reflection may hold, as a part of the ambient light's level:
+/// `VICTORY_AMBIENT_REFLECT=<part>` (0.5 by default; 0 leaves the title's
+/// reflections alone); a ninth number in the file sets it in a running game.
+static KEEP: std::sync::Mutex<Option<f32>> = std::sync::Mutex::new(None);
+
+fn keep() -> f32 {
+    if let Some(live) = *KEEP.lock().unwrap_or_else(|e| e.into_inner()) {
+        return live;
+    }
+    static SET: OnceLock<f32> = OnceLock::new();
+    *SET.get_or_init(|| {
+        std::env::var("VICTORY_AMBIENT_REFLECT")
+            .ok()
+            .and_then(|v| v.trim().parse().ok())
+            .filter(|k: &f32| k.is_finite() && *k >= 0.0)
+            .unwrap_or(0.5)
+    })
+}
+
 /// How much less of the light reaches creases and corners, worked out from
 /// the depth image alone: strength (0 for none), the radius looked at in
 /// metres, the near plane's distance, and the tangent of half the vertical
@@ -125,8 +159,11 @@ fn live_level() -> Option<f32> {
                         .filter_map(|v| v.parse().ok())
                         .collect();
                     if let [level, r, g, b, ref rest @ ..] = read[..] {
-                        if let [s, rad, n, t] = rest[..] {
+                        if let [s, rad, n, t, ref last @ ..] = rest[..] {
                             *SHADE.lock().unwrap_or_else(|e| e.into_inner()) = Some([s, rad, n, t]);
+                            if let [k, ..] = last[..] {
+                                *KEEP.lock().unwrap_or_else(|e| e.into_inner()) = Some(k.max(0.0));
+                            }
                         }
                         let new = Some((level.max(0.0), [r, g, b]));
                         let mut live = LIVE.lock().unwrap_or_else(|e| e.into_inner());
@@ -145,10 +182,11 @@ fn live_level() -> Option<f32> {
 }
 
 const SOURCE: &str = r#"
-#define RS "RootConstants(num32BitConstants=8, b0), DescriptorTable(UAV(u0), SRV(t0))"
+#define RS "RootConstants(num32BitConstants=9, b0), DescriptorTable(UAV(u0), SRV(t0))"
 cbuffer Floor : register(b0) {
     float level; float3 tint;
     float strength; float radius; float near; float tan_y;
+    float held;
 };
 RWTexture2D<uint> light : register(u0);
 Texture2D<float> depth : register(t0);
@@ -192,12 +230,26 @@ uint pack(float3 c) {
     uint3 m = min(uint3(c * scale + 0.5), 511u);
     return m.r | (m.g << 9) | (m.b << 18) | (uint(e) << 27);
 }
+float3 unpack(uint p) {
+    float e = float((p >> 27) & 31u);
+    float3 m = float3(float(p & 511u), float((p >> 9) & 511u), float((p >> 18) & 511u));
+    return m * exp2(e - 24.0);
+}
 [RootSignature(RS)]
 [numthreads(8, 8, 1)]
 void main(uint3 at : SV_DispatchThreadID) {
     uint w, h;
     light.GetDimensions(w, h);
     if (at.x >= w || at.y >= h) return;
+    if (held > 0.0) {
+        // Reflections: no brighter than a part of the light around.
+        const float3 LUMA = float3(0.2126, 0.7152, 0.0722);
+        float3 seen_there = unpack(light[at.xy]);
+        float most = dot(tint * level, LUMA) * held;
+        float has = dot(seen_there, LUMA);
+        if (has > most) light[at.xy] = pack(seen_there * (most / has));
+        return;
+    }
     float open = strength > 0.0 ? open_to_light(int2(at.xy), float2(w, h)) : 1.0;
     light[at.xy] = pack(tint * level * open);
 }
@@ -290,6 +342,23 @@ fn uav_barrier(list: &ID3D12GraphicsCommandList) {
 /// wrote it as an image. Whether it recorded anything (the list's bindings
 /// are then ours).
 pub(crate) fn raise(list: &HostList, light: This, depth: Option<This>) -> bool {
+    record(list, light, depth, 0.0)
+}
+
+/// Holds the reflections in `image` to a part of the ambient light, in
+/// `list`, after the program that wrote them last. Whether it recorded
+/// anything (the list's bindings are then ours).
+pub(crate) fn hold(list: &HostList, image: This) -> bool {
+    let held = keep();
+    if held <= 0.0 || !record(list, image, None, held) {
+        return false;
+    }
+    static HELD: std::sync::Once = std::sync::Once::new();
+    HELD.call_once(|| tracing::info!(held, "reflections held to the ambient light"));
+    true
+}
+
+fn record(list: &HostList, light: This, depth: Option<This>, held: f32) -> bool {
     let (Some(level), Some(host)) = (level(), host()) else {
         return false;
     };
@@ -315,7 +384,9 @@ pub(crate) fn raise(list: &HostList, light: This, depth: Option<This>) -> bool {
         return false;
     }
     ONCE.call_once(|| {
-        tracing::info!(level, width = d.Width, height = d.Height, "ambient light");
+        if held <= 0.0 {
+            tracing::info!(level, width = d.Width, height = d.Height, "ambient light");
+        }
     });
     let slot = pass.next.fetch_add(1, Ordering::Relaxed) % SLOTS * 2;
     list.keep(light);
@@ -370,8 +441,8 @@ pub(crate) fn raise(list: &HostList, light: This, depth: Option<This>) -> bool {
         let level = live_level().unwrap_or(level);
         let [strength, radius, near, tan_y] = shade();
         let strength = if depth.is_some() { strength } else { 0.0 };
-        let constants = [level, r, g, b, strength, radius, near, tan_y];
-        l.SetComputeRoot32BitConstants(0, 8, constants.as_ptr().cast(), 0);
+        let constants = [level, r, g, b, strength, radius, near, tan_y, held];
+        l.SetComputeRoot32BitConstants(0, 9, constants.as_ptr().cast(), 0);
         l.SetComputeRootDescriptorTable(
             1,
             D3D12_GPU_DESCRIPTOR_HANDLE {
