@@ -1515,15 +1515,7 @@ pub(crate) fn read_into(src: *const u8, dst: &mut [u8]) -> bool {
 /// Copies `len` bytes from `src` to `dst` unless a source page is not
 /// readable.
 fn read(src: *const u8, dst: *mut u8, len: usize) -> bool {
-    // A committed source is copied directly: the kernel transition per range
-    // read title memory at about 1 GB/s, and the world's copies are hundreds
-    // of megabytes a frame.
-    if len != 0 && crate::texture::committed(src, len) {
-        // SAFETY: the source is committed title memory, the destination our
-        // own mapped copy of it.
-        unsafe { std::ptr::copy_nonoverlapping(src, dst, len) };
-        return true;
-    }
+
     use windows_sys::Win32::System::Diagnostics::Debug::ReadProcessMemory;
     use windows_sys::Win32::System::Threading::GetCurrentProcess;
     let mut done = 0;
