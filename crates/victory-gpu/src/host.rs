@@ -1526,6 +1526,15 @@ fn read(src: *const u8, dst: *mut u8, len: usize) -> bool {
 /// Copies host memory into title memory after a submission (what shaders
 /// wrote), leaving pages that are not mapped alone.
 pub(crate) fn write_mapped(dst: *mut u8, src: *const u8, len: usize) {
+    // A committed destination is copied directly: the kernel transition per
+    // row made texture read-backs cost ~190 ms a frame.
+    if len != 0 && crate::texture::committed(dst.cast_const(), len) {
+        crate::watch::writing(dst as usize, len);
+        // SAFETY: the destination is committed title memory and the write
+        // watch gave it back.
+        unsafe { std::ptr::copy_nonoverlapping(src, dst, len) };
+        return;
+    }
     use windows_sys::Win32::System::Diagnostics::Debug::WriteProcessMemory;
     use windows_sys::Win32::System::Threading::GetCurrentProcess;
     let write = |at: usize, n: usize| {
