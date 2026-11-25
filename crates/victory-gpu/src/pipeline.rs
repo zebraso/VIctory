@@ -67,6 +67,9 @@ pub(crate) struct Shader {
     /// ([`Shader::walks`]).
     #[cfg(windows)]
     walks: OnceLock<bool>,
+    /// Whether its code resolves the indirect diffuse light
+    /// (`crate::ambient`).
+    pub(crate) resolves_light: bool,
 }
 
 impl std::fmt::Debug for Shader {
@@ -119,6 +122,9 @@ fn shader(stage: &'static str, bytes: &[u8]) -> Arc<Shader> {
                 translated: OnceLock::new(),
                 #[cfg(windows)]
                 walks: OnceLock::new(),
+                resolves_light: bytes
+                    .windows(crate::ambient::PROGRAM.len())
+                    .any(|w| w == crate::ambient::PROGRAM),
             })
         })
         .clone()

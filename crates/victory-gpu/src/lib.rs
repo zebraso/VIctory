@@ -15,6 +15,7 @@
 //! share, [`console`] which console model the title sees. Planned:
 //! `present` (swap chain).
 
+mod ambient;
 #[cfg(all(windows, feature = "diagnostics"))]
 mod capture;
 #[cfg(windows)]
