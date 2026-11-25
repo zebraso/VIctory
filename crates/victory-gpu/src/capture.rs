@@ -64,21 +64,25 @@ pub(crate) fn take_present_target() -> Option<std::sync::Arc<crate::resource::Ho
         });
     }
     // The target drawn to the most: the world over its UI, depth or post
-    // passes of the same size. Only formats the swap chain can take.
-    let mut found: Option<(u32, usize, std::sync::Arc<crate::resource::HostTexture>)> = None;
+    // passes of the same size. Only formats the swap chain can take, and an
+    // 8-bit RGBA one first: a 16-bit HDR scene sums to white with the UI.
+    let rank = |format: u32| u32::from(matches!(format, 27..=29));
+    let mut found: Option<((u32, u32), usize, std::sync::Arc<crate::resource::HostTexture>)> =
+        None;
     for (resource, copy, hits) in targets {
         // SAFETY: a live host texture.
         let d = unsafe { copy.texture.GetDesc() };
-        if d.Width == u64::from(w)
-            && d.Height == h
-            && crate::host::swap_format(d.Format).is_some()
-            && found.as_ref().is_none_or(|(n, _, _)| *n < hits)
+        if d.Width == u64::from(w) && d.Height == h && crate::host::swap_format(d.Format).is_some()
         {
-            found = Some((hits, resource, copy));
+            // Drawn to the most first (the world), then 8-bit over HDR.
+            let key = (hits, rank(d.Format.0 as u32));
+            if found.as_ref().is_none_or(|(best, _, _)| *best < key) {
+                found = Some((key, resource, copy));
+            }
         }
     }
     let found = {
-        if let Some((hits, resource, copy)) = found.as_ref() {
+        if let Some(((_rank, hits), resource, copy)) = found.as_ref() {
             static SHOWN: std::sync::Mutex<usize> = std::sync::Mutex::new(0);
             let mut shown = SHOWN.lock().unwrap_or_else(|e| e.into_inner());
             if *shown != *resource {

@@ -1515,6 +1515,15 @@ pub(crate) fn read_into(src: *const u8, dst: &mut [u8]) -> bool {
 /// Copies `len` bytes from `src` to `dst` unless a source page is not
 /// readable.
 fn read(src: *const u8, dst: *mut u8, len: usize) -> bool {
+    // A committed source is copied directly: the kernel transition per range
+    // read title memory at about 1 GB/s, and the world's copies are hundreds
+    // of megabytes a frame.
+    if len != 0 && crate::texture::committed(src, len) {
+        // SAFETY: the source is committed title memory, the destination our
+        // own mapped copy of it.
+        unsafe { std::ptr::copy_nonoverlapping(src, dst, len) };
+        return true;
+    }
     use windows_sys::Win32::System::Diagnostics::Debug::ReadProcessMemory;
     use windows_sys::Win32::System::Threading::GetCurrentProcess;
     let mut done = 0;
@@ -1841,10 +1850,19 @@ impl Host {
         // `VICTORY_PRESENT_TARGET=WxH`: present a render target of that size
         // from this frame instead of the title's (diagnostics: shows a scene
         // target while the title's composite is missing).
-        let override_target = crate::capture::take_present_target();
-        let (texture, state) = match &override_target {
-            Some(t) => (&t.texture, 0x4),
-            None => (texture, state),
+        // `VICTORY_PRESENT_COMPOSITE=1`: present the title's frame summed over
+        // that target, so the world and its UI reach the screen together.
+        let composite = crate::composite::on()
+            .then(|| crate::composite::frame(self, texture, state))
+            .flatten();
+        let override_target = match composite {
+            Some(_) => None,
+            None => crate::capture::take_present_target(),
+        };
+        let (texture, state) = match (&composite, &override_target) {
+            (Some((texture, state)), _) => (texture, *state),
+            (None, Some(t)) => (&t.texture, 0x4),
+            (None, None) => (texture, state),
         };
         // SAFETY: a live resource.
         let desc = unsafe { texture.GetDesc() };
