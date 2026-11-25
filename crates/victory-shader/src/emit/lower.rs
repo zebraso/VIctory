@@ -83,6 +83,8 @@ pub(crate) struct Lowered {
     /// Heap handles made with a non-uniform index.
     #[cfg(test)]
     pub nonuniform_handles: u32,
+    #[cfg(test)]
+    pub barrier_modes: Vec<u32>,
     /// Whether the program uses wave operations.
     #[cfg(test)]
     pub wave_ops: bool,
@@ -206,6 +208,36 @@ fn half_shift(width: u32) -> u32 {
     if width == 16 { 0 } else { 15 - width }
 }
 
+/// `s_setreg` hardware register of the pixel ordering unit (POPS packer).
+const HW_REG_POPS_PACKER: u16 = 25;
+/// Source operand code of `src_pops_exiting_wave_id`.
+const POPS_EXITING_WAVE_ID: u8 = 239;
+/// The SGPR after the user data that holds a POPS pixel program's entry word.
+const POPS_WAVE_SGPR: u8 = 18;
+
+/// Whether a pixel program runs part of itself in primitive order (POPS):
+/// it sets the ordering unit's packer register, or reads the exiting wave id.
+///
+/// The console's ordered section: s18 is the collision wave id (bits 9:0 this
+/// wave's id, 25:16 the id the wave must wait behind, 29:28 the packer mode,
+/// bit 31 set when an earlier wave may overlap). The program sets the packer
+/// register, spins until `src_pops_exiting_wave_id` passes the earlier wave's
+/// id, then does its read-modify-write on UAV images. The host's equivalent
+/// is a rasterizer-ordered view, so the program is lowered as the first wave
+/// (s18 is 0: bit 31 clear skips the wait), the packer write is dropped, and
+/// every UAV it opens is marked rasterizer ordered.
+/// shortcut: all UAVs of the program, not only those the section touches.
+fn enters_pops(p: &Program) -> bool {
+    p.blocks.iter().flat_map(|b| &b.insts).any(|i| {
+        let Fields::Sop { src, imm, .. } = &i.fields else {
+            return false;
+        };
+        (matches!(i.name(), "s_setreg_imm32_b32" | "s_setreg_b32")
+            && imm.is_some_and(|m| m & 0x3F == HW_REG_POPS_PACKER))
+            || src.iter().any(|o| matches!(o, Operand::Const(POPS_EXITING_WAVE_ID)))
+    })
+}
+
 struct Lower<'a> {
     s: Shader,
     x: &'a Parts<'a>,
@@ -254,6 +286,8 @@ struct Lower<'a> {
     tail: Vec<Option<usize>>,
     /// The program writes UAVs: barriers fence them too.
     writes_uavs: bool,
+    /// A pixel program with a primitive-ordered section ([`enters_pops`]).
+    pops: bool,
     /// src0 of the current instruction as DPP fetched it.
     src0: Option<V>,
     /// Compute code that reads other lanes: thread ids follow the host
@@ -1336,6 +1370,30 @@ fn half_input_partners(io: &StageIo, inputs: &[SigElement]) -> HashMap<u8, u8> {
     partners
 }
 
+/// The title's barrier retains its memory fences even when group sync
+/// would wait for a host wave that never visits it. Explicit overrides
+/// keep their old meanings; automatic mode is a targeted compatibility
+/// workaround for narrow-wave hosts and is restricted to single-console-wave
+/// groups (`group_threads <= console_wave`), so multi-console-wave groups
+/// never lose cross-wave synchronization.
+fn barrier_mode(
+    setting: u8,
+    host_wave: u32,
+    console_wave: u32,
+    group_threads: Option<u32>,
+    divergent: bool,
+    writes_uavs: bool,
+) -> u32 {
+    let single_console_wave = group_threads.is_some_and(|t| t <= console_wave);
+    let waits = match setting {
+        0 => false,
+        1 => !divergent,
+        2 => true,
+        _ => !(host_wave != 0 && host_wave < console_wave && single_console_wave && divergent),
+    };
+    8 | if writes_uavs { 2 } else { 0 } | u32::from(waits)
+}
+
 fn unsupported(offset: usize, what: Why) -> Stop {
     Stop::Fail(ShaderError::Unsupported { offset, what })
 }
@@ -1357,6 +1415,8 @@ impl<'a> Lower<'a> {
             matches!(i.fields, Fields::Image { .. } | Fields::Buffer { .. })
                 && (i.name().contains("store") || i.name().contains("atomic"))
         });
+        let pops = x.native.stage == HwStage::Ps && enters_pops(p);
+        s.rov = pops;
         let mut console_lanes = false;
         // LDS accesses get a group barrier each (a console wave split in two host waves)
         let mut split_lds = false;
@@ -1637,6 +1697,7 @@ impl<'a> Lower<'a> {
             rpo: vec![usize::MAX; p.blocks.len()],
             tail: vec![None; p.blocks.len()],
             writes_uavs,
+            pops,
             src0: None,
             console_lanes,
             split_lds,
@@ -2426,6 +2487,8 @@ impl<'a> Lower<'a> {
             #[cfg(test)]
             nonuniform_handles: self.s.nonuniform_handles,
             #[cfg(test)]
+            barrier_modes: self.s.m.barrier_modes(),
+            #[cfg(test)]
             wave_ops: self.s.flags & flags::WAVE_OPS != 0,
             dxil: self.s.finish(),
             user_data,
@@ -2468,6 +2531,9 @@ impl<'a> Lower<'a> {
                     // paths only seem to allow it before any save: the lane of a VGPR
                     // nobody wrote, and VGPRs nobody set read as zero.
                     None if n >= crate::ir::PARKED => Val::I32(self.s.m.i32(0)),
+                    // The primitive-ordered section's entry word (`enters_pops`):
+                    // zero is "no earlier wave to wait for".
+                    None if n == POPS_WAVE_SGPR && self.pops => Val::I32(self.s.m.i32(0)),
                     None => Val::Missing("a hardware SGPR input"),
                 },
                 Reg::Scc => Val::Missing("SCC on entry"),
@@ -3365,6 +3431,8 @@ impl<'a> Lower<'a> {
                 let v = inst.read(Reg::V(reg)).ok_or("an unread operand")?;
                 self.i32_of(v)
             }
+            // Read only by the wait that a zero entry word skips ([`enters_pops`]).
+            Operand::Const(POPS_EXITING_WAVE_ID) if self.pops => Ok(self.s.m.i32(0)),
             Operand::Const(c) => crate::resource::inline(c)
                 .map(|x| self.s.m.i32(x))
                 .ok_or("a special operand (vccz, execz, scc, lds_direct)"),
@@ -5065,17 +5133,17 @@ impl<'a> Lower<'a> {
                 // Thread-group sync with a shared-memory fence, and a UAV
                 // fence when the program writes UAVs (the waits before an
                 // s_barrier make those writes visible on the console).
-                let mut mode = if self.writes_uavs { 1 | 2 | 8 } else { 1 | 8 };
-                // Without the wait for the group (bit 0) where not every
-                // lane arrives, or where the switch says so.
-                let waits = match super::group_sync() {
-                    0 => false,
-                    1 => !self.fence_only.contains(&b),
-                    _ => true,
-                };
-                if !waits {
-                    mode &= !1;
-                }
+                let setting = super::group_sync();
+                let divergent = self.fence_only.contains(&b);
+                let group_threads = self.s.threads.map(|t| t.iter().product());
+                let mode = barrier_mode(
+                    setting,
+                    host_max_wave(),
+                    self.wave(),
+                    group_threads,
+                    divergent,
+                    self.writes_uavs,
+                );
                 let mode = self.s.m.i32(mode);
                 let void = self.s.t.void;
                 self.s
@@ -5230,6 +5298,14 @@ impl<'a> Lower<'a> {
         if inst.write(Reg::S(EXEC)).is_some() || self.is_mask(lo) {
             return Err(LANE_MASK);
         }
+        if self.pops
+            && matches!(name, "s_setreg_imm32_b32" | "s_setreg_b32")
+            && imm.is_some_and(|i| i & 0x3F == HW_REG_POPS_PACKER)
+        {
+            // The packer takes the wave's place in the ordering; the host's
+            // rasterizer-ordered UAVs give that order ([`enters_pops`]).
+            return Ok(());
+        }
         if matches!(
             name,
             "s_setreg_imm32_b32" | "s_setreg_b32" | "s_swappc_b64" | "s_version"
@@ -5273,6 +5349,10 @@ impl<'a> Lower<'a> {
                 Some(op) if h == 0 => l.operand(inst, op),
                 Some(Operand::Const(k)) => {
                     let x = crate::resource::inline(*k).ok_or("a special operand")?;
+                    Ok(l.s.m.i32(if (x as i32) < 0 { u32::MAX } else { 0 }))
+                }
+                // Of a signed operand, a literal sign-extends too.
+                Some(&Operand::Literal(x)) if name.ends_with("_i64") => {
                     Ok(l.s.m.i32(if (x as i32) < 0 { u32::MAX } else { 0 }))
                 }
                 _ => Ok(l.s.m.i32(0)),
@@ -8032,8 +8112,14 @@ impl<'a> Lower<'a> {
                 let x = crate::resource::inline(k).ok_or("a special operand")?;
                 Ok(self.s.m.int_const(i64t, i64::from(x as i32)))
             }
+            // A signed 64-bit operand sign-extends its 32-bit literal, as
+            // the hardware does (LLVM's AMDGPU operand rules).
+            Operand::Literal(x) if inst.name().ends_with("_i64") => {
+                Ok(self.s.m.int_const(i64t, i64::from(x as i32)))
+            }
             _ => {
-                // Literals and the null register: zero-extended.
+                // Literals (of unsigned and bit operands) and the null
+                // register: zero-extended.
                 let x = self.operand(inst, &op)?;
                 Ok(self.s.m.cast(c, Cast::ZExt, x, i64t))
             }
@@ -10942,6 +11028,84 @@ mod tests {
     const S_ENDPGM: u32 = 0xBF81_0000;
 
     #[test]
+    fn automatic_barriers_keep_fences_and_only_drop_unsafe_sync() {
+        for writes in [false, true] {
+            let fence = 8 | if writes { 2 } else { 0 };
+            for (host, console, threads, divergent, waits) in [
+                (32, 64, Some(64), true, false),
+                (32, 64, Some(64), false, true),
+                (32, 64, Some(128), true, true),
+                (32, 64, None, true, true),
+                (64, 64, Some(64), true, true),
+                (32, 32, Some(32), true, true),
+                (0, 64, Some(64), true, true),
+            ] {
+                assert_eq!(
+                    super::barrier_mode(3, host, console, threads, divergent, writes),
+                    fence | u32::from(waits),
+                );
+            }
+            assert_eq!(super::barrier_mode(0, 32, 64, Some(64), false, writes), fence);
+            assert_eq!(super::barrier_mode(1, 64, 64, Some(64), true, writes), fence);
+            assert_eq!(super::barrier_mode(1, 32, 64, Some(64), false, writes), fence | 1);
+            assert_eq!(super::barrier_mode(2, 32, 64, Some(64), true, writes), fence | 1);
+        }
+    }
+
+    #[test]
+    fn automatic_barrier_flags_reach_the_emitted_shader() {
+        let divergent = [
+            0x7D88_0090, // v_cmp_gt_u32 vcc, 16, v0
+            0xBE8C_246A, // s_and_saveexec_b64 s[12:13], vcc
+            0xBF88_0001, // s_cbranch_execz past the barrier
+            0xBF8A_0000, // s_barrier
+            0xBEFE_040C, // s_mov_b64 exec, s[12:13]
+        ];
+        let mut divergent32 = divergent;
+        divergent32[1] = 0xBE8C_3C6A; // s_and_saveexec_b32 s12, vcc_lo
+        divergent32[4] = 0xBEFE_030C; // s_mov_b32 exec_lo, s12
+        for (body, wave64, threads, host, expected) in [
+            (&divergent[..], true, 64, 32, 8),
+            (&divergent[..], true, 128, 32, 9),
+            (&divergent[..], true, 64, 64, 9),
+            (&divergent32[..], false, 64, 32, 9),
+            (&[0xBF8A_0000][..], true, 64, 32, 9),
+        ] {
+            let native = NativeProgram {
+                stage: HwStage::Cs,
+                wave64,
+                vgprs: 16,
+                layout: vec![],
+                used: vec![],
+                io: StageIo::Cs(ComputeIo { rsrc2: 0, threads: [threads, 1, 1] }),
+                code: body.iter().copied().chain([S_ENDPGM])
+                    .flat_map(u32::to_le_bytes).collect(),
+            };
+            let p = ir::build(&native.code, wave64, native.vgprs).expect("IR");
+            let st = structure::structure(&p).expect("structure");
+            let res = resource::track(&p, &[], native.stage, Some(&st)).expect("resources");
+            let io = io::raise(&p, &native).expect("IO");
+            let old_wave = super::TEST_HOST_WAVE.replace(Some(host));
+            let old_mode = super::super::TEST_GROUP_SYNC.replace(Some(3));
+            let shader = lower(&Parts {
+                native: &native,
+                p: &p,
+                st: &st,
+                io: &io,
+                res: &res,
+                inputs: vec![],
+                outputs: vec![],
+                prims: vec![],
+                mesh_stride: 0,
+            });
+            super::TEST_HOST_WAVE.set(old_wave);
+            super::super::TEST_GROUP_SYNC.set(old_mode);
+            let shader = shader.unwrap_or_else(|e| panic!("wave64={wave64}, host={host}: {e:?}"));
+            assert_eq!(shader.barrier_modes, vec![expected]);
+        }
+    }
+
+    #[test]
     fn packed_pixel_inputs_find_their_second_row() {
         use super::super::container::SigElement;
         use super::half_input_partners;
@@ -11061,6 +11225,47 @@ mod tests {
         assert_eq!(at(3, 7), None);
         // A row no element holds gives nothing, as before.
         assert_eq!(packed_half(&sig, &[(8, None)], 8, 0), None);
+    }
+
+    /// `v_dot8_i32_i4 v0, v1, v2, v3` decodes, and translates (clamped too)
+    /// in a program that stores its result, so it is not dropped as dead.
+    #[test]
+    fn signed_nibble_dot_product_translates() {
+        let dot = |clamp: u32| [0xCC18_4000 | clamp << 15, 0x101 | 0x102 << 9 | 0x103 << 18 | 3 << 27];
+        let program = |body: [u32; 2]| {
+            let mut words = vec![
+                0xBE85_0380, // s_mov_b32 s5, 0
+                0xF408_0202, // s_load_dwordx4 s[8:11], s[4:5], 0
+                0xFA00_0000,
+            ];
+            // v_mov_b32 v1..v4, s0..s3
+            words.extend((0..4u32).map(|i| 0x7E00_0200 | (i + 1) << 17 | i));
+            words.extend(body);
+            words.extend([0xE070_0000, 0x8002_0000, S_ENDPGM]); // buffer_store_dword v0
+            words
+        };
+        let code: Vec<u8> = program(dot(0)).iter().flat_map(|w| w.to_le_bytes()).collect();
+        let names: Vec<_> = crate::gfx10::decode(&code).unwrap().iter().map(|i| i.name()).collect();
+        assert!(names.contains(&Some("v_dot8_i32_i4")), "{names:?}");
+        let buffer = UsedResource {
+            kind: ResourceType::Uav,
+            root: RootType::Table,
+            table_offset_dwords: 0,
+            lower_bound: 0,
+            stride: 0,
+            dwords: 4,
+            user_data: 4,
+            slot: 1,
+        };
+        let constants = RootParam { sgprs: 4, ..root(RootType::Constants, 0, 0) };
+        for clamp in [0, 1] {
+            lower_with(
+                &program(dot(clamp)),
+                vec![constants, root(RootType::Table, 4, 1)],
+                vec![buffer],
+            )
+            .unwrap_or_else(|e| panic!("clamp {clamp}: {e}"));
+        }
     }
 
     /// Whether a synthetic compute program translates with these input registers.
