@@ -7519,6 +7519,9 @@ impl Meter {
         let [back_ms, back_mb] = [0, 1].map(|i| {
             COPY_BACK[i].swap(0, Ordering::Relaxed) as f64 / [1e3, 1e6][i] / frames
         });
+        // Of a frame, what is not our own work: the title's own time between
+        // presents (its waits and its code).
+        let rest = (ms - cpu - gpu - back_ms).max(0.0);
         let dropped = crate::draw::take_dropped() as f64 / frames;
         let indirect = crate::list::take_indirect() as f64 / frames;
         let mesh_largest = MESH_GROUPS[0].swap(0, Ordering::Relaxed);
@@ -7692,7 +7695,7 @@ impl Meter {
             tracing::info!(
                 "{fps:.1} fps, {ms:.1} ms/frame ({cpu:.1} preparing: copies {copy_ms:.1} ms \
                  {copy_mb:.1} MB, textures {texture_ms:.1} ms {texture_mb:.1} MB; {gpu:.1} on the \
-                 GPU; {back_ms:.1} copying back {back_mb:.1} MB), {draws:.0} draws/frame, \
+                 GPU; {back_ms:.1} copying back {back_mb:.1} MB), {rest:.1} ms title, {draws:.0} draws/frame, \
                  dropped {dropped:.0} without a host pipeline ({making} being made) and \
                  {indirect:.0} indirect; heap buffers {picked:.1} passes {picked_ms:.1} ms;                  texture slots written so far: {placed} placed, {objects} of objects; \
                  textures picked by index: {picked_textures} uploaded so far ({picked_mb} MB), \
