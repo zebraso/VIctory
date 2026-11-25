@@ -265,6 +265,10 @@ pub struct HostShader {
     pub writes_guest_memory: bool,
     /// Heap descriptors that can be selected from root state at bind time.
     pub root_indexed_views: Vec<crate::resource::RootIndexedView>,
+    /// Table descriptors read or written sixteen bits a channel: the host
+    /// shows the shader an unsigned 16-bit view at these places instead of
+    /// the float one the console's format names.
+    pub half_views: Vec<(u8, u32)>,
 }
 
 impl HostShader {
@@ -718,6 +722,7 @@ fn emit_program(
         written_root_uavs: l.written_root_uavs,
         writes_guest_memory: l.writes_guest_memory,
         root_indexed_views: res.root_indexed_views.clone(),
+        half_views: l.half_views,
     };
     Ok((shader, wave_size))
 }
