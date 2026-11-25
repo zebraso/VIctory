@@ -175,6 +175,141 @@ pub(crate) fn gone(window: bool, bytes: u64) {
     STATS[at + 1].fetch_sub(bytes, Ordering::Relaxed);
 }
 
+/// The longest stretch of views around `[at, end)` that follow one another
+/// in memory and in their section alike, within `reach` bytes of `at`
+/// rounded down to it: its start, its end, the section and the offset in it.
+fn stretch(at: usize, end: usize, reach: usize) -> Option<(usize, usize, usize, u64)> {
+    let views = views();
+    let (&first, &(n, section, offset)) = views.views.range(..=at).next_back()?;
+    if first + n <= at {
+        return None;
+    }
+    let (low, high) = (at - at % reach, (at - at % reach).checked_add(reach)?);
+    if end > high {
+        return None;
+    }
+    // Up from the view holding `at`.
+    let (mut stop, mut next) = (first + n, offset + n as u64);
+    for (&a, &(n, s, o)) in views.views.range(first + 1..high) {
+        if a != stop || s != section || o != next {
+            break;
+        }
+        (stop, next) = (a + n, o + n as u64);
+    }
+    if stop < end {
+        return None;
+    }
+    // And down from it.
+    let (mut start, mut from) = (first, offset);
+    for (&a, &(n, s, o)) in views.views.range(low..first).rev() {
+        if a + n != start || s != section || o + n as u64 != from {
+            break;
+        }
+        (start, from) = (a, o);
+    }
+    let start_in = start.max(low);
+    Some((start_in, stop.min(high), section, from + (start_in - start) as u64))
+}
+
+/// A stretch of views of at least this many bytes is worth a heap of its own.
+const STRETCH_LEAST: usize = 4 << 20;
+
+/// Title memory `[start, start + len)` the title shows one 64 KiB view at a
+/// time, used in place: its views follow one another in the section, so the
+/// stretch they make is mapped once more at an address of ours and opened
+/// as a heap there (`VICTORY_STRETCH=0` turns it off; port of
+/// Belobug/VIctory-Belobug-AMD `0434b3a`, GPL-3.0-or-later). The same
+/// pages, so nothing is copied, and the title's own views stay as they are.
+/// shortcut: the view of ours is never unmapped.
+pub(crate) fn place_stretch(start: u64, len: u64) -> Option<Placed> {
+    static ON: std::sync::OnceLock<bool> = std::sync::OnceLock::new();
+    if !*ON.get_or_init(|| std::env::var_os("VICTORY_STRETCH").is_none_or(|v| v != "0")) {
+        return None;
+    }
+    if level() < 1 {
+        return None;
+    }
+    let (at, end, section, offset) =
+        stretch(start as usize, start.saturating_add(len) as usize, 1 << 30)?;
+    let bytes = end - at;
+    if bytes < STRETCH_LEAST {
+        return None;
+    }
+    let host = crate::host::host()?;
+    // SAFETY: a section the runtime told us of, alive while it has views;
+    // the stretch lies inside it.
+    let view = unsafe {
+        mem::MapViewOfFile(
+            section as *mut c_void,
+            mem::FILE_MAP_WRITE,
+            (offset >> 32) as u32,
+            offset as u32,
+            bytes,
+        )
+    };
+    if view.Value.is_null() {
+        tracing::warn!(
+            error = %std::io::Error::last_os_error(),
+            at = format_args!("{at:#x}"),
+            bytes,
+            "a stretch of title memory could not be mapped again"
+        );
+        return None;
+    }
+    // Read-only guards would refuse the GPU's writes.
+    crate::watch::writing(at, bytes);
+    let heap = match open(&host.device, From::Part(view.Value as usize, bytes)) {
+        Ok(heap) => heap,
+        Err(error) => {
+            tracing::warn!(
+                at = format_args!("{at:#x}"),
+                bytes,
+                error = %error,
+                "a stretch of title memory refused by the host GPU"
+            );
+            // SAFETY: our view, used by nothing.
+            unsafe {
+                mem::UnmapViewOfFile(mem::MEMORY_MAPPED_VIEW_ADDRESS { Value: view.Value });
+            }
+            return None;
+        }
+    };
+    let buffer = match place(&host.device, &heap, 0, bytes as u64) {
+        Ok(buffer) => buffer,
+        Err(error) => {
+            tracing::warn!(
+                at = format_args!("{at:#x}"),
+                bytes,
+                error = %error,
+                "a stretch of title memory not placed"
+            );
+            // SAFETY: our view, used by nothing.
+            unsafe {
+                mem::UnmapViewOfFile(mem::MEMORY_MAPPED_VIEW_ADDRESS { Value: view.Value });
+            }
+            return None;
+        }
+    };
+    // SAFETY: a live buffer.
+    let gpu = unsafe { buffer.GetGPUVirtualAddress() } + (start - at as u64);
+    static COUNT: AtomicU64 = AtomicU64::new(0);
+    let count = COUNT.fetch_add(1, Ordering::Relaxed) + 1;
+    if count <= 32 || count.is_power_of_two() {
+        tracing::info!(
+            count,
+            at = format_args!("{at:#x}"),
+            bytes,
+            "title memory in place through a view of ours"
+        );
+    }
+    Some(Placed {
+        buffer,
+        heap,
+        gpu,
+        bias: start - at as u64,
+    })
+}
+
 /// Title memory `[at, at + len)` is about to show something else, or the
 /// title is about to decommit, free or protect it: what is in place there
 /// is let go (the tables forget it; its heap goes when the last list and
