@@ -1667,7 +1667,16 @@ impl HostHeap {
             // dword, either value is one the slot had).
             unsafe { (*data as *mut u32).add(index as usize).write_volatile(stride.unwrap_or(0)) };
         }
-        let range = view.and_then(buffer_range);
+        let range = view.and_then(|v| match v {
+            // A ray tracing acceleration structure's shader view has no
+            // resource: its description holds the structure's address
+            // (`Location`, dwords 4 and 5), which the programs that walk it
+            // read from this table (port of upstream #2098).
+            View::Shader(_, Some(desc)) if desc[1] == 11 => {
+                Some((u64::from(desc[4]) | u64::from(desc[5]) << 32, 0))
+            }
+            _ => buffer_range(v),
+        });
         if let Some((_, _, data)) = &self.views
             && index < victory_shader::emit::SLOT_VIEWS_COUNT
         {
