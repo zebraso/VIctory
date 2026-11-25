@@ -1,0 +1,140 @@
+commit c36971b213770e48f513f0d6e3ced3f1f65a32b2
+Author: fxceless <36782933+fxceless@users.noreply.github.com>
+Date:   Wed Nov 25 16:09:43 2026 -0500
+
+    Small buffers' copies in the card's memory (VICTORY_CARD_BUFFERS_MIN_KB), changed_runs by masks, scalar buffer loads four dwords a call (VICTORY_SHADER_OPT bit 64), a measuring step for the copy-back (VICTORY_BACK_READS)
+    
+    - VICTORY_CARD_BUFFERS_MIN_KB=64 (off by default): every title buffer's copy in the card's memory;
+      measured at like draws: the title's lists 68.0 -> 49.8 ms of card time a frame, frame 114.9 ->
+      109.7 ms. VICTORY_CARD_HASH_LEN=1 (off): the card's hashes cover the title buffer's own bytes.
+      A log line says where copies went, by size.
+    - changed_runs 64 bytes at a time by a mask of differing bytes (default; =0 the walk, =alt in turn).
+    - Shaders: the dwords of one console load by one call for every four (bit 64, not in the default):
+      with the bit off the whole pack's output is byte-identical to the build before.
+    - VICTORY_BACK_READS=1|2|alt (diagnostics): who touches what the copy-back stored.
+    - Frame shots are named with the time they began.
+    - README: runs 274 and 275.
+    
+    Game runs: the changes ran in runs 274 and 275 (the hash switch and the read-back switch of pull
+    request #999 not yet). In this tree the diagnostics build finishes; its unit tests were not run
+    after the merge (they passed in the tree the changes came from).
+    
+    Co-Authored-By: Claude Fable 5.2 <noreply@anthropic.com>
+
+diff --git a/crates/victory-shader/src/emit/bitcode/opt.rs b/crates/victory-shader/src/emit/bitcode/opt.rs
+index 13551c3..e5caf91 100644
+--- a/crates/victory-shader/src/emit/bitcode/opt.rs
++++ b/crates/victory-shader/src/emit/bitcode/opt.rs
+@@ -52,10 +52,19 @@ pub const LOADS: u32 = 16;
+ /// half has a lane where every lane is in EXEC (`lower.rs`,
+ /// `v_readfirstlane_b32`).
+ pub const FIRST: u32 = 32;
++/// Not a pass over the module either: the lowering reads the dwords of one
++/// console load (`s_buffer_load_dwordx2` to `x16` from an SRV, a
++/// `global_load_dwordx2` to `x4`) by one call for every four of them, not
++/// by a call each (`lower.rs`, `raw_dwords`). The same bytes are read.
++pub const WIDE: u32 = 64;
+ /// The passes over the module.
+ pub const MODULE: u32 = DEAD | FOLD | REUSE | FACTS | LOADS;
+ /// Every pass.
+-pub const ALL: u32 = MODULE | FIRST;
++pub const ALL: u32 = MODULE | FIRST | WIDE;
++/// The passes that run when nothing says which: every one but [`WIDE`],
++/// which no card has shown a gain for yet (`VICTORY_SHADER_OPT=127` asks
++/// for it).
++pub const DEFAULT: u32 = ALL & !WIDE;
+ 
+ /// What the instructions a module writes use, of the features a shader
+ /// declares by flag (the validator's "flags must match usage").
+diff --git a/crates/victory-shader/src/emit/lower.rs b/crates/victory-shader/src/emit/lower.rs
+index 63c4de7..7a27510 100644
+--- a/crates/victory-shader/src/emit/lower.rs
++++ b/crates/victory-shader/src/emit/lower.rs
+@@ -1721,6 +1721,12 @@ impl<'a> Lower<'a> {
+                 }
+             }
+         };
++        if let (None, Some(h), true) = (sub, h, n > 1 && Self::wide_loads()) {
++            for (k, x) in self.raw_dwords(h, off, n).into_iter().enumerate() {
++                self.write(inst, Reg::V(reg + k as u8), x, guard);
++            }
++            return Ok(());
++        }
+         for k in 0..n {
+             let x = match sub {
+                 None => {
+@@ -5448,6 +5454,47 @@ impl<'a> Lower<'a> {
+         }
+     }
+ 
++    /// Whether the dwords of one console load are read by one call for up
++    /// to four of them (`bitcode::opt::WIDE` of `VICTORY_SHADER_OPT`), not
++    /// by a call each.
++    fn wide_loads() -> bool {
++        super::shader_opt() & super::bitcode::opt::WIDE != 0
++    }
++
++    /// `count` dwords from byte `addr` on of the raw view `h`, as integers,
++    /// read in the current block by one call for every four of them
++    /// ([`Self::wide_loads`]). They are the dwords of ONE console load,
++    /// which the console reads as one (address plus 4, 8, ... without
++    /// wrapping at 32 bits): the same bytes as a call a dword reads. Loads
++    /// of different console instructions are never joined: the program
++    /// computes their offsets in 32-bit registers, and `x - 4` and `x` at
++    /// `x = 0` are one dword out of the view and its first one, where one
++    /// call from `x - 4` on would read both out of it.
++    fn raw_dwords(&mut self, h: V, addr: V, count: u32) -> Vec<V> {
++        let c = self.cur;
++        let (u, al) = (self.s.m.undef(self.s.t.i32), self.s.m.i32(4));
++        let mut out = Vec::with_capacity(count as usize);
++        for first in (0..count).step_by(4) {
++            let n = (count - first).min(4);
++            let off = self.s.m.i32(4 * first);
++            let a = self.s.m.bin(c, Bin::Add, addr, off);
++            let mask = self.s.m.i8((1u8 << n) - 1);
++            let r = self.s.op(
++                c,
++                "rawBufferLoad.f32",
++                Attr::ReadOnly,
++                self.s.t.res_ret,
++                139,
++                &[h, a, u, mask, al],
++            );
++            for k in 0..n {
++                let x = self.s.m.extract(c, r, k);
++                out.push(self.as_int(x));
++            }
++        }
++        out
++    }
++
+     fn smem(&mut self, inst: &Inst, site: Site) -> Result<(), Why> {
+         let Fields::Smem {
+             data,
+@@ -5529,7 +5576,12 @@ impl<'a> Lower<'a> {
+             let at = self.begin_guarded(Some(is_buffer));
+             let h = self.handle(site, src, false, (11, 0))?;
+             let mut raw = Vec::new();
+-            for k in 0..count {
++            let wide = Self::wide_loads();
++            if wide {
++                let dwords = self.raw_dwords(h, addr, count);
++                raw.extend(dwords.into_iter().map(|x| (x, zero)));
++            }
++            for k in 0..if wide { 0 } else { count } {
+                 let b = self.cur;
+                 let off = self.s.m.i32(4 * k);
+                 let a = self.s.m.bin(b, Bin::Add, addr, off);
+@@ -5567,6 +5619,12 @@ impl<'a> Lower<'a> {
+         }
+         if matches!(kind, Some(u) if u.kind == ResourceType::Srv) {
+             let h = self.handle(site, src, false, (11, 0))?;
++            if Self::wide_loads() {
++                for (k, x) in self.raw_dwords(h, addr, count).into_iter().enumerate() {
++                    self.write(inst, Reg::S(code + k as u8), x, None);
++                }
++                return Ok(());
++            }
+             for k in 0..count {
+                 let off = self.s.m.i32(4 * k);
+                 let a = self.s.m.bin(c, Bin::Add, addr, off);

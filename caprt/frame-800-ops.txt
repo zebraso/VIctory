@@ -1,0 +1,32 @@
+1 list 0x17c9376dcc0 SUBMIT queue kind Some(0) held true lists ["0x17c8c9a6490"] (the first 0 run at once, the rest part by part)
+2 list 0x17c8c9bce90 WRITE VALUE at 0xdd2b00050 value 0x322
+3 list 0x17c9376dcc0 SUBMIT queue kind Some(0) held true lists ["0x17c8c9b9a40", "0x17c8c9c4ac0", "0x17c8c9c1cb0", "0x17c8c9c78d0"] (the first 0 run at once, the rest part by part)
+4 list 0x17c9376dcc0 RUN held submission of 1 lists (forced false)
+5 list 0x17c8c9bce90 WRITE VALUE at 0xdd2b00054 value 0x29a5ee15
+6 list 0x17c8c9bce90 WAIT VALUE at 0xdd2b00000 comparison 7 reference 0x1 wide true met true
+7 list 0x17c9376dcc0 RUN held submission of 1 lists (forced false)
+8 list 0x17c8c9bce90 WRITE VALUE at 0xdd2b00054 value 0xfb6d2b63
+9 list 0x17c9376dcc0 RUN held submission of 4 lists (forced false)
+10 list 0x17c8c9c1cb0 dispatch 5x5x33 [compute 052a2316a03b9ba1] | 052a2316a03b9ba1: u5=0x1e1f2e0 tables ["052a2316a03b9ba1 Srv s1+0: 2x2 f2 flags 0x4 of 0x17fc9845a70", "052a2316a03b9ba1 Uav s1+8: uav texture 33x33 f10 flags 0x4 of 0x17fd4e53540", "052a2316a03b9ba1 Cbv s1+16: Constant(0x483f360, 128) [0.0, 6500.0, 0.0, 6500.0]", "052a2316a03b9ba1 Cbv s1+24: Constant(0x483f3e0, 2704) [0.0, 0.0, -1.6914326e-17, 2.0710716e-10]"]
+11 list 0x17c8c9c1cb0 STENCIL REF 0x0
+12 list 0x17c8c9c1cb0 DEPTH BOUNDS 0..1
+13 list 0x17c8c9c1cb0 draw 3x1 [vertex dfafaf385b2f94e8, pixel 06295fb1d1aefb78] targets ["0x18124bf6920 3840x2160 f28"] depth Some("0x18124bf59b0 3840x2160 f19") state [depth false write 0 func 8; stencil false read 0xff write 0x0 front [fail 1 depth-fail 1 pass 1 func 8] back [fail 1 depth-fail 1 pass 1 func 8]; cull 1 front-ccw true; blend false src 2 dst 1 op 1 mask 0xf] scissor [0 0 3840 2160] viewport [0 0 3840 2160 depth 0..1] | dfafaf385b2f94e8: root0=0x483f270 host Some(
+    (
+        0x2ee11f270,
+        0x9ae0d90,
+    ),
+) | 06295fb1d1aefb78: tables ["dfafaf385b2f94e8 Srv s0+0: Descriptor"]
+14 list 0x17c8c9c1cb0 DEPTH BOUNDS 0..1
+15 list 0x17c8c9c1cb0 draw 3x1 [vertex 58d926085fca4999, pixel edc1cad8ffb79bc9] targets ["0x18124bf6920 3840x2160 f28"] depth Some("0x18124bf59b0 3840x2160 f19") state [depth false write 0 func 8; stencil false read 0xff write 0x0 front [fail 1 depth-fail 1 pass 1 func 8] back [fail 1 depth-fail 1 pass 1 func 8]; cull 3 front-ccw true; blend false src 2 dst 1 op 1 mask 0xf] scissor [0 0 3840 2160] viewport [0 0 3840 2160 depth 0..1] | 58d926085fca4999: | edc1cad8ffb79bc9: u8=0x1e1e200 tables ["edc1cad8ffb79bc9 Cbv s0+0: Constant(0x483f210, 96) [0.0, 0.0, 0.0, 0.0]"]
+16 list 0x17c8c9c1cb0 indexed 60x1 [vertex d166c341988178de, pixel e370f602fa0db9b2] targets ["0x18124bf6920 3840x2160 f28"] depth Some("0x18124bf59b0 3840x2160 f19") state [depth false write 0 func 8; stencil false read 0xff write 0x0 front [fail 1 depth-fail 1 pass 1 func 8] back [fail 1 depth-fail 1 pass 1 func 8]; cull 1 front-ccw true; blend true src 5 dst 6 op 1 mask 0xf] scissor [0 0 3840 2160] viewport [0 0 3840 2160 depth 0..1] | d166c341988178de: u8=0x1e1dbe0 | e370f602fa0db9b2: tables ["d166c341988178de Cbv s0+0: Constant(0x483dc00, 1536) [1.1827797e-7, 1.1827797e-7, 1.1827797e-7, 0.0]"]
+17 list 0x17c8c9c1cb0 STENCIL REF 0xff
+18 list 0x17c8c9c1cb0 DEPTH BOUNDS 0..1
+19 list 0x17c8c9c1cb0 texture upload 0x18022718420 (1920x1080x1 f61 mips 1) sub 0 of 1 from staging 0x2ff000000+0x21bf80: offset 0x0 1920x1080x1 pitch 2048
+20 list 0x17c8c9c1cb0 texture upload 0x18022718010 (3840x2160x1 f61 mips 1) sub 0 of 1 from staging 0x2ffc00000+0x7e9000: offset 0x0 3840x2160x1 pitch 3840
+21 list 0x17c8c9c1cb0 texture upload 0x180227185c0 (1920x1080x1 f61 mips 1) sub 0 of 1 from staging 0x2f7c00000+0x21bf80: offset 0x0 1920x1080x1 pitch 2048
+22 list 0x17c8c9c1cb0 draw 4x1 [vertex f7f331c8c5b3a0d8, pixel 3bfe730f7e24ee1a] targets ["0x18022718c40 3840x2160 f29"] depth None state [depth false write 0 func 8; stencil false read 0xff write 0x0 front [fail 1 depth-fail 1 pass 1 func 8] back [fail 1 depth-fail 1 pass 1 func 8]; cull 1 front-ccw true; blend true src 5 dst 6 op 1 mask 0xf] scissor [0 0 3840 2160] viewport [0 0 3840 2160 depth 0..1] | f7f331c8c5b3a0d8: u8=0x1e1ca60 | 3bfe730f7e24ee1a: u8=0x1e1ca60 tables ["f7f331c8c5b3a0d8 Srv s0+0: placed uav=false dim 1 128x1 f0 layout 0x1 at 0x483c9e0", "f7f331c8c5b3a0d8 Cbv s0+40: Constant(0x483c800, 480) [1.0, 0.0, 0.0, 0.0]", "f7f331c8c5b3a0d8 Cbv s0+48: Constant(0x483db40, 160) [1.402, -0.71414, 0.0, 0.0]", "3bfe730f7e24ee1a Sampler s0+0: ImmediateSampler", "3bfe730f7e24ee1a Srv s0+8: 1920x1080 f61 flags 0x0 of 0x18022718420", "3bfe730f7e24ee1a Srv s0+16: 3840x2160 f61 flags 0x0 of 0x18022718010", "3bfe730f7e24ee1a Srv s0+24: 1920x1080 f61 flags 0x0 of 0x180227185c0", "3bfe730f7e24ee1a Srv s0+32: placed uav=false dim 4 1x1 f28 layout 0x105 at 0xd57a60000", "3bfe730f7e24ee1a Cbv s0+48: Constant(0x483db40, 160) [1.402, -0.71414, 0.0, 0.0]"]
+23 list 0x17c8c9c1cb0 DEPTH BOUNDS 0..1
+24 list 0x17c8c9c1cb0 draw 4x1 [vertex 80cb958cde505e15, pixel f9bf13c6c099ccec] targets ["0x18124bf6920 3840x2160 f28"] depth Some("0x18124bf59b0 3840x2160 f19") state [depth false write 0 func 8; stencil false read 0xff write 0x0 front [fail 1 depth-fail 1 pass 1 func 8] back [fail 1 depth-fail 1 pass 1 func 8]; cull 1 front-ccw true; blend true src 5 dst 6 op 1 mask 0xf] scissor [0 0 3840 2160] viewport [0 0 3840 2160 depth 0..1] | 80cb958cde505e15: u8=0x1e1b7a0 | f9bf13c6c099ccec: u8=0x1e1b7a0 tables ["80cb958cde505e15 Srv s0+0: placed uav=false dim 1 128x1 f0 layout 0x1 at 0x483b720", "80cb958cde505e15 Cbv s0+16: Constant(0x483b540, 480) [1.0, 0.0, 0.0, 0.0]", "f9bf13c6c099ccec Sampler s7+0: ImmediateSampler", "f9bf13c6c099ccec Srv s0+8: 3840x2160 f29 flags 0x1 of 0x18022718c40"]
+25 list 0x17c8c9c1cb0 STENCIL REF 0x0
+26 list 0x17c8c9c1cb0 DEPTH BOUNDS 0..1
+27 list 0x17c8c9c1cb0 draw 3x1 [vertex 0602c2384acbb3b2, pixel a78d088fa55aa495] targets ["0x17c8d99bf50 3840x2160 f28"] depth None state [depth false write 0 func 8; stencil false read 0xff write 0x0 front [fail 1 depth-fail 1 pass 1 func 8] back [fail 1 depth-fail 1 pass 1 func 8]; cull 1 front-ccw true; blend true src 2 dst 6 op 1 mask 0xf] scissor [0 0 3840 2160] viewport [0 0 3840 2160 depth 0..1] | 0602c2384acbb3b2: u8=0x1e1a4e0 | a78d088fa55aa495: u8=0x1e1a4e0 tables ["0602c2384acbb3b2 Srv s0+0: placed uav=false dim 1 128x1 f0 layout 0x1 at 0x483a460", "0602c2384acbb3b2 Cbv s0+16: Constant(0x483a280, 480) [1.0, 0.0, 0.0, 0.0]", "a78d088fa55aa495 Sampler s2+0: ImmediateSampler", "a78d088fa55aa495 Srv s0+8: 3840x2160 f28 flags 0x1 of 0x18124bf6920"]

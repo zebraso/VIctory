@@ -1,0 +1,834 @@
+﻿containers   26503 (614 duplicates skipped)
+programs     26084 translated of 26084 (40597693 IR instructions)
+structured   26084 of 26084 (32535818 vector instructions, 790411 guarded, 28029 on opaque masks; branches 795619 per lane, 360838 uniform)
+resources    25889 of 26084 tracked (descriptors 2596542 loaded, 126843 built, 174561 constant; 1269812 scalar accesses; 218896 with a computed term)
+  used-resource entries 437642: 187 not traced {"Cbv via Constants": 17, "Cbv via Table": 33, "Sampler via ImmediateSampler": 22, "Srv via Table": 115}; 0 traced parameters not listed
+I/O          14247 of 14247 vertex and pixel programs raised (214834 interpolations, 6888 vertex values; exports {"color": 29217, "depth": 1170, "null": 6476, "param": 9143, "position": 2222, "unread param": 154}, 0 still f16 pairs)
+DXIL         14237 emitted of 14247 vertex and pixel programs; 0 validated, 0 pipelines
+             2679 emitted of 2682 compute programs; 0 validated, 0 pipelines
+             8765 emitted of 8765 mesh programs; 0 validated, 0 pipelines
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x1028f23a VS_Blit_cce8175f_Wrapped #15cba8cd6958be43 ~0185352a  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x1033a9c3 PS_Stupid_cce8175f_Wrapped #9f553f9ef69b4932 ~f12718b7  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x19e8cbb MS_VS_Transform_eb34a03f_Wrapped #c5c53075921f4b51 ~f0ff5a67  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x19eaa5b MS_VS_MirrorReflectionTransform_38e78c3a_Wrapped #caee89313251e82f ~94b01f04  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x19ec8a4 MS_VS_TransformTransmission_eb34a03f_Wrapped #b43e399ede629230 ~2d86080b  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x19ee63c MS_VS_TransformAlphaPrepass_eb34a03f_Wrapped #a449e8c47a442875 ~b90ea1ea  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x19f053f MSNC_VS_TransformSkin_26a320a2_Wrapped #a70f84ec6dd66cdc ~2b624ce0  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x19f249d MSNC_VS_MirrorReflectionTransformSkin_99ec7bdf_Wrapped #3d34241a075df2b4 ~0acb7f36  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x19f44b0 MSNC_VS_TransformSkinTransmission_26a320a2_Wrapped #1cb3f6947f1e6ba1 ~62308b48  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x19f63e0 MSNC_VS_TransformSkin_AlphaPrepass_26a320a2_Wrapped #b75b2a95f4f95a75 ~ebcf304f  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x1a0dbcf MS_VS_TransformEntityMask_0c44c94b_Wrapped #41a5fa3314b7d295 ~fef7f03a  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x1a8a554 VS_TransformSkin_VfxVBuffer_e0e3045b_Wrapped #cb8d5b28c05db3e1 ~b4d01b3a  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x1a9e58a MSNC_VS_TransformSkinD_9e3a1555_Wrapped #d0503aa87911743e ~055b4956  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x1aa38cf MSNC_VS_MirrorReflectionTransformSkinDecalsD_5fd36f8e_Wrapped #431b909ff0e93ff9 ~71e4b12a  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x1c6ec62 MS_VS_Transform_PositionOnly_8d8b5e7b_Wrapped #730c17ec257bc31e ~6c7e0f7d  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x1c80a7c MS_VS_Transform_PositionOnly_4b73ea93_Wrapped #9b5d6d448d2e74b2 ~a9b84ad8  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x1cbed94 MS_VS_Transform_PositionOnly_8d8b5e7b_Wrapped #9c740b1a69d035df ~07e8b1e6  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x1cbfed2 MSNC_VS_TransformSkin_PositionOnly_a1cf5e50_Wrapped #1e5dd538dac6aad1 ~c70db9d7  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x1cd0f10 MS_VS_Transform_PositionOnly_4b73ea93_Wrapped #d50eda7263e2ffe8 ~84e5bc9c  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x1cd21b9 MSNC_VS_TransformSkin_PositionOnly_4b67dd74_Wrapped #5c8b4943d59f926c ~4e9acb26  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x1ce47f8 MSNC_VS_TransformSkinEntityMask_5df5b799_Wrapped #92646ff40ccbb3af ~9ad30b17  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x1edbaa0 VS_Transform_VfxVBuffer_cbe32b6c_Wrapped #29f50eb7dd8496ba ~442d4c60  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x1edffef MS_VS_Transform_eb34a03f_Wrapped #6e7f342f2874bf5f ~f2d5173f  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x1ee1e12 MS_VS_MirrorReflectionTransform_38e78c3a_Wrapped #9029b95eafcc9994 ~3c86dbda  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x1ee3ce8 MS_VS_TransformTransmission_eb34a03f_Wrapped #01a32c998a279339 ~ac9ef098  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x1ee7a94 MSNC_VS_TransformSkin_26a320a2_Wrapped #051ddf79504b57e4 ~d9379901  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x1ee9a7e MSNC_VS_MirrorReflectionTransformSkin_99ec7bdf_Wrapped #416d7ad97dda921d ~f50863cd  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x1eebb1b MSNC_VS_TransformSkinTransmission_26a320a2_Wrapped #816ba427cd839859 ~b2dd7776  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x1eedaec MSNC_VS_TransformSkin_AlphaPrepass_26a320a2_Wrapped #2d556c576996897b ~89c28f00  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x1ef7a9a VS_Transform_VfxVBuffer_AlphaClip_0e67afa3_Wrapped #a2a70a696dac1653 ~cb80ee9d  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x1f0299e VS_TransformSkin_VfxVBuffer_AlphaClip_5fd4397c_Wrapped #49be7d925b14a5b7 ~ff973fce  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x1f0550c MS_VS_CascadeShadows_drawTexture_65459485_Wrapped #882382f3a14c64b0 ~66f16ea1  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x1f07663 MS_VS_CascadeShadows_drawTexture_04fe460e_Wrapped #2fb7ed568ab33830 ~daa12992  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x1f097be MSNC_VS_CascadeShadows_drawskinnedTexture_a14f0f80_Wrapped #2acecda8040b3e85 ~0a558ccb  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x1f0d052 MSNC_VS_TransformSkinEntityMask_5df5b799_Wrapped #0ef151b6bfa27800 ~f448516f  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x1ff6c8d MS_VS_Transform_eb34a03f_Wrapped #53a2296b20eda093 ~8b5dba1a  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x1ff7dc3 MS_VS_MirrorReflectionTransform_38e78c3a_Wrapped #65194bd445516999 ~836dc483  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x20fe9b3 MSNC_VS_TransformSkin_0c91b99b_Wrapped #9d11f899c67e6350 ~60a5a795  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2100a4e MSNC_VS_MirrorReflectionTransformSkin_5cbcacdf_Wrapped #c0d2ab7d937f4004 ~b663d642  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2105a6f MSNC_VS_TransformSkin_2f2b1ecc_Wrapped #c8d5f8f8e8188e8f ~5473881b  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x22d216a MS_VS_Transform_4dbafe93_Wrapped #66046bc63f9fd908 ~ca74a2fe  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x22d7dfd MSNC_VS_TransformSkin_a5c32d3a_Wrapped #becfcc211fd69bf5 ~cdfd552e  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x22dd564 VS_TransformSkin_VfxVBuffer_AlphaClip_0c3e4157_Wrapped #310c802cc89cbdba ~c2bd797c  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x22e011b MS_VS_Transform_2f2b1ecc_Wrapped #5ed55fca0a2bb81e ~f88de0eb  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x22e2142 MSNC_VS_TransformSkin_bc7ce46b_Wrapped #d65ec5ae60cc2852 ~aab5e50b  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x22e4e13 MS_VS_Transform_4dbafe93_Wrapped #3c067b199b10fea2 ~f8102ce4  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x22eee8c VS_TransformSkin_VfxVBuffer_AlphaClip_0fb3cebd_Wrapped #787d502724116e1e ~fdc21a64  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x22f1026 MS_VS_Transform_2f2b1ecc_Wrapped #1930c8b251cbedfc ~2e1ad57f  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x22f5351 MSNC_VS_CascadeShadows_drawskinned_65459485_Wrapped #460c616db53752fe ~d882d87a  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x22fa45b MSNC_VS_CascadeShadows_drawskinned_a14f0f80_Wrapped #7fdb2a034f3efc0b ~23f8d6ca  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x238e371 MS_VS_Transform_4dbafe93_Wrapped #3c067b199b10fea2 ~f8102ce4  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x239023d MS_VS_MirrorReflectionTransform_5cbcacdf_Wrapped #1e2972fd36187512 ~2fc36175  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x23921c6 VS_Transform_VfxVBuffer_AlphaClip_0fb3cebd_Wrapped #1bc11c65b4070c2f ~201f76e7  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2394091 MSNC_VS_TransformSkin_4dbafe93_Wrapped #965bad7164375eb4 ~f8b492cc  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x239623d MSNC_VS_MirrorReflectionTransformSkin_5cbcacdf_Wrapped #b3df887001d925d3 ~4ea29542  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x23984da VS_TransformSkin_VfxVBuffer_AlphaClip_0fb3cebd_Wrapped #787d502724116e1e ~fdc21a64  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x239a6a4 MS_VS_Transform_cf03bbb3_Wrapped #94172d16747ed84e ~87f27bdf  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x239c6e1 MS_VS_Transform_2f2b1ecc_Wrapped #1930c8b251cbedfc ~2e1ad57f  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x239e72c MSNC_VS_TransformSkin_2f2b1ecc_Wrapped #d4f89b80c2844c17 ~5a1f6162  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x23b2c91 MS_VS_Transform_PositionOnly_4dbafe93_Wrapped #02df3d73364d5969 ~8c6cabac  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x23c1cd4 MS_VS_Transform_PositionOnly_74d32bcb_Wrapped #57012ca33c812b1e ~7fd935e5  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x23c2810 MS_VS_Transform_PositionOnly_cf03bbb3_Wrapped #1e55fec48b4038c3 ~b2849d02  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x23c852c MS_VS_Transform_4dbafe93_Wrapped #8c476a7a09eb2f0c ~bca32c3f  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x23ca411 MS_VS_MirrorReflectionTransform_5cbcacdf_Wrapped #1e2972fd36187512 ~2fc36175  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x23cc3b2 VS_Transform_VfxVBuffer_AlphaClip_0fb3cebd_Wrapped #1bc11c65b4070c2f ~201f76e7  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x23ce295 MSNC_VS_TransformSkin_4dbafe93_Wrapped #965bad7164375eb4 ~f8b492cc  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x23d0459 MSNC_VS_MirrorReflectionTransformSkin_5cbcacdf_Wrapped #b3df887001d925d3 ~4ea29542  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x23d48f0 MS_VS_Transform_2f2b1ecc_Wrapped #1e551a6e8565cc53 ~0df7ca5f  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x23d6953 MSNC_VS_TransformSkin_2f2b1ecc_Wrapped #d4f89b80c2844c17 ~5a1f6162  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x23d8c98 MS_VS_TransformD_86a3553c_Wrapped #efc42f899249f886 ~eb5deca7  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x23deadb MSNC_VS_MirrorReflectionTransformSkinD_942ffbd9_Wrapped #d906df088c16b334 ~9c9acea2  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2442fa5 MS_VS_Transform_0c91b99b_Wrapped #89036e16fa081505 ~68eab902  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2444dc8 MS_VS_MirrorReflectionTransform_5cbcacdf_Wrapped #cce4aedeb2a045b8 ~30039158  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2446cc8 MSNC_VS_TransformSkin_0c91b99b_Wrapped #c97fca70d9ead316 ~87ce922a  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x244ae72 MS_VS_Transform_cf03bbb3_Wrapped #956f3d6b24194d9a ~59510f8f  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x244cdf6 MS_VS_Transform_2f2b1ecc_Wrapped #ea85de0133873f8d ~5d8af941  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x244ed95 MSNC_VS_TransformSkin_2f2b1ecc_Wrapped #c259357d6cd37153 ~11092364  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2450f96 MS_VS_Transform_0c91b99b_Wrapped #0d9d1c59733d6340 ~d5a6ada3  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2454dca MSNC_VS_TransformSkin_0c91b99b_Wrapped #6204b6c7bb1a534a ~51e26380  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x24590c0 MS_VS_Transform_cf03bbb3_Wrapped #6220f70425688326 ~91aac27e  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x245b0eb MS_VS_Transform_2f2b1ecc_Wrapped #c5d717bdc8efad5a ~572b0970  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x245d132 MSNC_VS_TransformSkin_2f2b1ecc_Wrapped #4929af335eea5e12 ~704021ea  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x256405d MS_VS_MirrorReflectionTransform_5cbcacdf_Wrapped #84e86784350ced33 ~97b61990  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x256659a VS_Transform_VfxVBuffer_AlphaClip_0fb3cebd_Wrapped #3b74fcf2d52f3261 ~1742b1c9  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2568a25 MSNC_VS_TransformSkin_4dbafe93_Wrapped #95cf500dc645d195 ~e265d1cf  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x256b187 MSNC_VS_MirrorReflectionTransformSkin_5cbcacdf_Wrapped #d5036e9e92676385 ~a534cf6a  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2572767 MSNC_VS_TransformSkin_2f2b1ecc_Wrapped #c9af1b75a21fcc86 ~f76be594  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x28ce66a MS_VS_Transform_PositionOnly_8d8b5e7b_Wrapped #6580f48bbeec508d ~29bdac1a  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x28ddf4b MS_VS_Transform_PositionOnly_4b73ea93_Wrapped #0d437e1790b1959e ~4c135ca3  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x28eea61 MSNC_VS_TransformSkinEntityMask_2b74d11a_Wrapped #4f0198431fc2babb ~1e6821d8  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x297036b MS_VS_Transform_PositionOnly_8d8b5e7b_Wrapped #3d8783a44ba8d08e ~8132774c  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2971169 MSNC_VS_TransformSkin_PositionOnly_8d8b5e7b_Wrapped #baf2e2e803a58d6a ~2eceaef4  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x29801f0 MS_VS_Transform_PositionOnly_4b73ea93_Wrapped #a8511d5ed06d3d9e ~84bf8014  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2981155 MSNC_VS_TransformSkin_PositionOnly_4b73ea93_Wrapped #ba3bdfc110a9fca2 ~a0dc3930  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2992843 MS_VS_Transform_PositionOnly_8d8b5e7b_Wrapped #6580f48bbeec508d ~29bdac1a  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2993641 MSNC_VS_TransformSkin_PositionOnly_8d8b5e7b_Wrapped #cea938321fbb2818 ~21ad0676  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x29a2612 MS_VS_Transform_PositionOnly_4b73ea93_Wrapped #0d437e1790b1959e ~4c135ca3  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x29a3574 MSNC_VS_TransformSkin_PositionOnly_4b73ea93_Wrapped #7603bdb103e78d38 ~d312da94  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x29b258b MS_VS_TransformEntityMask_2b74d11a_Wrapped #4d2d9f121053ada8 ~dbea7843  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x29b37f6 MSNC_VS_TransformSkinEntityMask_2b74d11a_Wrapped #4f0198431fc2babb ~1e6821d8  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x29e07a0 MS_VS_Transform_eb34a03f_Wrapped #ec06af2d83a1f3bc ~6113f612  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x29e2389 MS_VS_MirrorReflectionTransform_38e78c3a_Wrapped #0bc7cccecb876ab0 ~e6e148bc  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x29e4014 MS_VS_TransformTransmission_eb34a03f_Wrapped #335e91bfaf5801d4 ~7fc318c7  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x29e5be2 MS_VS_TransformAlphaPrepass_eb34a03f_Wrapped #b35a71053bf49d65 ~d6d69b84  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x29e78a8 MSNC_VS_TransformSkin_eb34a03f_Wrapped #3e46de51d7495ab4 ~ee9d518a  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x29e9677 MSNC_VS_MirrorReflectionTransformSkin_38e78c3a_Wrapped #286598b826da991f ~1d74385e  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x29eb4fa MSNC_VS_TransformSkinTransmission_eb34a03f_Wrapped #3de7cea925a1aba8 ~0bc8b0cc  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x29ed2c7 MSNC_VS_TransformSkin_AlphaPrepass_eb34a03f_Wrapped #357de9822e80790d ~2c4d21ff  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x29ef29b MS_VS_TransformD_c5fd36bb_Wrapped #b188c5975f64f080 ~7dd29f67  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x29f0da3 MS_VS_MirrorReflectionTransformD_f0a15084_Wrapped #79e14b9402a254ba ~de477e8a  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x29f29a0 MS_VS_MirrorReflectionTransformDecalsD_f0a15084_Wrapped #e868a06cfa28c369 ~1c7f7ae9  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x29f45ae VS_Transform_VfxVBuffer_AlphaClip_0e67afa3_Wrapped #e40846b8b2480bfa ~09d107f9  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x29f60f7 MSNC_VS_TransformSkinD_c5fd36bb_Wrapped #406f9956fb1d06a5 ~eb149c34  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x29f7ef9 MSNC_VS_MirrorReflectionTransformSkinD_f0a15084_Wrapped #a156f73651480217 ~84e161de  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x29f9e03 MSNC_VS_MirrorReflectionTransformSkinDecalsD_f0a15084_Wrapped #1129a275b2ebf268 ~60f15afd  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x29fbd3f VS_TransformSkin_VfxVBuffer_AlphaClip_0e67afa3_Wrapped #5025c94173499ed3 ~a8150adc  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x29fdb99 MS_VS_TransformEntityMask_2b74d11a_Wrapped #182f5db162513379 ~5a615998  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x29fee82 MSNC_VS_TransformSkinEntityMask_2b74d11a_Wrapped #4d61a2eccc1ef75c ~cc7e3b43  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2a00299 MS_VS_Transform_PositionOnly_8d8b5e7b_Wrapped #ca097b869baa1595 ~48ee5528  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2a0109f MSNC_VS_TransformSkin_PositionOnly_8d8b5e7b_Wrapped #738ab8fd836cb97e ~35a0675c  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2a10dac MS_VS_Transform_PositionOnly_4b73ea93_Wrapped #1c5f75905d97a614 ~7f5b0015  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2a11d0e MSNC_VS_TransformSkin_PositionOnly_4b73ea93_Wrapped #7496289e7de4c3bb ~2a5e0224  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2a21ba5 MS_VS_TransformEntityMask_2b74d11a_Wrapped #8719f9cdf4987d93 ~eb1ab85f  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2a22fc2 MSNC_VS_TransformSkinEntityMask_2b74d11a_Wrapped #e09816c1b808745b ~f8874ed8  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2a2b24a MSNC_VS_TransformSkin_eb34a03f_Wrapped #da2b925bef84b49d ~73ce655e  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2a2ceec MSNC_VS_MirrorReflectionTransformSkin_38e78c3a_Wrapped #e1c0ceeab6e9c73c ~368df09c  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2a2ec4b MSNC_VS_TransformSkinTransmission_eb34a03f_Wrapped #17be3a1bba19df6e ~48ff6ecf  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2a308ef MSNC_VS_TransformSkin_AlphaPrepass_eb34a03f_Wrapped #27eb50b579340258 ~817c3a20  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2a37811 VS_Transform_VfxVBuffer_AlphaClip_0e67afa3_Wrapped #1a33ed7e84d0be1e ~fa215e60  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2a3927b MSNC_VS_TransformSkinD_c5fd36bb_Wrapped #842640aed8256e7e ~e47c22f9  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2a3af80 MSNC_VS_MirrorReflectionTransformSkinD_f0a15084_Wrapped #3a449ba01d98b36c ~f800014a  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2a3cd89 MSNC_VS_MirrorReflectionTransformSkinDecalsD_f0a15084_Wrapped #729d596dba9da9e1 ~75674775  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2a40910 MS_VS_TransformEntityMask_2b74d11a_Wrapped #ae080428006c5f0b ~effe824c  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2a41bc2 MSNC_VS_TransformSkinEntityMask_2b74d11a_Wrapped #4f0198431fc2babb ~1e6821d8  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2a42fb1 MS_VS_Transform_PositionOnly_8d8b5e7b_Wrapped #653b576147d78d2e ~2f0de24d  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2a43da4 MSNC_VS_TransformSkin_PositionOnly_8d8b5e7b_Wrapped #66db8bf803d8bc99 ~1806365e  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2a52fa6 MS_VS_Transform_PositionOnly_4b73ea93_Wrapped #aad70e1676f8329a ~e1025f30  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2a53f0a MSNC_VS_TransformSkin_PositionOnly_4b73ea93_Wrapped #697db874110240e1 ~89b23657  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2a63182 MS_VS_TransformEntityMask_2b74d11a_Wrapped #182f5db162513379 ~5a615998  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2a65815 MS_VS_Transform_eb34a03f_Wrapped #96816586922baa0e ~3d12d586  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2a672d6 MS_VS_MirrorReflectionTransform_38e78c3a_Wrapped #91f0d47d2bd08e3a ~b9e0cbb8  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2a68e31 MS_VS_TransformTransmission_eb34a03f_Wrapped #9ca336f86350eeec ~9d4e2d9f  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2a6a8e2 MS_VS_TransformAlphaPrepass_eb34a03f_Wrapped #59a2b09c209aaad0 ~76835c67  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2a6c49b MSNC_VS_TransformSkin_eb34a03f_Wrapped #da2b925bef84b49d ~73ce655e  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2a6e10d MSNC_VS_MirrorReflectionTransformSkin_38e78c3a_Wrapped #e1c0ceeab6e9c73c ~368df09c  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2a6fe3c MSNC_VS_TransformSkinTransmission_eb34a03f_Wrapped #17be3a1bba19df6e ~48ff6ecf  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2a71ab0 MSNC_VS_TransformSkin_AlphaPrepass_eb34a03f_Wrapped #27eb50b579340258 ~817c3a20  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2a7392c MS_VS_TransformD_c5fd36bb_Wrapped #19c4d6c9cdd37052 ~9b7ee627  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2a7531f MS_VS_MirrorReflectionTransformD_f0a15084_Wrapped #a1cff0a9f6313431 ~c57b1b30  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2a76e21 MS_VS_MirrorReflectionTransformDecalsD_f0a15084_Wrapped #5bad3aec3d8e1b57 ~a03a58d7  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2a78913 VS_Transform_VfxVBuffer_AlphaClip_0e67afa3_Wrapped #1a33ed7e84d0be1e ~fa215e60  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2a7a34d MSNC_VS_TransformSkinD_c5fd36bb_Wrapped #842640aed8256e7e ~e47c22f9  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2a7c022 MSNC_VS_MirrorReflectionTransformSkinD_f0a15084_Wrapped #3a449ba01d98b36c ~f800014a  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2a7ddfb MSNC_VS_MirrorReflectionTransformSkinDecalsD_f0a15084_Wrapped #729d596dba9da9e1 ~75674775  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2a7fbfa VS_TransformSkin_VfxVBuffer_AlphaClip_0e67afa3_Wrapped #2c373fffed5cc8e4 ~b2fee68e  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2a81922 MS_VS_TransformEntityMask_2b74d11a_Wrapped #ae080428006c5f0b ~effe824c  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2a82ba4 MSNC_VS_TransformSkinEntityMask_2b74d11a_Wrapped #4f0198431fc2babb ~1e6821d8  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2a83f56 MS_VS_Transform_eb34a03f_Wrapped #0a339d12cc71dc3e ~184ba9f4  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2a85bb5 MS_VS_MirrorReflectionTransform_38e78c3a_Wrapped #915d8eb5aba62cfe ~1c66144b  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2a878bf MS_VS_TransformTransmission_eb34a03f_Wrapped #7605708d0d15834f ~337964db  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2a89505 MS_VS_TransformAlphaPrepass_eb34a03f_Wrapped #dd8d127047a6650a ~31e2a3b0  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2a8b265 MSNC_VS_TransformSkin_eb34a03f_Wrapped #c4c6d184f1a4fd32 ~303da8e3  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2a8d07b MSNC_VS_MirrorReflectionTransformSkin_38e78c3a_Wrapped #20135afc4a670276 ~4544fe5b  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2a8ef4a MSNC_VS_TransformSkinTransmission_eb34a03f_Wrapped #bdd5e181b177ae89 ~b03fe85d  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2a90d6d MSNC_VS_TransformSkin_AlphaPrepass_eb34a03f_Wrapped #e1935964f44d96d4 ~55eb3e82  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2a92daa MS_VS_TransformD_c5fd36bb_Wrapped #b19fac626d64f18d ~3cd57c09  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2a94993 MS_VS_MirrorReflectionTransformD_f0a15084_Wrapped #dd52dd0754c6d373 ~22740d49  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2a9666d MS_VS_MirrorReflectionTransformDecalsD_f0a15084_Wrapped #0082eb48e1ad6c12 ~1a5420be  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2a98340 VS_Transform_VfxVBuffer_AlphaClip_0e67afa3_Wrapped #71ce0b1e57cbabbc ~195da1bc  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2a99f51 MSNC_VS_TransformSkinD_c5fd36bb_Wrapped #18932af80f3c84b4 ~c82399fc  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2a9bde3 MSNC_VS_MirrorReflectionTransformSkinD_f0a15084_Wrapped #033f75aa0971a897 ~2cbd1990  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2a9dd81 MSNC_VS_MirrorReflectionTransformSkinDecalsD_f0a15084_Wrapped #01861c6b9ed1e20b ~63535803  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2a9fd3a VS_TransformSkin_VfxVBuffer_AlphaClip_0e67afa3_Wrapped #b1421b1c3ca0672a ~6d2de2f0  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2aa3063 MSNC_VS_TransformSkinEntityMask_2b74d11a_Wrapped #e09816c1b808745b ~f8874ed8  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2aa610e MS_VS_MirrorReflectionTransform_38e78c3a_Wrapped #fff2ba2c6830a6b3 ~0d95d5c6  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2ac2301 MSNC_VS_TransformSkinEntityMask_2b74d11a_Wrapped #4d61a2eccc1ef75c ~cc7e3b43  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2aca368 MSNC_VS_TransformSkin_eb34a03f_Wrapped #de65d7f0fead198a ~f01653f9  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2acbfc0 MSNC_VS_MirrorReflectionTransformSkin_38e78c3a_Wrapped #e7cb49355e751182 ~3644104c  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2acdcda MSNC_VS_TransformSkinTransmission_eb34a03f_Wrapped #11d077b197bc7813 ~cfc3b81d  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2acf92f MSNC_VS_TransformSkin_AlphaPrepass_eb34a03f_Wrapped #4145b85faa7674bb ~7bdcab38  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2ad6741 VS_Transform_VfxVBuffer_AlphaClip_0e67afa3_Wrapped #8632487542327de8 ~bb83d312  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2ad8169 MSNC_VS_TransformSkinD_c5fd36bb_Wrapped #f6f3337f169a8456 ~d68c3dbb  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2ad9e2a MSNC_VS_MirrorReflectionTransformSkinD_f0a15084_Wrapped #5e5e5f9a3a1030c0 ~8e65518f  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2adbbec MSNC_VS_MirrorReflectionTransformSkinDecalsD_f0a15084_Wrapped #86ddb48c50f4bd9f ~b18e7738  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2ae0955 MSNC_VS_TransformSkinEntityMask_2b74d11a_Wrapped #5e2368824ed9f1f5 ~d1a2d192  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2b123f8 MS_VS_Transform_eb34a03f_Wrapped #f60f2edbcd5c20d5 ~78caa8c5  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2b13dee MS_VS_MirrorReflectionTransform_38e78c3a_Wrapped #875cc03f8f3265a4 ~5d07cb61  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2b15893 MS_VS_TransformTransmission_eb34a03f_Wrapped #3d4ef261f42fe172 ~d23c2586  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2b17286 MS_VS_TransformAlphaPrepass_eb34a03f_Wrapped #274715d3b14a4d47 ~cb299c81  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2b1a916 MSNC_VS_MirrorReflectionTransformSkin_38e78c3a_Wrapped #abdda50904bb4926 ~bf685056  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2b1fed9 MS_VS_TransformD_c5fd36bb_Wrapped #74a70fe506cab1ae ~5a13ede6  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2b21820 MS_VS_MirrorReflectionTransformD_f0a15084_Wrapped #2e2ecf8215544e57 ~aa0bb2ed  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2b23263 MS_VS_MirrorReflectionTransformDecalsD_f0a15084_Wrapped #0147eb2a58ce7720 ~25931ec8  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2b24cbb VS_Transform_VfxVBuffer_AlphaClip_0e67afa3_Wrapped #55ba5479ae9056a2 ~fc44c78e  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2b28285 MSNC_VS_MirrorReflectionTransformSkinD_f0a15084_Wrapped #3d1fe91f5d71a45b ~d66c765c  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2b29fd5 MSNC_VS_MirrorReflectionTransformSkinDecalsD_f0a15084_Wrapped #848169a21660bc54 ~00f39854  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2b2bd56 VS_TransformSkin_VfxVBuffer_AlphaClip_0e67afa3_Wrapped #27ee7636bd615991 ~35664fca  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2b33249 MS_VS_TransformEntityMask_2b74d11a_Wrapped #be8dec1f7522c64a ~31d1960b  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2b35723 MS_VS_TransformD_4b73ea93_Wrapped #1dbe6c8a13d4f8fb ~617fb8f0  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2b38f68 MS_VS_Transform_eb34a03f_Wrapped #0c972b724ebed0ab ~47535a58  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2b3a968 MS_VS_MirrorReflectionTransform_38e78c3a_Wrapped #85a31827208e9ac5 ~c556ffff  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2b3c406 MS_VS_TransformTransmission_eb34a03f_Wrapped #eb3f6356cef32339 ~5267f93c  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2b3ddfc MS_VS_TransformAlphaPrepass_eb34a03f_Wrapped #f983932de2123695 ~9254fba8  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2b3f8eb MSNC_VS_TransformSkin_26a320a2_Wrapped #4a36b5d8168befc8 ~daaf2098  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2b41b3a MSNC_VS_MirrorReflectionTransformSkin_99ec7bdf_Wrapped #9c78523703afad7f ~0226f407  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2b43e4a MSNC_VS_TransformSkinTransmission_26a320a2_Wrapped #7009d976e68165d1 ~d8e2a09f  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2b5ee24 MS_VS_TransformEntityMask_2b74d11a_Wrapped #16ad41c433ba7861 ~e41a165b  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2b5fff6 MSNC_VS_TransformSkinEntityMask_5df5b799_Wrapped #7f2f591a8d58d8fe ~3efc2c3e  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2ca528c MS_VS_Transform_eb34a03f_Wrapped #e4322700730771dd ~bd6f0b8b  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2caa1dd MSNC_VS_MirrorReflectionTransformSkin_38e78c3a_Wrapped #8cdf87eeea21cf69 ~95b287ae  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2cabde0 MS_VS_TransformD_c5fd36bb_Wrapped #857b2e13c9cc107f ~e63283b0  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2cb3a22 MSNC_VS_MirrorReflectionTransformSkinD_f0a15084_Wrapped #26b2464c69fa6d77 ~5529ea3e  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2cb549d MSNC_VS_MirrorReflectionTransformSkinDecalsD_f0a15084_Wrapped #c786ec91f45a2a02 ~12f64f13  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2cb8978 MS_VS_TransformEntityMask_2b74d11a_Wrapped #83e17015d496a2ca ~a8f5bf84  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2cbadb6 MS_VS_TransformD_80041f13_Wrapped #963e89070f3cfff7 ~59ae2f02  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2cc9c6a MS_VS_Transform_eb34a03f_Wrapped #4fad3eae2db6b278 ~67a97a73  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2ccb7c2 MS_VS_MirrorReflectionTransform_38e78c3a_Wrapped #acf28a24d02ecb98 ~30491f7b  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2ccd3b9 MS_VS_TransformTransmission_eb34a03f_Wrapped #3524df7769dd0889 ~47b36000  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2cceefc MS_VS_TransformAlphaPrepass_eb34a03f_Wrapped #b6fb8afc0baf01a4 ~9de141f9  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2cd0b35 MSNC_VS_TransformSkin_eb34a03f_Wrapped #045ef911e10bf7d1 ~2b12cabf  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2cd287f MSNC_VS_MirrorReflectionTransformSkin_38e78c3a_Wrapped #2d65f927a4d3caef ~0b10d0b4  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2cd4679 MSNC_VS_TransformSkinTransmission_eb34a03f_Wrapped #ccca4da1b871b9cc ~98bd028d  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2cd63ba MSNC_VS_TransformSkin_AlphaPrepass_eb34a03f_Wrapped #2024f91dff5e6d2f ~ff96e0b8  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2cd82fe MS_VS_TransformD_c5fd36bb_Wrapped #c7d6de70cb73254d ~83fb8463  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2cd9d79 MS_VS_MirrorReflectionTransformD_f0a15084_Wrapped #224fa6875f037e41 ~eb9602d2  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2cdb8ef MS_VS_MirrorReflectionTransformDecalsD_f0a15084_Wrapped #2b8384ff3ab920fe ~2a6961e0  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2cdd473 VS_Transform_VfxVBuffer_AlphaClip_0e67afa3_Wrapped #a732755d1dd30834 ~d051319b  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2cdef29 MSNC_VS_TransformSkinD_c5fd36bb_Wrapped #13191125f072d554 ~a102aa6e  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2ce0ca7 MSNC_VS_MirrorReflectionTransformSkinD_f0a15084_Wrapped #1ed8d183ea4b360d ~43128bb5  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2ce2b21 MSNC_VS_MirrorReflectionTransformSkinDecalsD_f0a15084_Wrapped #cdffbfd1b2bdb083 ~cd74e04c  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2ce49cb VS_TransformSkin_VfxVBuffer_AlphaClip_0e67afa3_Wrapped #1c065430548841a1 ~b89f88ea  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2ce67ab MS_VS_TransformEntityMask_2b74d11a_Wrapped #4d2d9f121053ada8 ~dbea7843  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2ce79fe MSNC_VS_TransformSkinEntityMask_2b74d11a_Wrapped #4f0198431fc2babb ~1e6821d8  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2ce8d80 MS_VS_Transform_eb34a03f_Wrapped #d0c2cc9fd4abb7ed ~2a312259  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2ceac3d MS_VS_MirrorReflectionTransform_38e78c3a_Wrapped #33af6c476d5e0363 ~9c92ec3f  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2ceebc9 MS_VS_TransformAlphaPrepass_eb34a03f_Wrapped #91ec1e95b6f5d0aa ~23779acd  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2cf4d53 MS_VS_Transform_Fire_eb34a03f_Wrapped #e3a40a3bd973f2f1 ~2f58e6c8  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2cf8d0d MS_VS_Transform_Fire_AlphaPrepass_eb34a03f_Wrapped #7c26f76b03232b1a ~84445096  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2d1700f MS_VS_CascadeShadows_drawTexture_e45bd153_Wrapped #4a936e68e6e972ec ~a77f42dd  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2d1b69e MSNC_VS_TransformSkinEntityMask_2b74d11a_Wrapped #97fe877b9d9fd57b ~d8a652f8  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2ec5540 MS_VS_Transform_PositionOnly_8d8b5e7b_Wrapped #1d1596bec433ed11 ~09e2638f  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2ed528a MS_VS_Transform_PositionOnly_4b73ea93_Wrapped #1be81c739a224ed1 ~3c7f2c50  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2eeb750 MS_VS_Transform_PositionOnly_8d8b5e7b_Wrapped #d213593be0d5a324 ~01a95f08  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2eec54f MSNC_VS_TransformSkin_PositionOnly_8d8b5e7b_Wrapped #51f0e7946ec029a6 ~2a3a270a  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2efc26d MS_VS_Transform_PositionOnly_4b73ea93_Wrapped #8bdcb3d2f523387b ~3d5e2a0d  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2efd1cb MSNC_VS_TransformSkin_PositionOnly_4b73ea93_Wrapped #4beb32ff2c964210 ~2f5195c3  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2f1352d MS_VS_Transform_eb34a03f_Wrapped #f60f2edbcd5c20d5 ~78caa8c5  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2f14f3b MS_VS_MirrorReflectionTransform_38e78c3a_Wrapped #875cc03f8f3265a4 ~5d07cb61  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2f169f8 MS_VS_TransformTransmission_eb34a03f_Wrapped #3d4ef261f42fe172 ~d23c2586  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2f18403 MS_VS_TransformAlphaPrepass_eb34a03f_Wrapped #274715d3b14a4d47 ~cb299c81  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2f19f06 MSNC_VS_TransformSkin_eb34a03f_Wrapped #7a8cf9482453718f ~108fe2af  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2f1d744 MSNC_VS_TransformSkinTransmission_eb34a03f_Wrapped #6da9b9138564f1c7 ~dd637086  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2f1f30b MSNC_VS_TransformSkin_AlphaPrepass_eb34a03f_Wrapped #e4a907f49d515bf1 ~0e8dfe6b  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2f210ce MS_VS_TransformD_c5fd36bb_Wrapped #ecfe2f8317bda619 ~f4fa4a63  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2f229f9 MS_VS_MirrorReflectionTransformD_f0a15084_Wrapped #be5131f1197d06f4 ~0ff8d5b5  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2f2442c MS_VS_MirrorReflectionTransformDecalsD_f0a15084_Wrapped #0cbf5b316ea12e4a ~38ae82a1  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2f2cec2 VS_TransformSkin_VfxVBuffer_AlphaClip_0e67afa3_Wrapped #61ca263891fefc2f ~551b3394  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2f2fd23 MSNC_VS_TransformSkinEntityMask_2b74d11a_Wrapped #d354583b02f6671d ~d42f6b26  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2f31045 MS_VS_Transform_eb34a03f_Wrapped #0c972b724ebed0ab ~47535a58  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2f32a5d MS_VS_MirrorReflectionTransform_38e78c3a_Wrapped #85a31827208e9ac5 ~c556ffff  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2f34513 MS_VS_TransformTransmission_eb34a03f_Wrapped #eb3f6356cef32339 ~5267f93c  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2f35f21 MS_VS_TransformAlphaPrepass_eb34a03f_Wrapped #f983932de2123695 ~9254fba8  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2f37a28 MSNC_VS_TransformSkin_26a320a2_Wrapped #4a36b5d8168befc8 ~daaf2098  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2f39c8f MSNC_VS_MirrorReflectionTransformSkin_99ec7bdf_Wrapped #9c78523703afad7f ~0226f407  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2f3bfb7 MSNC_VS_TransformSkinTransmission_26a320a2_Wrapped #7009d976e68165d1 ~d8e2a09f  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2f3e228 MSNC_VS_TransformSkin_AlphaPrepass_26a320a2_Wrapped #83ad44da953b8aec ~2f7b41e6  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2f408ef MS_VS_TransformD_c5fd36bb_Wrapped #2beeafef913ae385 ~cdc890ad  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2f4221c MS_VS_MirrorReflectionTransformD_862306ef_Wrapped #3edb477ac35165a5 ~844a8e68  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2f43c49 MS_VS_MirrorReflectionTransformDecalsD_862306ef_Wrapped #fa0d9c531aef28e9 ~3a54fc44  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2f4e0dc VS_TransformSkin_VfxVBuffer_AlphaClip_5fd4397c_Wrapped #d4bec78f1799cc87 ~ef59f582  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2f5181b MSNC_VS_TransformSkinEntityMask_5df5b799_Wrapped #7f2f591a8d58d8fe ~3efc2c3e  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2f53207 MS_VS_Transform_PositionOnly_8d8b5e7b_Wrapped #3d8783a44ba8d08e ~8132774c  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2f54005 MSNC_VS_TransformSkin_PositionOnly_8d8b5e7b_Wrapped #baf2e2e803a58d6a ~2eceaef4  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2f54f6d VS_Transform_VfxVBuffer_cbe32b6c_Wrapped #58b4b5b7e133d9d0 ~7011a4ad  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2f58ab0 MS_VS_MirrorReflectionTransform_38e78c3a_Wrapped #875cc03f8f3265a4 ~5d07cb61  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2f5da33 MSNC_VS_TransformSkin_eb34a03f_Wrapped #823aa7870721c5a5 ~ef35712d  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2f61242 MSNC_VS_TransformSkinTransmission_eb34a03f_Wrapped #49202b4dd5076de6 ~7b07cd6c  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2f62df2 MSNC_VS_TransformSkin_AlphaPrepass_eb34a03f_Wrapped #8d3b0e7634488320 ~a28fbce4  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2f64ba7 MS_VS_Transform_PositionOnly_4b73ea93_Wrapped #a8511d5ed06d3d9e ~84bf8014  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2f65b0c MSNC_VS_TransformSkin_PositionOnly_4b73ea93_Wrapped #ba3bdfc110a9fca2 ~a0dc3930  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2f684ff MS_VS_MirrorReflectionTransformD_f0a15084_Wrapped #be5131f1197d06f4 ~0ff8d5b5  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2f6f626 MSNC_VS_TransformSkinD_c5fd36bb_Wrapped #9dc3ad37bf950230 ~234284c8  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2f79397 MS_VS_CascadeShadows_drawTexture_ec5590fc_Wrapped #a50ebb76790cecc5 ~9d342792  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2f7cca2 MSNC_VS_CascadeShadows_drawskinnedTexture_ec5590fc_Wrapped #df72d2806afa7b3d ~2f493663  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2f7ec94 MSNC_VS_LinearDepthSkin_da28e022_Wrapped #6ab183583cd50a9c ~b51b7210  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2f7fe9e MS_VS_TransformEntityMask_2b74d11a_Wrapped #be8dec1f7522c64a ~31d1960b  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x2f8106d MSNC_VS_TransformSkinEntityMask_2b74d11a_Wrapped #d354583b02f6671d ~d42f6b26  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x3431816 MS_VS_MirrorReflectionTransformDecalsD_f0a15084_Wrapped #83ca24fef0e52b5c ~ea16dc67  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x343c1f0 MS_VS_TransformEntityMask_2b74d11a_Wrapped #86d576a1911c58df ~0131ecf4  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x343d44f MSNC_VS_TransformSkinEntityMask_2b74d11a_Wrapped #a4c45623a3b3ee82 ~c298e93f  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x34765b4 MS_VS_TransformEntityMask_2b74d11a_Wrapped #ae080428006c5f0b ~effe824c  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x350fd78 MS_VS_TransformEntityMask_2b74d11a_Wrapped #86d576a1911c58df ~0131ecf4  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x35561c9 MS_VS_Transform_eb34a03f_Wrapped #f60f2edbcd5c20d5 ~78caa8c5  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x3557bef MS_VS_MirrorReflectionTransform_38e78c3a_Wrapped #875cc03f8f3265a4 ~5d07cb61  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x35596c4 MS_VS_TransformTransmission_eb34a03f_Wrapped #3d4ef261f42fe172 ~d23c2586  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x355b0e7 MS_VS_TransformAlphaPrepass_eb34a03f_Wrapped #274715d3b14a4d47 ~cb299c81  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x355cc02 MSNC_VS_TransformSkin_eb34a03f_Wrapped #7a8cf9482453718f ~108fe2af  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x355e7d7 MSNC_VS_MirrorReflectionTransformSkin_38e78c3a_Wrapped #cadae4701abf73e8 ~533b2473  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x3560470 MSNC_VS_TransformSkinTransmission_eb34a03f_Wrapped #6da9b9138564f1c7 ~dd637086  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x356204f MSNC_VS_TransformSkin_AlphaPrepass_eb34a03f_Wrapped #e4a907f49d515bf1 ~0e8dfe6b  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x3563e2a MS_VS_TransformD_c5fd36bb_Wrapped #ecfe2f8317bda619 ~f4fa4a63  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x356576d MS_VS_MirrorReflectionTransformD_f0a15084_Wrapped #be5131f1197d06f4 ~0ff8d5b5  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x35671b8 MS_VS_MirrorReflectionTransformDecalsD_f0a15084_Wrapped #0cbf5b316ea12e4a ~38ae82a1  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x3568c1b VS_Transform_VfxVBuffer_AlphaClip_0e67afa3_Wrapped #3466ae42be8d8f11 ~d478a342  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x356a5be MSNC_VS_TransformSkinD_c5fd36bb_Wrapped #0d1c025b120f0769 ~cc723551  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x356c201 MSNC_VS_MirrorReflectionTransformSkinD_f0a15084_Wrapped #8470bf0ef9780741 ~6200f74b  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x356df45 MSNC_VS_MirrorReflectionTransformSkinDecalsD_f0a15084_Wrapped #1267ad49fa52ec5c ~b4268a17  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x356fcc6 VS_TransformSkin_VfxVBuffer_AlphaClip_0e67afa3_Wrapped #61ca263891fefc2f ~551b3394  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x3571957 MS_VS_TransformEntityMask_2b74d11a_Wrapped #84463bfec774f8d0 ~feb867b6  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x3572b57 MSNC_VS_TransformSkinEntityMask_2b74d11a_Wrapped #d354583b02f6671d ~d42f6b26  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x3573e91 MS_VS_Transform_eb34a03f_Wrapped #a15f7156d4e93a5f ~21edab83  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x3575817 MS_VS_MirrorReflectionTransform_38e78c3a_Wrapped #aef0e793e481e57b ~9181569b  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x3577232 MS_VS_TransformTransmission_eb34a03f_Wrapped #69e78387df9d710c ~34347c24  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x3578b9f MS_VS_TransformAlphaPrepass_eb34a03f_Wrapped #1d7678c337c72ee8 ~20ca90de  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x357a613 MS_VS_Transform_Fire_eb34a03f_Wrapped #1ce3d7ded56d8803 ~3462642e  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x357bffd MS_VS_TransformTransmissionFire_eb34a03f_Wrapped #fed2f671abf0fad7 ~5ed5417b  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x357d9db MS_VS_Transform_Fire_AlphaPrepass_eb34a03f_Wrapped #e7dcef4b802cda13 ~64b17176  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x357f4b3 MSNC_VS_TransformSkin_eb34a03f_Wrapped #e4326d2dac8c0de7 ~c4bd891d  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x3580fe3 MSNC_VS_MirrorReflectionTransformSkin_38e78c3a_Wrapped #30ed58ef70da3941 ~4e61e424  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x3582bd9 MSNC_VS_TransformSkinTransmission_eb34a03f_Wrapped #8f69723e9672b8d8 ~8330c631  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x358470b MSNC_VS_TransformSkin_AlphaPrepass_eb34a03f_Wrapped #200aaaf7beb35aaf ~b5e7c0fc  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x358645e MSNC_VS_TransformSkin_Fire_eb34a03f_Wrapped #f86477a17656d7d2 ~65ac6cfc  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x35880bf MSNC_VS_TransformSkinTransmissionFire_eb34a03f_Wrapped #0353fa6ae3f2d8da ~3ff38550  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x3589d28 MSNC_VS_TransformSkin_Fire_AlphaPrepass_eb34a03f_Wrapped #a9134eb1ccd09e70 ~71d388ac  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x358bb80 MS_VS_CascadeShadows_drawTexture_e45bd153_Wrapped #f0ec9537361ed76d ~d2ae8ed8  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x358cf86 MSNC_VS_CascadeShadows_drawskinnedTexture_e45bd153_Wrapped #47a2454ce38381ad ~5274135e  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x358e560 MS_VS_TransformEntityMask_2b74d11a_Wrapped #382f26ede22181ee ~32a2c6af  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x358f6c5 MSNC_VS_TransformSkinEntityMask_2b74d11a_Wrapped #b26132458c78c85f ~bb821e8f  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x36e93af MS_VS_Transform_eb34a03f_Wrapped #f60f2edbcd5c20d5 ~78caa8c5  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x36eadbd MS_VS_MirrorReflectionTransform_38e78c3a_Wrapped #875cc03f8f3265a4 ~5d07cb61  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x36ec87a MS_VS_TransformTransmission_eb34a03f_Wrapped #3d4ef261f42fe172 ~d23c2586  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x36ee285 MS_VS_TransformAlphaPrepass_eb34a03f_Wrapped #274715d3b14a4d47 ~cb299c81  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x36efd88 MSNC_VS_TransformSkin_eb34a03f_Wrapped #7a8cf9482453718f ~108fe2af  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x36f1945 MSNC_VS_MirrorReflectionTransformSkin_38e78c3a_Wrapped #cadae4701abf73e8 ~533b2473  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x36f35c6 MSNC_VS_TransformSkinTransmission_eb34a03f_Wrapped #6da9b9138564f1c7 ~dd637086  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x36f518d MSNC_VS_TransformSkin_AlphaPrepass_eb34a03f_Wrapped #e4a907f49d515bf1 ~0e8dfe6b  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x36f6f50 MS_VS_TransformD_c5fd36bb_Wrapped #ecfe2f8317bda619 ~f4fa4a63  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x36f887b MS_VS_MirrorReflectionTransformD_f0a15084_Wrapped #be5131f1197d06f4 ~0ff8d5b5  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x36fa2ae MS_VS_MirrorReflectionTransformDecalsD_f0a15084_Wrapped #0cbf5b316ea12e4a ~38ae82a1  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x36fbcf9 VS_Transform_VfxVBuffer_AlphaClip_0e67afa3_Wrapped #3466ae42be8d8f11 ~d478a342  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x36fd684 MSNC_VS_TransformSkinD_c5fd36bb_Wrapped #0d1c025b120f0769 ~cc723551  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x36ff2af MSNC_VS_MirrorReflectionTransformSkinD_f0a15084_Wrapped #8470bf0ef9780741 ~6200f74b  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x3700fdb MSNC_VS_MirrorReflectionTransformSkinDecalsD_f0a15084_Wrapped #1267ad49fa52ec5c ~b4268a17  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x3702d44 VS_TransformSkin_VfxVBuffer_AlphaClip_0e67afa3_Wrapped #61ca263891fefc2f ~551b3394  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x37049bd MS_VS_TransformEntityMask_2b74d11a_Wrapped #84463bfec774f8d0 ~feb867b6  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x3705ba5 MSNC_VS_TransformSkinEntityMask_2b74d11a_Wrapped #d354583b02f6671d ~d42f6b26  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x3706ec7 MS_VS_Transform_eb34a03f_Wrapped #ffd5cebc0287f61d ~0b537daf  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x3708aab MS_VS_MirrorReflectionTransform_38e78c3a_Wrapped #456e5e8f42f20bf2 ~fdccd8a6  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x370a740 MS_VS_TransformTransmission_eb34a03f_Wrapped #031ad8a02bcef21a ~331fb2d3  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x370c31c MS_VS_TransformAlphaPrepass_eb34a03f_Wrapped #924dd2b8cab56ff8 ~240a901e  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x370e006 MSNC_VS_TransformSkin_eb34a03f_Wrapped #f95566e56d72831e ~33ca97ca  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x370fda0 MSNC_VS_MirrorReflectionTransformSkin_38e78c3a_Wrapped #c30fc9409d4ee2c4 ~058fbbdf  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x3711bfa MSNC_VS_TransformSkinTransmission_eb34a03f_Wrapped #df2df70b9b2f9d2a ~df86c2fc  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x37139ad MSNC_VS_TransformSkin_AlphaPrepass_eb34a03f_Wrapped #6edfe26cfd92b6d7 ~4be0c590  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x3715967 MS_VS_TransformD_c5fd36bb_Wrapped #0750cb2d975c7563 ~6a304081  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x37174da MS_VS_MirrorReflectionTransformD_f0a15084_Wrapped #3e8df31f528427be ~fb0fb8c0  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x371913a MS_VS_MirrorReflectionTransformDecalsD_f0a15084_Wrapped #98fb2fa6f9608ea6 ~31e9dec1  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x371ad96 VS_Transform_VfxVBuffer_AlphaClip_0e67afa3_Wrapped #1672b96cedeae96f ~c201802a  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x371c923 MSNC_VS_TransformSkinD_c5fd36bb_Wrapped #ea2f944e3742721c ~15d0cdfb  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x371e72f MSNC_VS_MirrorReflectionTransformSkinD_f0a15084_Wrapped #be34a33869e8caab ~d055eb3f  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x372064e MSNC_VS_MirrorReflectionTransformSkinDecalsD_f0a15084_Wrapped #8e2fc49a417a2b56 ~a80713d9  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x3722597 VS_TransformSkin_VfxVBuffer_AlphaClip_0e67afa3_Wrapped #2032c4a008e7b3e5 ~fe987b56  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x3724413 MS_VS_TransformEntityMask_2b74d11a_Wrapped #0bbd9c7a95dbb355 ~dc102723  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x37257d3 MSNC_VS_TransformSkinEntityMask_2b74d11a_Wrapped #304c0a0662b4b61d ~883e4206  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x37eb041 MS_VS_Transform_PositionOnly_8d8b5e7b_Wrapped #6580f48bbeec508d ~29bdac1a  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x37ebe3f MSNC_VS_TransformSkin_PositionOnly_8d8b5e7b_Wrapped #cea938321fbb2818 ~21ad0676  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x37faaef MS_VS_Transform_PositionOnly_4b73ea93_Wrapped #0d437e1790b1959e ~4c135ca3  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x37fba51 MSNC_VS_TransformSkin_PositionOnly_4b73ea93_Wrapped #7603bdb103e78d38 ~d312da94  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x380cc8b MS_VS_Transform_PositionOnly_8d8b5e7b_Wrapped #028d60d330097939 ~e0c288de  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x380da6d MSNC_VS_TransformSkin_PositionOnly_8d8b5e7b_Wrapped #ca778aa47997a6f5 ~0c6f40e3  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x383b016 MS_VS_Transform_PositionOnly_4b73ea93_Wrapped #505d6f43b024b354 ~41a9f422  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x383bf54 MSNC_VS_TransformSkin_PositionOnly_4b73ea93_Wrapped #ab4f0184a7f0e1b3 ~8ef4a440  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x383e7f9 MSNC_VS_CascadeShadows_drawskinnedTexture_e45bd153_Wrapped #c2b82a2be65641ae ~9b3c9770  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x3842b3c MS_VS_Transform_PositionOnly_8d8b5e7b_Wrapped #bb2b48baf045e4ab ~99a8685d  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x3843911 MSNC_VS_TransformSkin_PositionOnly_8d8b5e7b_Wrapped #1e31e53b5e2411f3 ~253ae78c  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x384b596 MS_VS_Transform_PositionOnly_4b73ea93_Wrapped #73efdbe777d266ed ~b885c60e  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x384c4d6 MSNC_VS_TransformSkin_PositionOnly_4b73ea93_Wrapped #9edee2d78c6b6114 ~2892ff68  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x389b847 MS_VS_Transform_eb34a03f_Wrapped #0a339d12cc71dc3e ~184ba9f4  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x389d45e MS_VS_MirrorReflectionTransform_38e78c3a_Wrapped #915d8eb5aba62cfe ~1c66144b  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x389f120 MS_VS_TransformTransmission_eb34a03f_Wrapped #7605708d0d15834f ~337964db  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x38a0d1e MS_VS_TransformAlphaPrepass_eb34a03f_Wrapped #dd8d127047a6650a ~31e2a3b0  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x38aa45a MS_VS_TransformD_c5fd36bb_Wrapped #b19fac626d64f18d ~3cd57c09  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x38af91a VS_Transform_VfxVBuffer_AlphaClip_0e67afa3_Wrapped #71ce0b1e57cbabbc ~195da1bc  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x38b332b MSNC_VS_MirrorReflectionTransformSkinD_f0a15084_Wrapped #033f75aa0971a897 ~2cbd1990  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x38b5281 MSNC_VS_MirrorReflectionTransformSkinDecalsD_f0a15084_Wrapped #01861c6b9ed1e20b ~63535803  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x38b909e MS_VS_TransformEntityMask_2b74d11a_Wrapped #8719f9cdf4987d93 ~eb1ab85f  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x38bb9ae MS_VS_Transform_PositionOnly_8d8b5e7b_Wrapped #1f8ac1d81e664938 ~593539f3  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x38cf383 MS_VS_Transform_PositionOnly_4b73ea93_Wrapped #ec5abde83fa36810 ~fb3a1a93  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x394c1e6 MS_VS_TransformEntityMask_2b74d11a_Wrapped #f2ed97d18490dbbe ~872f331a  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x394d402 MSNC_VS_TransformSkinEntityMask_2b74d11a_Wrapped #b45c06317fd7d7ef ~873a515d  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x3956c6f MS_VS_Transform_eb34a03f_Wrapped #0cd9a29277b5953e ~28e0aee4  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x395870e MS_VS_MirrorReflectionTransform_38e78c3a_Wrapped #89de2205cd15371e ~eacd418b  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x395a257 MS_VS_TransformTransmission_eb34a03f_Wrapped #b3e7e2a7af791ff9 ~d4d8242c  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x395bcf4 MS_VS_TransformAlphaPrepass_eb34a03f_Wrapped #ed545b5722a234ed ~d2d88305  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x3964c0a MS_VS_TransformD_c5fd36bb_Wrapped #52db39703ea0fef6 ~d0dd2673  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x39665e6 MS_VS_MirrorReflectionTransformD_f0a15084_Wrapped #4170f789bc861bde ~55decf13  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x39680d1 MS_VS_MirrorReflectionTransformDecalsD_f0a15084_Wrapped #d1ce90ff365acb43 ~7b3987bf  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x3970dbc VS_TransformSkin_VfxVBuffer_AlphaClip_0e67afa3_Wrapped #51975e67c024b978 ~34d0f8c2  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x3972a93 MS_VS_TransformEntityMask_2b74d11a_Wrapped #84463bfec774f8d0 ~feb867b6  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x3973cc3 MSNC_VS_TransformSkinEntityMask_2b74d11a_Wrapped #a4c45623a3b3ee82 ~c298e93f  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x39abc81 MS_VS_Transform_eb34a03f_Wrapped #0a1653de9f64c2d6 ~876ba5f4  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x39add73 MS_VS_MirrorReflectionTransform_38e78c3a_Wrapped #7aaa1606f55d74f0 ~07cc38a2  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x39aff0f MS_VS_TransformTransmission_eb34a03f_Wrapped #4a442773371f1bf2 ~8225c9a6  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x39b2006 MS_VS_TransformAlphaPrepass_eb34a03f_Wrapped #72e947a0095633ba ~c6a5f3fd  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x39bad6c MSNC_VS_TransformSkin_AlphaPrepass_eb34a03f_Wrapped #579d28898d799858 ~54f48902  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x39bd323 MS_VS_TransformD_c5fd36bb_Wrapped #6937838f6f0a9992 ~b6c7ebe5  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x39bf374 MS_VS_MirrorReflectionTransformD_f0a15084_Wrapped #d5a033b745e67dfa ~524660a8  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x39c148f MS_VS_MirrorReflectionTransformDecalsD_f0a15084_Wrapped #93f23d4b74826114 ~d2f4e4bb  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x39c35aa VS_Transform_VfxVBuffer_AlphaClip_0e67afa3_Wrapped #ccb6c4af4a20cc91 ~f29dee6f  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x39c7a23 MSNC_VS_MirrorReflectionTransformSkinD_f0a15084_Wrapped #0333deef61393cd5 ~f27f7ff4  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x39cc452 VS_TransformSkin_VfxVBuffer_AlphaClip_0e67afa3_Wrapped #d244e1a14ee9b974 ~6caa4ce2  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x39ce89c MS_VS_TransformEntityMask_2b74d11a_Wrapped #ce12d56b267ee911 ~033974ba  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x39cff97 MSNC_VS_TransformSkinEntityMask_2b74d11a_Wrapped #a97324c4bb2786ec ~67c2e354  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x39d18a3 MS_VS_Transform_PositionOnly_8d8b5e7b_Wrapped #5697daae9a672b4c ~91327a24  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x39d26a2 MSNC_VS_TransformSkin_PositionOnly_a1cf5e50_Wrapped #b3f1d522c40656b5 ~56a7d313  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x39e3863 MS_VS_Transform_PositionOnly_4b73ea93_Wrapped #857a0d9a7e4ecba2 ~83f353e5  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x39e47c5 MSNC_VS_TransformSkin_PositionOnly_4b67dd74_Wrapped #8e723eeb0d3de44f ~82b52a02  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x39f5fe0 MS_VS_TransformEntityMask_2b74d11a_Wrapped #bdaad77c625cf826 ~7cc1ba6d  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x39f71fa MSNC_VS_TransformSkinEntityMask_5df5b799_Wrapped #f8145000beee8f02 ~80d44fb7  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x3a09f00 MS_VS_MirrorReflectionTransform_38e78c3a_Wrapped #3adbb0f0564bde2e ~05795f54  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x3a0ee66 MSNC_VS_TransformSkin_eb34a03f_Wrapped #77d5cd749686479e ~6a7f74b6  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x3a12685 MSNC_VS_TransformSkinTransmission_eb34a03f_Wrapped #5c5b5bb4830aa811 ~a4c856d6  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x3a1423f MSNC_VS_TransformSkin_AlphaPrepass_eb34a03f_Wrapped #e4d8b34bfbe9a83d ~c271daf7  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x3a1c6e0 MSNC_VS_TransformSkinD_c5fd36bb_Wrapped #9c7f9880155d828a ~300ecdf0  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x3a24b80 MSNC_VS_TransformSkinEntityMask_2b74d11a_Wrapped #b45c06317fd7d7ef ~873a515d  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x3a25e7f MS_VS_Transform_eb34a03f_Wrapped #29bed50a44d37eed ~de20de7b  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x3a2791f MS_VS_MirrorReflectionTransform_38e78c3a_Wrapped #682d0b91ff681c19 ~c0b25f9f  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x3a29450 MSNC_VS_TransformSkin_eb34a03f_Wrapped #ac177a48ad9eb5ad ~90ff2e9f  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x3a2b0a2 MSNC_VS_MirrorReflectionTransformSkin_38e78c3a_Wrapped #7acd678fa6e93a79 ~4d24d132  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x3a2cd96 MS_VS_TransformD_80041f13_Wrapped #043dbac88f8ab0a8 ~95ab86be  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x3a2e825 MSNC_VS_TransformSkinD_80041f13_Wrapped #289253bf45ddc49b ~d1e8ff15  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x3a30452 MS_VS_TransformD_c5fd36bb_Wrapped #c962201cddbdd7dd ~06ef6d72  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x3a31d6d MS_VS_MirrorReflectionTransformD_f0a15084_Wrapped #ae3d0039f994f11f ~1cd4569d  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x3a33745 MS_VS_MirrorReflectionTransformDecalsD_f0a15084_Wrapped #bd9e4d3042639779 ~ab28c050  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x3a3513b VS_Transform_VfxVBuffer_AlphaClip_0e67afa3_Wrapped #12e2a7e549da8afe ~2f32d930  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x3a36a8d MSNC_VS_TransformSkinD_c5fd36bb_Wrapped #771028e121d8a760 ~27b53a79  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x3a3854b MSNC_VS_MirrorReflectionTransformSkinD_f0a15084_Wrapped #8871fd6b729d0811 ~9896d1a7  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x3a3a0b6 MSNC_VS_MirrorReflectionTransformSkinDecalsD_f0a15084_Wrapped #9f0df6cae0cdb99a ~d68f3884  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x3a3bc5d VS_TransformSkin_VfxVBuffer_AlphaClip_0e67afa3_Wrapped #dd420a0286e2c64b ~3b4261d1  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x3a3d770 MS_VS_TransformEntityMask_2b74d11a_Wrapped #a7ea5758a53401f1 ~2b80c5ae  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x3a3e9e3 MSNC_VS_TransformSkinEntityMask_2b74d11a_Wrapped #60292d6bff0d80c2 ~7a2c9405  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x3a3fd8c MS_VS_Transform_eb34a03f_Wrapped #3734a93f938936ba ~90f3f196  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x3a41901 MS_VS_MirrorReflectionTransform_38e78c3a_Wrapped #5f1d4a084313f359 ~a8a1d361  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x3a43510 MSNC_VS_TransformSkin_eb34a03f_Wrapped #8ced70bcfb52da7c ~e04ae67c  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x3a45239 MSNC_VS_MirrorReflectionTransformSkin_38e78c3a_Wrapped #cb9ff0c9537f8bbf ~1887d1f9  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x3a47010 MS_VS_TransformD_80041f13_Wrapped #db4cf147fd6b486f ~737933ca  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x3a48b6b MSNC_VS_TransformSkinD_80041f13_Wrapped #2f8720b66d3fcecb ~e1600547  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x3a4a854 MS_VS_TransformD_c5fd36bb_Wrapped #1e0f5b008739cedd ~b4974a4e  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x3a4c245 MS_VS_MirrorReflectionTransformD_f0a15084_Wrapped #1cdec21b1ce2b1a7 ~00b51536  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x3a4dcf6 MS_VS_MirrorReflectionTransformDecalsD_f0a15084_Wrapped #68ca233be848288a ~ebae8abd  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x3a4f7cf VS_Transform_VfxVBuffer_AlphaClip_0e67afa3_Wrapped #8ab1149d11643966 ~1f224069  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x3a511f1 MSNC_VS_TransformSkinD_c5fd36bb_Wrapped #ce8400955101d3bd ~da98b2d7  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x3a52da1 MSNC_VS_MirrorReflectionTransformSkinD_f0a15084_Wrapped #b334e25fed49facf ~37f340a2  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x3a549f6 MSNC_VS_MirrorReflectionTransformSkinDecalsD_f0a15084_Wrapped #84260fa42d397b8e ~49101f57  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x3a5667a VS_TransformSkin_VfxVBuffer_AlphaClip_0e67afa3_Wrapped #fe8a6866e46a9c89 ~1a7cdb8a  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x3a5827a MS_VS_TransformEntityMask_2b74d11a_Wrapped #e6d4f8d0c82b2d6f ~4e73d6da  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x3a595b6 MSNC_VS_TransformSkinEntityMask_2b74d11a_Wrapped #0e1b873054a1b6ea ~005e70a1  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x3a61ae6 MSNC_VS_TransformSkin_eb34a03f_Wrapped #08b32c9b526fdc5f ~dd03c88c  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x3a656ac MSNC_VS_TransformSkinTransmission_eb34a03f_Wrapped #c52d34f09b853201 ~70269518  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x3a6743e MSNC_VS_TransformSkin_AlphaPrepass_eb34a03f_Wrapped #c9cb8b2a782b63db ~9c6c611a  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x3a70353 MSNC_VS_TransformSkinD_c5fd36bb_Wrapped #0f73a9ae763e96e2 ~9de9e7cc  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x3a79195 MSNC_VS_TransformSkinEntityMask_2b74d11a_Wrapped #154ebce9dd3062b5 ~3700dbdc  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x3a7a663 MS_VS_Transform_eb34a03f_Wrapped #58ba3f440c88a773 ~a8d16052  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x3a7c041 MS_VS_MirrorReflectionTransform_38e78c3a_Wrapped #3adbb0f0564bde2e ~05795f54  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x3a7dab6 MS_VS_TransformTransmission_eb34a03f_Wrapped #1ebe082ba46564ef ~f87d6e0f  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x3a7f487 MS_VS_TransformAlphaPrepass_eb34a03f_Wrapped #86d8b63df1ff6a14 ~f874ecc8  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x3a82af8 MSNC_VS_MirrorReflectionTransformSkin_38e78c3a_Wrapped #7b1de2e02556f967 ~99f909e9  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x3a8809a MS_VS_TransformD_c5fd36bb_Wrapped #ea3c4866d511f59b ~3cdbbbe6  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x3a8999c MS_VS_MirrorReflectionTransformD_f0a15084_Wrapped #038ca437dc28d16e ~bf8f47c9  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x3a8b3a0 MS_VS_MirrorReflectionTransformDecalsD_f0a15084_Wrapped #fd2a2fc883f68ff5 ~cb0221fc  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x3a8cdc5 VS_Transform_VfxVBuffer_AlphaClip_0e67afa3_Wrapped #0372f9fb9e681425 ~b7c62fef  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x3a9031e MSNC_VS_MirrorReflectionTransformSkinD_f0a15084_Wrapped #0599f8b5ac17b277 ~b47e777d  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x3a9201c MSNC_VS_MirrorReflectionTransformSkinDecalsD_f0a15084_Wrapped #23b594f1524a7e19 ~d50327f3  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x3a93d57 VS_TransformSkin_VfxVBuffer_AlphaClip_0e67afa3_Wrapped #303d580b5e71375e ~6cba53d1  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x3a95986 MS_VS_TransformEntityMask_2b74d11a_Wrapped #3dd4cabe7afc78ac ~3e1affbf  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x3aba95d MS_VS_Transform_PositionOnly_8d8b5e7b_Wrapped #298b61b3ca24066b ~deebdbb1  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x3abb75a MSNC_VS_TransformSkin_PositionOnly_8d8b5e7b_Wrapped #ada8de51c0e30dfc ~acf00331  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x3ac8c21 MS_VS_Transform_PositionOnly_4b73ea93_Wrapped #fdc2599114801d1a ~3d553b04  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x3ac9b78 MSNC_VS_TransformSkin_PositionOnly_4b73ea93_Wrapped #29e159341954b56f ~7cce7961  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x3ad3e7c MS_VS_TransformEntityMask_2b74d11a_Wrapped #f93a3dd2be6d6362 ~d3c663e1  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x3ad4a9f MSNC_VS_TransformSkinEntityMask_2b74d11a_Wrapped #6a571b3e573743c4 ~6a10b3ad  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x3b10da4 MS_VS_Transform_PositionOnly_bda55aba_Wrapped #84873f76b9c62264 ~7f3f9fd1  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x3b14827 MS_VS_TransformUnlit_b6f9827b_Wrapped #7ae5e3fe7ac7c412 ~988e3caf  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x3b32647 MS_VS_CascadeShadows_draw_65459485_Wrapped #5bd72cc4c32177a3 ~9c3e6b4f  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x3b33264 MS_VS_CascadeShadows_draw_04fe460e_Wrapped #624c1254a189f7ee ~6841f9df  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x3b37d44 MS_VS_Transform_PositionOnly_bda55aba_Wrapped #228150849658be29 ~1b262d55  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x3b66709 MS_VS_Transform_PositionOnly_bda55aba_Wrapped #3ce73e45a9c34935 ~15786c70  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x3b6c8ec MS_VS_TransformUnlit_b6f9827b_Wrapped #d4d3b35ab1257636 ~d8c80388  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x3b7d906 MS_VS_TransformUnlit_b6f9827b_Wrapped #d4d3b35ab1257636 ~d8c80388  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x3b8962d MS_VS_TransformUnlit_b6f9827b_Wrapped #7ae5e3fe7ac7c412 ~988e3caf  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x3b91def MS_VS_Transform_PositionOnly_bda55aba_Wrapped #4e2979c0ee97cbf2 ~c0f210fc  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x3b957ad MS_VS_TransformUnlit_b6f9827b_Wrapped #7ae5e3fe7ac7c412 ~988e3caf  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x3ba11d8 MS_VS_Transform_PositionOnly_bda55aba_Wrapped #5e0541f501b3a036 ~53d74d2b  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x3ba4c8f MS_VS_TransformUnlit_b6f9827b_Wrapped #d4d3b35ab1257636 ~d8c80388  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x3c064e0 MS_VS_CascadeShadows_draw_65459485_Wrapped #39e695ce9b355721 ~ebe5e311  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x3c070f3 MS_VS_CascadeShadows_draw_04fe460e_Wrapped #4c6673adcd6a3282 ~2d606a1c  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x3f4285e MS_VS_TransformD_7095f810_Wrapped #50b9f962f6621bf3 ~9ab6d101  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x3f44a47 MS_VS_TransformD_DetailMapsOff_7095f810_Wrapped #91a34ab8dc7f9397 ~81f86a03  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x3f46b9a MS_VS_MirrorReflectionTransformD_b3e2cb54_Wrapped #5ce6beb1591b332d ~b9fb3e0a  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x3f48e9b MSR_VS_TransformSkinD_34f92402_Wrapped #95a280f62e6feedf ~4bc4e5a5  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x3f4bec7 MS_VS_TransformSkinD_34f92402_Wrapped #851babd34fb468b8 ~da08f93f  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x3f4f158 MSR_VS_TransformSkinD_DetailMapsOff_34f92402_Wrapped #49c2ee5f1a758bf0 ~ff6a0e50  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x3f520e1 MS_VS_TransformSkinD_DetailMapsOff_34f92402_Wrapped #244ba68d7972654b ~54e3b7a1  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x3f552db MSR_VS_TransformSkinD_NoDeform_34f92402_Wrapped #632920c79f26d5cc ~4e1a51fb  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x3f578ef MS_VS_TransformSkinD_NoDeform_34f92402_Wrapped #61d41962dcb26958 ~4f9c1aec  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x3f5a159 MSR_VS_TransformSkinD_DetailMapsOff_NoDeform_34f92402_Wrapped #a62abba7a1c35478 ~7cd08d45  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x3f5c6ef MS_VS_TransformSkinD_DetailMapsOff_NoDeform_34f92402_Wrapped #db4c81deefcb75f2 ~85eaf047  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x3f5eec3 MSR_VS_MirrorReflectionTransformSkinD_e599bb9a_Wrapped #dc244c81ba909a31 ~f489a882  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x3f61ffc MS_VS_MirrorReflectionTransformSkinD_e599bb9a_Wrapped #1375725680791e8c ~ee6e1bf0  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x3f6537e VS_Transform_VfxVBuffer_AlphaClip_199591c0_Wrapped #3b941e8ac0c8940b ~471ef0c6  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x3f6756d VS_TransformSkin_VfxVBuffer_AlphaClip_81d231b7_Wrapped #8d977ecd40314c81 ~2d903898  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x3f6a86b MS_VS_Transform_d69a8879_Wrapped #06980160f6c5516f ~1064fdd2  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x3f6cb1b MSR_VS_TransformSkin_f99c720c_Wrapped #ab008fdce9f216c6 ~2b0ddd2a  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x3f6fae0 MS_VS_TransformSkin_f99c720c_Wrapped #52b873d99483b41b ~41f19b1d  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x3f72c17 MSNC_VS_BakeDecorations_0656b4af_Wrapped #66f6f22f89b21799 ~4d609b82  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x452d711 MS_VS_Transform_eb34a03f_Wrapped #96816586922baa0e ~3d12d586  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x4530c9d MS_VS_TransformTransmission_eb34a03f_Wrapped #9ca336f86350eeec ~9d4e2d9f  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x4532706 MS_VS_TransformAlphaPrepass_eb34a03f_Wrapped #59a2b09c209aaad0 ~76835c67  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x453b5eb MS_VS_TransformD_c5fd36bb_Wrapped #19c4d6c9cdd37052 ~9b7ee627  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x453cf96 MS_VS_MirrorReflectionTransformD_f0a15084_Wrapped #a1cff0a9f6313431 ~c57b1b30  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x453ea50 MS_VS_MirrorReflectionTransformDecalsD_f0a15084_Wrapped #5bad3aec3d8e1b57 ~a03a58d7  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x45476be VS_TransformSkin_VfxVBuffer_AlphaClip_0e67afa3_Wrapped #2c373fffed5cc8e4 ~b2fee68e  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x454939e MS_VS_TransformEntityMask_2b74d11a_Wrapped #4d2d9f121053ada8 ~dbea7843  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x477c4e MS_VS_Transform_PositionOnly_8d8b5e7b_Wrapped #5be0489cea0a7c7c ~d86f2efa  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x4780418 MS_VS_PropFoliageForwardLit_18b3d403_Wrapped #98ae06f28b78b41e ~6c7a4178  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x478193f MS_VS_CascadeShadows_drawTexture_65459485_Wrapped #b5491ea4c4d1cd0e ~f25d87e4  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x4783730 MS_VS_CascadeShadows_drawTexture_04fe460e_Wrapped #5611868d96681884 ~5466bc03  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x4785528 MSNC_VS_CascadeShadows_drawskinnedTexture_a14f0f80_Wrapped #b292e58919dac60a ~83ddba07  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x478768e MSNC_VS_LinearDepthSkin_1b4b70ba_Wrapped #2c3833733876c72c ~74ec810c  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x478a24 MSNC_VS_TransformSkin_PositionOnly_8d8b5e7b_Wrapped #9a35364ca30d208e ~b78acf30  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x47996b MS_VS_Transform_eb34a03f_Wrapped #cab21189b3cc59f0 ~06820741  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x47a59d0 MS_VS_PropFoliageForwardLit_18b3d403_Wrapped #e6bbb513805a7baa ~9ad7aa8b  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x47aed7 MS_VS_MirrorReflectionTransform_38e78c3a_Wrapped #c2edf8fa5b79d814 ~7edce5cd  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x47dd5d8 MS_VS_CascadeShadows_drawTexture_65459485_Wrapped #bdcab447bec6c76e ~0275e9ef  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x47e1453 MS_VS_CascadeShadows_drawTexture_04fe460e_Wrapped #93b71ecaee341239 ~50f43fe9  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x47e9355 MSNC_VS_LinearDepthSkin_1b4b70ba_Wrapped #910b4be059bfb28f ~3d95a084  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x47f2f2 MS_VS_Transform_PositionOnly_4b73ea93_Wrapped #4a60fc7b5c353b92 ~707e7ab5  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x480227 MSNC_VS_TransformSkin_PositionOnly_4b73ea93_Wrapped #4d636cc7f2a5c79c ~947ecf32  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x4865ea MS_VS_TransformEntityMask_2b74d11a_Wrapped #4e707e552b59b98b ~5d8dba71  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x488487 MS_VS_Transform_PositionOnly_8d8b5e7b_Wrapped #b229c479a8d081c7 ~f243eeb9  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x489256 MSNC_VS_TransformSkin_PositionOnly_8d8b5e7b_Wrapped #ec61f7f9d187da94 ~97e506de  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x48fe76 MS_VS_Transform_PositionOnly_4b73ea93_Wrapped #a0e2039a2c228c60 ~b8aca37b  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x490db3 MSNC_VS_TransformSkin_PositionOnly_4b73ea93_Wrapped #63db51aada065b23 ~a1682e48  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x497496 MS_VS_TransformEntityMask_2b74d11a_Wrapped #a489e052634dc33e ~cea6232f  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x4980a4 MSNC_VS_TransformSkinEntityMask_2b74d11a_Wrapped #df6a7eba81c5a097 ~e6b4def3  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x4aaaecc MS_VS_CascadeShadows_drawTexture_65459485_Wrapped #55157e536826fe12 ~8be0bd4f  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x4aaea9a MS_VS_CascadeShadows_drawTexture_04fe460e_Wrapped #f162c1e1cdfcc8b8 ~4cddadba  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x4f8751 MS_VS_Transform_PositionOnly_8d8b5e7b_Wrapped #be766f48538a509b ~404f6e42  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x4f9550 MSNC_VS_TransformSkin_PositionOnly_8d8b5e7b_Wrapped #647701a010d826c7 ~c75dbb31  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x5060e4 MS_VS_Transform_PositionOnly_4b73ea93_Wrapped #fca2bc595690a5df ~a2894b5d  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x50703a MSNC_VS_TransformSkin_PositionOnly_4b73ea93_Wrapped #dc6d7c3ef6e1bc95 ~e8a991e3  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x510c2e MS_VS_CascadeShadows_draw_65459485_Wrapped #a25d226a2c50691a ~8a8a4139  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x522e57a PS_DeferredTexturedStdColor_e74ae427_Wrapped #8bd8aadfa137cf56 ~783d94a7  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x5231582 PS_DeferredTexturedStdFireColor_e74ae427_Wrapped #f07ad8db30b24e2f ~c1689499  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x5272bb MS_VS_Transform_PositionOnly_8d8b5e7b_Wrapped #78931e2f98dda682 ~4592c985  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x528128 MS_VS_Transform_eb34a03f_Wrapped #17eaea295322d3b3 ~3468f578  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x5294d8 MS_VS_MirrorReflectionTransform_38e78c3a_Wrapped #eff4afde79c8bacc ~d93a5cc6  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x52a92a MS_VS_Transform_PositionOnly_4b73ea93_Wrapped #7d54170f8042e309 ~cc9e9a8d  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x52e3e5 MS_VS_TransformEntityMask_2f25a3c1_Wrapped #00a4138bc1c4e013 ~25497f0e  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x54811f2 PS_PedTexturedCutOutTint_Zero_8aeae56d_Wrapped #f0296ce9fbe481cb ~245f60ab Ps at 0x2dbc  emit: a hardware SGPR input
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x5485142 PS_PedTexturedCutOutTint_Zero_af24a1cd_Wrapped #c1dacd75698a5db8 ~bc749a82 Ps at 0x2dbc  emit: a hardware SGPR input
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x5502f06 PS_PedTexturedCutOutTint_Zero_8aeae56d_Wrapped #aafcf40b30b9df18 ~7a72866a Ps at 0x2dbc  emit: a hardware SGPR input
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x5506e5a PS_PedTexturedCutOutTint_Zero_d215f36c_Wrapped #a76619e2dcb45652 ~9305cb8b Ps at 0x2dbc  emit: a hardware SGPR input
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x5895819 PS_PedTexturedCutOutTint_Zero_8aeae56d_Wrapped #09cee52e3ebbdf51 ~e2494dbb Ps at 0x3014  emit: a hardware SGPR input
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x5899a2c PS_PedTexturedCutOutTint_Zero_af24a1cd_Wrapped #5ac9e7769a54e90c ~c2d5ba1e Ps at 0x3014  emit: a hardware SGPR input
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x591a36e PS_PedTexturedCutOutTint_Zero_8aeae56d_Wrapped #1b1bee1ab00a82b5 ~7da4abc1 Ps at 0x3014  emit: a hardware SGPR input
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x591e57b PS_PedTexturedCutOutTint_Zero_d215f36c_Wrapped #bb3f113d13bd2788 ~9d475a67 Ps at 0x3014  emit: a hardware SGPR input
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x5d2c255 PS_PedTexturedCutOutTint_Zero_8aeae56d_Wrapped #c94ff21793ffd81e ~df038a50 Ps at 0x2dbc  emit: a hardware SGPR input
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x5d30156 PS_PedTexturedCutOutTint_Zero_af24a1cd_Wrapped #8c5ae9ea0f2158eb ~cba2b064 Ps at 0x2dbc  emit: a hardware SGPR input
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x6fdb114 PS_AlphaPrepass_eb34a03f_Wrapped #3f62e6a2a9069c90 ~aabfe681  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x6fe73e9 PS_AlphaPrepass_26a320a2_Wrapped #70afcbb0c0c2e455 ~28d86f66  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x7e8a122 PS_VoxelizeVisiblity_225d1bd4_Wrapped #4e03dc8a2c7079a1 ~3b525a4b  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x7e8beff PS_TexturedLit_2f2b1ecc_Wrapped #8a159517a4d778f2 ~d48d9d93  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x805f493 PS_TexturedLit_2f2b1ecc_Wrapped #412886f27a8b539b ~4feeeeb1  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x80df68f PS_VoxelizeVisiblity_225d1bd4_Wrapped #615b8ad20321af10 ~a6d4365a  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x80e23fc PS_TexturedLit_2f2b1ecc_Wrapped #8a1560e96ffcefa5 ~8714d1e7  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x86b7faa PS_AlphaTransmission_eb34a03f_Wrapped #3d20750bcde4a930 ~8145c189  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x87151a4 PS_VfxVBuffer_AlphaClip_0e67afa3_Wrapped #cb8557bd76753f58 ~a0d11e80  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x8771697 PS_AlphaTransmission_eb34a03f_Wrapped #ec95565eefb7ad9a ~57f42b9e  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x87ccbf4 PS_AlphaPrepass_eb34a03f_Wrapped #99a71c4bc5240337 ~cbb7cfa5  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x87f7ace PS_VfxVBuffer_AlphaClip_0e67afa3_Wrapped #cbb28a8f3689681b ~bed3f4ef  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x880302d PS_AlphaPrepass_eb34a03f_Wrapped #099197b7b560815b ~97e1170e  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x880f1ea PS_AlphaPrepass_26a320a2_Wrapped #4d0ba22d7d68fe2e ~2db802e8  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x8bf4fcf PS_VfxVBuffer_AlphaClip_0e67afa3_Wrapped #6cdd456fbd4dfb37 ~e9c459e5  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x8c77f88 PS_VfxVBuffer_AlphaClip_0e67afa3_Wrapped #de77de1b1136a9f0 ~c76208bf  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x8cf4013 PS_VfxVBuffer_AlphaClip_0e67afa3_Wrapped #b06eacc76860abc8 ~0684a41b  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x8d4062d PS_VfxVBuffer_AlphaClip_0e67afa3_Wrapped #999322cd36c2fc85 ~de770dd2  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x8db7cb2 PS_LinearDepth_da28e022_Wrapped #694a77a5281029ff ~eb580ade  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x8db8993 PS_EntityMask_2b74d11a_Wrapped #024d8d6885b3781d ~1a631be0  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x92c7d3a PS_AlphaTransmission_eb34a03f_Wrapped #fe3e2938972e1728 ~8eefb5b0  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x934a21f PS_AlphaTransmission_eb34a03f_Wrapped #0ed5f07b60aadedd ~fb46adcb  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x935db2e PS_VoxelizeVisiblity_f406ea93_Wrapped #da80016513ae5133 ~29a58501  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x956ec54 PS_VfxVBuffer_AlphaClip_0e67afa3_Wrapped #98ad672bf7c995f0 ~e5549185  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x956fef9 PS_VoxelizeVisiblity_f406ea93_Wrapped #da80016513ae5133 ~29a58501  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x99416b0 PS_Textured_Eight_e0305669_Wrapped #8c26124477ee0585 ~27c3f547  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x9948589 PS_MirrorReflectionTextured_Eight_fe750d3c_Wrapped #b0fa29c1b2e663e2 ~daf0cb24  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x994f219 PS_PuddleDetect_80041f13_Wrapped #c1e898e2ca39af60 ~15d196d8  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x995d0d3 PS_Textured_Eight_e0305669_Wrapped #580d87f90df9af1e ~ad9e0da6  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x9964094 PS_MirrorReflectionTextured_Eight_fe750d3c_Wrapped #78f7ffa6f243005d ~a09b5e65  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x996ae16 PS_PuddleDetect_80041f13_Wrapped #4f5efb081ced314a ~d7e93c8d  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x99a4169 PS_AlphaPrepass_eb34a03f_Wrapped #78631d25b7688e63 ~c9b96f82  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x99b09b3 PS_VfxVBuffer_AlphaClip_0e67afa3_Wrapped #1d824a290977156e ~a0cc8531  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x9a1aac9 PS_VoxelizeVisiblity_f406ea93_Wrapped #c137524a1789abdf ~f02e5fb0  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x9c01724 PS_VoxelizeVisiblity_fc3c3220_Wrapped #39fb79abe7c65c60 ~2818fcab  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x9ce4c28 PS_VoxelizeVisiblity_fc3c3220_Wrapped #a16a5302d809326f ~6868b02c  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x9f8b501 PS_VfxVBuffer_AlphaClip_199591c0_Wrapped #21f33b9c17c60ba7 ~3ee230d3  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x9f97726 PS_VfxVBuffer_AlphaClip_81d231b7_Wrapped #af30e517ad71711a ~12dccacf  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xb6020cc PS_PropFoliageForwardLit_18b3d403_Wrapped #a37e9d8644109a51 ~000d1dc1  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xb608411 PS_ImposterNoDiscard_827db145_Wrapped #e2df5965b2c7140e ~e1b66e73  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xb6357d3 PS_PropFoliageForwardLit_18b3d403_Wrapped #e38e0aa38978bfef ~6761fcce  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xb63ba7b PS_ImposterNoDiscard_827db145_Wrapped #0fb457a6773a8f3c ~1d00b83e  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbd7b8e3 GS_VoxelizeGeneric_b300ca2e_Wrapped #d82a0a5a22471c77 ~b8bb2fac Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbd7c2e4 GS_VoxelizeGeneric_912dfba0_Wrapped #8cf49c6770ae0810 ~438dafa5 Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbd7ccea GS_VoxelizeGeneric_6be01b34_Wrapped #3451632de2c1eec7 ~d73fa639 Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbd7d675 GS_VoxelizeGeneric_b300ca2e_Wrapped #ee8224eb303a5c22 ~dc1dc57e Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbd7e07f GS_VoxelizeGeneric_912dfba0_Wrapped #88cdcc6833c85c12 ~e2ef3e27 Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbd7ea8e GS_VoxelizeGeneric_912dfba0_Wrapped #eb903aa45369fa7c ~9f053db6 Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbd7f49d GS_VoxelizeGeneric_912dfba0_Wrapped #10ee473ac801b6c9 ~948910e0 Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbd7fea2 GS_VoxelizeGeneric_b300ca2e_Wrapped #f3ce8cbe0a878df5 ~859cc4f2 Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbd808a9 GS_VoxelizeGeneric_b300ca2e_Wrapped #96a4ecfc019da200 ~ab6588e3 Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbd812ad GS_VoxelizeGeneric_b300ca2e_Wrapped #e44450df891c7505 ~70edd876 Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbd81c9a GS_VoxelizeGeneric_912dfba0_Wrapped #36699d5ebc0823c4 ~2704ab4b Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbd82683 GS_VoxelizeGeneric_912dfba0_Wrapped #f48557bcc08cc2b7 ~e13d5bb3 Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbd83086 GS_VoxelizeGeneric_912dfba0_Wrapped #ae189fb030d02e54 ~4e5cba3b Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbd83a6b GS_VoxelizeGeneric_912dfba0_Wrapped #794ad4892f6d615c ~e76783c7 Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbd84451 GS_VoxelizeGeneric_912dfba0_Wrapped #7a7ee5bb6b85da3d ~c3ada613 Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbd84e3d GS_VoxelizeGeneric_912dfba0_Wrapped #8199ae1bb040014d ~645107d0 Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbd85824 GS_VoxelizeGeneric_899ecf3f_Wrapped #ed0106ea365b51c8 ~f81aff4f Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbd86256 GS_VoxelizeGeneric_912dfba0_Wrapped #d83187dc358323c7 ~ad2c8256 Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbd86c5f GS_VoxelizeGeneric_912dfba0_Wrapped #67a7ce77d1b4dcf0 ~901405ba Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbd87673 GS_VoxelizeGeneric_912dfba0_Wrapped #25d0d8a77d89a6bf ~9fa26232 Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbd88087 GS_VoxelizeGeneric_912dfba0_Wrapped #c5dc48698ac0c4ab ~0f7f707c Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbd88a95 GS_VoxelizeGeneric_912dfba0_Wrapped #6c2a92465da6738e ~12717b04 Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbd894a4 GS_VoxelizeGeneric_912dfba0_Wrapped #1e2b65513d93a26a ~9f46e03d Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbd89eb2 GS_VoxelizeGeneric_912dfba0_Wrapped #78241702ca8c42be ~38d9b5c9 Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbd8a8c4 GS_VoxelizeGeneric_912dfba0_Wrapped #d666c510188103f7 ~f87ee545 Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbd8b2da GS_VoxelizeGeneric_912dfba0_Wrapped #bb06602631cfc361 ~c0322e8b Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbd8bce7 GS_VoxelizeGeneric_912dfba0_Wrapped #beb2be99d99aa841 ~f5f8bb4f Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbd8c6f5 GS_VoxelizeGeneric_912dfba0_Wrapped #2bf19d2e6659abcd ~9de6d6ce Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbd8d0f7 GS_VoxelizeGeneric_912dfba0_Wrapped #dc10b1128fb093c1 ~f9a4642a Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbd8db02 GS_VoxelizeGeneric_912dfba0_Wrapped #4b9d2402bfd23933 ~14d6d686 Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbd8e512 GS_VoxelizeGeneric_4bb8822d_Wrapped #33d2bc4c48506e07 ~6d218f1b Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbd8ee9a GS_VoxelizeGeneric_225d1bd4_Wrapped #69231a1263f6a494 ~03583932 Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbd8f8a4 GS_VoxelizeGeneric_f406ea93_Wrapped #131def9c81254192 ~746349fb Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbd902ad GS_VoxelizeGeneric_225d1bd4_Wrapped #045a2a33f42ad000 ~218b22ea Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbd90cb7 GS_VoxelizeGeneric_225d1bd4_Wrapped #c28370f5bb16fc45 ~442aab07 Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbd916c3 GS_VoxelizeGeneric_225d1bd4_Wrapped #435258df8725fbe5 ~b389d8c9 Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbd920c9 GS_VoxelizeGeneric_f406ea93_Wrapped #b54208ed513e14d8 ~f7617a8f Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbd92adc GS_VoxelizeGeneric_f406ea93_Wrapped #caa98ee1261dea84 ~e8a20bd5 Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbd934f5 GS_VoxelizeGeneric_f406ea93_Wrapped #b932aa004958ca82 ~ab6eb374 Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbd93f07 GS_VoxelizeGeneric_f406ea93_Wrapped #cb78ca5c62c1ba14 ~41d926dd Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbd9491a GS_VoxelizeGeneric_f406ea93_Wrapped #4751abde881a7ed3 ~4f1be5b4 Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbd9530e GS_VoxelizeGeneric_f406ea93_Wrapped #bb76111d4f732cec ~faab7e49 Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbd95d1d GS_VoxelizeGeneric_f406ea93_Wrapped #7c7caa58b2fa8342 ~cfc30b9c Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbd9672e GS_VoxelizeGeneric_912dfba0_Wrapped #e9e656f4443e43ba ~faf6347a Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbd9712d GS_VoxelizeGeneric_f406ea93_Wrapped #f084c9cf884c6edc ~aa3c6e24 Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbd97b3c GS_VoxelizeGeneric_f406ea93_Wrapped #e4e63021cb959623 ~f87e7235 Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbd9854e GS_VoxelizeGeneric_912dfba0_Wrapped #4bd913bd11d2201b ~6175b5b6 Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbd98ef7 GS_VoxelizeGeneric_912dfba0_Wrapped #31d74f060dce8087 ~aca5ebdc Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbd99898 GS_VoxelizeGeneric_225d1bd4_Wrapped #c6d648867aad311f ~577b496d Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbd9a283 GS_VoxelizeGeneric_f406ea93_Wrapped #f3f1e5e1b71f6a55 ~9d33c482 Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbd9ac77 GS_VoxelizeGeneric_f406ea93_Wrapped #cc7467ec9ba58992 ~333a92a6 Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbd9b667 GS_VoxelizeGeneric_f406ea93_Wrapped #845adb5562a92175 ~e66e5825 Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbd9c072 GS_VoxelizeGeneric_f406ea93_Wrapped #d5f1cb475e3ca6b9 ~7f42233a Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbd9ca83 GS_VoxelizeGeneric_912dfba0_Wrapped #4502e2eba4fd3d2f ~2f494cd9 Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbd9d46d GS_VoxelizeGeneric_912dfba0_Wrapped #80d5943ff96ef72c ~3bde6f81 Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbd9de59 GS_VoxelizeGeneric_912dfba0_Wrapped #d87385fbd65106c1 ~6cbb9aca Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbd9e860 GS_VoxelizeGeneric_00334932_Wrapped #0d98ad0e9193ac3d ~e7c6c1de Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbd9f24e GS_VoxelizeGeneric_912dfba0_Wrapped #d4cc870ca8f775e5 ~a0c1e3d7 Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbd9fc55 GS_VoxelizeGeneric_912dfba0_Wrapped #675c0cbfdb6d9a7a ~6d4c50b0 Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbda065e GS_VoxelizeGeneric_912dfba0_Wrapped #3b8fd77bac3dce6c ~011235d9 Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbda1062 GS_VoxelizeGeneric_f406ea93_Wrapped #fada957fadee229b ~6d6a93de Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbda1a72 GS_VoxelizeGeneric_225d1bd4_Wrapped #9f71b31ab319d328 ~9314e4b4 Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbda2464 GS_VoxelizeGeneric_f406ea93_Wrapped #72d7e384aad08933 ~93692819 Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbda2e74 GS_VoxelizeGeneric_225d1bd4_Wrapped #10f8bf64a668084f ~60cb9f0c Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbda3882 GS_VoxelizeGeneric_225d1bd4_Wrapped #140ee4ee6011e34a ~ee85e172 Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbda428f GS_VoxelizeGeneric_225d1bd4_Wrapped #460d4df40303f284 ~56db90fa Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbda4c98 GS_VoxelizeGeneric_225d1bd4_Wrapped #03861c67cb9ceb8d ~a24f439b Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbda56a7 GS_VoxelizeGeneric_225d1bd4_Wrapped #928cc89e39b3dd14 ~3cbee3ae Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbda60b2 GS_VoxelizeGeneric_f406ea93_Wrapped #7722e2c6665753ab ~8397c0f4 Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbda6abd GS_VoxelizeGeneric_f406ea93_Wrapped #1a4030a585af345b ~ceba64ea Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbda74cf GS_VoxelizeGeneric_f406ea93_Wrapped #78eef8bfeba20fa9 ~5d4a6471 Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbda7edf GS_VoxelizeGeneric_f406ea93_Wrapped #9a7437a5991b55d2 ~521ebce7 Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbda88f2 GS_VoxelizeGeneric_f406ea93_Wrapped #320112c20add577a ~804e429a Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbda92fd GS_VoxelizeGeneric_f406ea93_Wrapped #f07d6032922cf044 ~9b69b002 Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbda9d06 GS_VoxelizeGeneric_225d1bd4_Wrapped #1b3b3a73d64d9f11 ~833c5c62 Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbdaa713 GS_VoxelizeGeneric_225d1bd4_Wrapped #6333e1229dbde83f ~8756819e Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbdab101 GS_VoxelizeGeneric_225d1bd4_Wrapped #fb4f7ac5b66e2926 ~ae533fd4 Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbdabaf0 GS_VoxelizeGeneric_d578a847_Wrapped #5bc906bdc229d6ca ~88249392 Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbdac522 GS_VoxelizeGeneric_225d1bd4_Wrapped #9633604625ed250e ~808bb407 Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbdacf2e GS_VoxelizeGeneric_225d1bd4_Wrapped #e81b1de50279ca5d ~7ec48e24 Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbdad919 GS_VoxelizeGeneric_d578a847_Wrapped #49420daf53a8dcd6 ~5b71699e Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbdae34a GS_VoxelizeGeneric_d578a847_Wrapped #f6c9c36261ce22a2 ~926fdc4c Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbdaed82 GS_VoxelizeGeneric_225d1bd4_Wrapped #2ae59bd4c3646a6f ~d357926f Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbdaf78e GS_VoxelizeGeneric_225d1bd4_Wrapped #14eacf2cab44abf3 ~37fccf8b Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbdb019b GS_VoxelizeGeneric_225d1bd4_Wrapped #55ce410fe4b681f0 ~7279010c Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbdb0ba8 GS_VoxelizeGeneric_225d1bd4_Wrapped #91bd6322d48304a9 ~4f3a7764 Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbdb15b4 GS_VoxelizeGeneric_f406ea93_Wrapped #0d1b6e5019557fcc ~9a7cd5cf Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbdb1fa8 GS_VoxelizeGeneric_f406ea93_Wrapped #e2a78131a79c6f49 ~fb189783 Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbdb299b GS_VoxelizeGeneric_f406ea93_Wrapped #9ebe90f37905d46b ~b913cedf Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbdb3389 GS_VoxelizeGeneric_f406ea93_Wrapped #e77db67f76905747 ~ff7720b6 Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbdb3d81 GS_VoxelizeGeneric_f406ea93_Wrapped #dce3d0a8721c8392 ~cbb6bc25 Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbdb4778 GS_VoxelizeGeneric_f406ea93_Wrapped #3bd157d19115c3c0 ~60fe4e3c Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbdb516f GS_VoxelizeGeneric_912dfba0_Wrapped #bae945ce12e07a23 ~8b619137 Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbdb5b56 GS_VoxelizeGeneric_f406ea93_Wrapped #e6dc2726d5b31850 ~2735ca67 Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbdb654c GS_VoxelizeGeneric_f406ea93_Wrapped #fd3f9e6540de800d ~c8c1f480 Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbdb6f42 GS_VoxelizeGeneric_f406ea93_Wrapped #46f1608dd7c8fa67 ~cfb62318 Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbdb7930 GS_VoxelizeGeneric_f406ea93_Wrapped #7581a7517a8de3a2 ~af71081e Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbdb8325 GS_VoxelizeGeneric_f406ea93_Wrapped #fc0795ae8cc56805 ~b57cfde2 Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbdb8d35 GS_VoxelizeGeneric_f406ea93_Wrapped #a69e46fd2ed85b30 ~ef9c9101 Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbdb972a GS_VoxelizeGeneric_f406ea93_Wrapped #9c3bb7c93e9645bb ~afedbd0d Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbdba13a GS_VoxelizeGeneric_f406ea93_Wrapped #9da4026ded69826b ~393c9a4e Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbdbab2b GS_VoxelizeGeneric_f406ea93_Wrapped #7f021c90e543ca8b ~4c59eb2f Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbdbb538 GS_VoxelizeGeneric_f406ea93_Wrapped #c7268bd22b94531a ~ddbce4fb Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbdbbf48 GS_VoxelizeGeneric_f406ea93_Wrapped #a683821ddb39aafd ~aff30f9a Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbdbc956 GS_VoxelizeGeneric_f406ea93_Wrapped #e9dd3973f953b9d7 ~bb01684e Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbdbd364 GS_VoxelizeGeneric_f406ea93_Wrapped #429da701a42e35b0 ~ee9f39f7 Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbdbdd6d GS_VoxelizeGeneric_f406ea93_Wrapped #5282d7442b0f4da1 ~ee798d9c Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbdbe764 GS_VoxelizeGeneric_f406ea93_Wrapped #284072a3d9f4b7f1 ~81005621 Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbdbf15a GS_VoxelizeGeneric_f406ea93_Wrapped #ccd47d0355ea998d ~5bff4da6 Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbdbfb4f GS_VoxelizeGeneric_f406ea93_Wrapped #b8be696a6b6ca880 ~97389b5b Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbdc0561 GS_VoxelizeGeneric_f406ea93_Wrapped #6d0a738f700795c8 ~b9f3c877 Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbdc0f6f GS_VoxelizeGeneric_f406ea93_Wrapped #d639f1fe28be878c ~21dff0d5 Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbdc197c GS_VoxelizeGeneric_f406ea93_Wrapped #c65f3c5e2193f245 ~36ad892d Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbdc2389 GS_VoxelizeGeneric_f406ea93_Wrapped #e2bd1eb07a2a06d0 ~9365bb94 Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbdc2da1 GS_VoxelizeGeneric_f406ea93_Wrapped #7d58c6ba0cefdd1d ~6f78e7d8 Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbdc37ab GS_VoxelizeGeneric_f406ea93_Wrapped #f66bdb55e3fe59fb ~daf2fc88 Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbdc419d GS_VoxelizeGeneric_f406ea93_Wrapped #bf82589e1b211b7a ~b44929d5 Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbdc4bad GS_VoxelizeGeneric_f406ea93_Wrapped #ca9ac331aff9f164 ~fbb00ae5 Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbdc55b7 GS_VoxelizeGeneric_f406ea93_Wrapped #10ab256e1944bcdb ~4674dd69 Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbdc5fa9 GS_VoxelizeGeneric_f406ea93_Wrapped #b719a3f767cf2708 ~bd45d1c0 Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbdc6997 GS_VoxelizeGeneric_f406ea93_Wrapped #b221d32f2ba6eafc ~497ed7fe Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbdc73a6 GS_VoxelizeGeneric_f406ea93_Wrapped #e49c4a392591c828 ~422e4f5d Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbdc7db3 GS_VoxelizeGeneric_f406ea93_Wrapped #ae963f7955b2248b ~279e773b Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbdc87c3 GS_VoxelizeGeneric_f406ea93_Wrapped #712505cb1a6a7a63 ~52c7a553 Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbdc91d2 GS_VoxelizeGeneric_f406ea93_Wrapped #83430da7721626ef ~3ed3c112 Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbdc9bdb GS_VoxelizeGeneric_f406ea93_Wrapped #91959f454ccf0165 ~64b794b7 Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbdca5ea GS_VoxelizeGeneric_f406ea93_Wrapped #8126cf2dc6ce0c21 ~091d583f Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbdcaff7 GS_VoxelizeGeneric_f406ea93_Wrapped #0bda3519e1a6e40d ~5ffc5fd0 Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbdcba04 GS_VoxelizeGeneric_f406ea93_Wrapped #bd54415e678a1204 ~55ea8b82 Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbdcc418 GS_VoxelizeGeneric_f406ea93_Wrapped #042f2bfe37649d13 ~3e1756a4 Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbdcce29 GS_VoxelizeGeneric_f406ea93_Wrapped #6429356c4ec68b3f ~11ffff68 Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbdcd832 GS_VoxelizeGeneric_f406ea93_Wrapped #3bb567eeb782ec1c ~7d994321 Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbdce23b GS_VoxelizeGeneric_f406ea93_Wrapped #7400ce996801dbdb ~d8dcbe05 Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbdcec45 GS_VoxelizeGeneric_f406ea93_Wrapped #32eb5131adf48014 ~03d35997 Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbdcf64c GS_VoxelizeGeneric_f406ea93_Wrapped #d66dedb406e0765f ~08145dad Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbdd0057 GS_VoxelizeGeneric_f406ea93_Wrapped #bc6ef7ca400b470d ~13c63d0f Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbdd0a65 GS_VoxelizeGeneric_912dfba0_Wrapped #3563112e4e442fd8 ~56964f35 Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbdd144e GS_VoxelizeGeneric_f406ea93_Wrapped #a780cde7cdbc298f ~b68cfb3d Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbdd1e61 GS_VoxelizeGeneric_f406ea93_Wrapped #7e66b159a7f401e7 ~334c45b0 Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbdd2856 GS_VoxelizeGeneric_912dfba0_Wrapped #117429535bd6d553 ~f508d923 Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbdd325d GS_VoxelizeGeneric_fc3c3220_Wrapped #f7f6d3b4502fad7b ~b41f021a Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbdd3c7c GS_VoxelizeGeneric_fc3c3220_Wrapped #a42458d974d4c728 ~ceb7eb37 Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbdd46a6 GS_VoxelizeGeneric_fc3c3220_Wrapped #cc511d2a18b9d99e ~501c6473 Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbdd50cb GS_VoxelizeGeneric_fc3c3220_Wrapped #8adc36ff56409840 ~9c5dc288 Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbdd5af4 GS_VoxelizeGeneric_fc3c3220_Wrapped #f99bdc027b733ed9 ~7c49f161 Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbdd6515 GS_VoxelizeGeneric_fc3c3220_Wrapped #553e32aa28d9bc88 ~473b0b38 Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbdd6f36 GS_VoxelizeGeneric_fc3c3220_Wrapped #15ca62b3d9448565 ~927d8426 Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbdd795c GS_VoxelizeGeneric_f406ea93_Wrapped #07ff6eaeedcaaf3a ~c36cc62d Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbdd8367 GS_VoxelizeGeneric_f406ea93_Wrapped #d3b2caabd155835b ~b7b4557a Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbdd8d76 GS_VoxelizeGeneric_122d0253_Wrapped #b5a276fa64ca9883 ~ca9bc946 Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbdd978d GS_VoxelizeGeneric_122d0253_Wrapped #cf18eca1ee414e83 ~7750fa05 Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbdda19c GS_VoxelizeGeneric_122d0253_Wrapped #9b384468385fd7c6 ~c3aad914 Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbddaba3 GS_VoxelizeGeneric_122d0253_Wrapped #bbd5c4e0ffbd1378 ~eae66b4e Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbddb5b6 GS_VoxelizeGeneric_122d0253_Wrapped #caa727a1f8ed6e18 ~7844742b Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbddbfc4 GS_VoxelizeGeneric_122d0253_Wrapped #42e4afe8a555739d ~ef2fcd7f Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbddc9d6 GS_VoxelizeGeneric_122d0253_Wrapped #1c6f85459891c5a1 ~bb05d498 Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbddd3e5 GS_VoxelizeGeneric_122d0253_Wrapped #b43e4274f4d94b5d ~c78d5b79 Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbddde01 GS_VoxelizeGeneric_122d0253_Wrapped #20ac03d0c474e01c ~627044b0 Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbdde81c GS_VoxelizeGeneric_122d0253_Wrapped #83ddff8e6c3368b5 ~e3e69aff Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbddf240 GS_VoxelizeGeneric_122d0253_Wrapped #a15f07a630a2c9f8 ~75b73e63 Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbddfc68 GS_VoxelizeGeneric_f406ea93_Wrapped #ac9662aa81f44e22 ~6345ff1b Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbde0679 GS_VoxelizeGeneric_f406ea93_Wrapped #56efb7939f7ab018 ~9803fc31 Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbde1087 GS_VoxelizeGeneric_f406ea93_Wrapped #4da897dde7b66489 ~c4f09b93 Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbde1a7d GS_VoxelizeGeneric_f406ea93_Wrapped #741e07cac1e7008c ~342e841c Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbde247e GS_VoxelizeGeneric_f406ea93_Wrapped #e11db4a8022276b5 ~ff66c95c Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbde2e8d GS_VoxelizeGeneric_f406ea93_Wrapped #8c0d0dfe7531c5e8 ~8e45e8d2 Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbde3888 GS_VoxelizeGeneric_f406ea93_Wrapped #d5dfb8d6d5a9d138 ~d82de719 Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbde4291 GS_VoxelizeGeneric_f406ea93_Wrapped #7335a42d9cf4227d ~657abc79 Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbde4c8c GS_VoxelizeGeneric_f406ea93_Wrapped #60655788ad346ffd ~18e95aae Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbde56a2 GS_VoxelizeGeneric_122d0253_Wrapped #0f2b50e2a934842e ~b26602d2 Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbde60b0 GS_VoxelizeGeneric_122d0253_Wrapped #b81ba4b32fe123dc ~9680c3ce Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbde6ac1 GS_VoxelizeGeneric_122d0253_Wrapped #cf37f982c61a4609 ~1806ccfc Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbde74d4 GS_VoxelizeGeneric_122d0253_Wrapped #e36abddaafdac65a ~25f0cfab Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbde7ee4 GS_VoxelizeGeneric_f406ea93_Wrapped #f014136b77408d1d ~461af97e Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbde88ea GS_VoxelizeGeneric_991d528a_Wrapped #15d5f6852b145a77 ~9e4efc54 Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbde932f GS_VoxelizeGeneric_991d528a_Wrapped #d252e26f536e5751 ~71c19c5f Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbde9d7e GS_VoxelizeGeneric_991d528a_Wrapped #57bc3001951308d7 ~a4c986e5 Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbdea7b8 GS_VoxelizeGeneric_991d528a_Wrapped #975a59f301711e7c ~96556220 Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbdeb202 GS_VoxelizeGeneric_82ac8b9d_Wrapped #83ff401a49f6edf2 ~3de6dbbd Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbdebc2f GS_VoxelizeGeneric_82ac8b9d_Wrapped #3301a607dc675a57 ~cf24065c Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbdec663 GS_VoxelizeGeneric_82ac8b9d_Wrapped #496a309157f438da ~0157f554 Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbded08a GS_VoxelizeGeneric_82ac8b9d_Wrapped #8549c9f0b20fa2c7 ~d862f941 Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbdedac4 GS_VoxelizeGeneric_f406ea93_Wrapped #e2bbb972bfbe4bd4 ~2b6f8bc3 Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbdee4d8 GS_VoxelizeGeneric_225d1bd4_Wrapped #3f138db554ab4d21 ~cc6a0456 Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbdeeee5 GS_VoxelizeGeneric_f406ea93_Wrapped #3bc4e0c5a553b403 ~fe177384 Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbdef8fb GS_VoxelizeGeneric_f406ea93_Wrapped #a2887c0662fbaab2 ~0c2b34d1 Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbdf030d GS_VoxelizeGeneric_f406ea93_Wrapped #fafac503438eec0c ~5264af39 Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbdf0d19 GS_VoxelizeGeneric_f406ea93_Wrapped #474cd528274958aa ~5ecfd790 Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbdf172f GS_VoxelizeGeneric_f406ea93_Wrapped #66ca0cc4bd8771f2 ~52d8b808 Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbdf2134 GS_VoxelizeGeneric_f406ea93_Wrapped #c0ad7470111ec2da ~40c26f4f Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbdf2b42 GS_VoxelizeGeneric_4bb8822d_Wrapped #ee36275bf1b1cc5a ~7b3648fe Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbdf34ca GS_VoxelizeGeneric_f406ea93_Wrapped #448482000da23c28 ~4e2d9418 Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbdf3ed7 GS_VoxelizeGeneric_f406ea93_Wrapped #914892fa60318075 ~c34834aa Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbdf48c7 GS_VoxelizeGeneric_f406ea93_Wrapped #ed2e58dffec3d4eb ~a191d3cc Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbdf52d0 GS_VoxelizeGeneric_f406ea93_Wrapped #b95561a401877ffc ~c8498126 Gs at 0x44  resources: an address in an SGPR that is no root parameter
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbfb4807 cutout_fence:CS_RaytracingResolve_b1139868_Wrapped #05ba183058112919 ~752f2dc2  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbfc0ea2 cutout_fence:CS_RaytracingResolve_ae7b7f3c_Wrapped #49f2638c5dde0b23 ~971007c6  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbfcf5a6 cutout_fence:CS_RaytracingResolve_f21e9178_Wrapped #af3033548d076333 ~41833edd  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xc027bec cutout_hard_inst:CS_RaytracingResolve_f21e9178_Wrapped #c3864e62b7ffedb6 ~4839ad18  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xc1a65f9 grass_batch_camera_aligned:CS_BatchReadback_bca4bc5a_Wrapped #33d1afd56bb714a5 ~c479470f  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xc1b2430 grass_batch_underwater:CS_BatchReadback_bca4bc5a_Wrapped #aff43dffcb37574e ~ebe85ac1  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xc1b339a grass_batch_wind:CS_BatchReadback_bca4bc5a_Wrapped #aff43dffcb37574e ~ebe85ac1  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xcb885f MS_VS_PedTransformAlpha_52f61330_Wrapped #997e1054d3ecfd37 ~c1e20b04  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xcb9d26 MS_VS_MirrorReflectionPedTransform_622e6d7a_Wrapped #3b8db526def32004 ~aa2b23da  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xcbb1fc MS_VS_PedTransformAlpha_e4bb9bb6_Wrapped #bb455a7d0a82b2c6 ~bce3a3e6  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xcbc6da MS_VS_PedTransformTransmissionAlpha_52f61330_Wrapped #47a3bfbe947da72f ~51ac3a2c  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xcbf00d MS_VS_PedTransformTransmissionAlpha_Decals_52f61330_Wrapped #f183770b3553f998 ~22ad906a  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xcc0525 MS_VS_PedTransformAlpha_Decals_52f61330_Wrapped #332d6049ebb3fced ~0cbcd1f1  duplicate
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xd474300 shadowmask:CS_TraceShadowRays_FullAdaptive_ae7b9cf0_Wrapped #dbdbf36298727135 ~a706dd1b Cs at 0xae80  emit: a lane mask holding lanes elsewhere read as data
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xf6c0e2e water_shading:CS_TransmissionVolumetrics_bd25dcd5_Wrapped #6871d6e4b3ac9a10 ~66f0a564 Cs at 0x1f98  emit: a lane mask holding lanes elsewhere read as data
+C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xf6d2c02 water_shading:CS_TransmissionVolumetricsSubmerged_bbfb2953_Wrapped #926c46bab3b86bd6 ~58d713c6 Cs at 0x13c8  emit: a lane mask holding lanes elsewhere read as data
+      195  resources: an address in an SGPR that is no root parameter  (e.g. C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xbd916c3 GS_VoxelizeGeneric_225d1bd4_Wrapped #435258df8725fbe5 ~b389d8c9 Gs at 0x44)
+       10  emit: a hardware SGPR input  (e.g. C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0x591a36e PS_PedTexturedCutOutTint_Zero_8aeae56d_Wrapped #1b1bee1ab00a82b5 ~7da4abc1 Ps at 0x3014)
+        3  emit: a lane mask holding lanes elsewhere read as data  (e.g. C:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\shaders.rpf@0xf6d2c02 water_shading:CS_TransmissionVolumetricsSubmerged_bbfb2953_Wrapped #926c46bab3b86bd6 ~58d713c6 Cs at 0x13c8)

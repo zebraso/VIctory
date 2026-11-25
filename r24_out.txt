@@ -1,0 +1,13 @@
+build          unknown (b99f876b74d4a77f03af5f878223b27bd647b5c35a79d5decd9f716504239e93)
+mapped at      0x7ffeca570000 (preferred 0x140000000)
+title          7952987A, storage C:\Users\david\AppData\Local\victory\data\7952987A/storage (2048 MB)
+console        Xbox Series X
+title dll      xboxbvhbuilder.dll at 0x7fff845f0000
+title dll      amd_fidelityfx_loader_xbox.dll at 0x7fffc1890000
+title dll      libhttpclient.gdk.dll at 0x7fff84420000
+title dll      bink2scarlett.dll at 0x7fff843d0000
+bound          xboxbvhbuilder.dll: 9 hle, 48 host, 0 title, 0 missing
+bound          amd_fidelityfx_loader_xbox.dll: 4 hle, 18 host, 0 title, 0 missing
+bound          libhttpclient.gdk.dll: 27 hle, 171 host, 0 title, 0 missing
+bound          bink2scarlett.dll: 6 hle, 54 host, 0 title, 0 missing
+bound          game_scarlett_master.exe: 88 hle, 427 host, 72 title, 0 missing
