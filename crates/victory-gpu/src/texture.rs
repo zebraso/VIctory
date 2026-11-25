@@ -54,7 +54,13 @@ pub(crate) struct Staging {
 struct Last {
     hash: Option<blake3::Hash>,
     asked: u64,
-    read: Vec<u8>,
+}
+
+thread_local! {
+    /// A worker thread's buffer for texture refreshes, reused across textures
+    /// (upstream 8f2a6f14): a fresh buffer per refresh zero-fills and faults a
+    /// page per 4 KiB for a whole texture. Kept up to 32 MiB.
+    static SCRATCH: std::cell::RefCell<Vec<u8>> = const { std::cell::RefCell::new(Vec::new()) };
 }
 
 // SAFETY: the staging mapping is written only at submission, under
@@ -194,9 +200,14 @@ impl Staging {
             last.asked = now;
             // Read through the copy, which stands unmapped pages: memory of
             // big pools is too slow to ask page by page.
-            last.read.resize(size, 0);
-            crate::host::copy_mapped(last.read.as_mut_ptr(), self.memory, size, false);
-            self.detile(&last.read);
+            SCRATCH.with(|scratch| {
+                let mut scratch = scratch.borrow_mut();
+                if scratch.len() < size {
+                    scratch.resize(size.max(size.next_power_of_two().min(32 << 20)), 0);
+                }
+                crate::host::copy_mapped(scratch.as_mut_ptr(), self.memory, size, false);
+                self.detile(&scratch[..size]);
+            });
             #[cfg(feature = "diagnostics")]
             crate::copystat::add(crate::copystat::C::TexWatched, size as u64);
             return size;
