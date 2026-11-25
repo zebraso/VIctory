@@ -43,6 +43,10 @@ pub(crate) struct Shadow {
     /// The copy's bytes before the submission ran, from an offset on,
     /// covering the ranges its shaders write: what the GPU wrote differs.
     before: Mutex<Option<(usize, Vec<u8>)>>,
+    /// The frame whose writes a large range's copy already took, and the
+    /// range: many lists ask for the same one (a 174 MB buffer 152 times a
+    /// frame), and checking it each time costs a `GetWriteWatch` a call.
+    touched: Mutex<(u64, usize, usize)>,
 }
 
 /// Snapshot memory kept for reuse (already touched, so no page faults).
@@ -118,6 +122,7 @@ impl Shadow {
             watched: AtomicU8::new(0),
             pending: Mutex::default(),
             before: Mutex::default(),
+            touched: Mutex::new((u64::MAX, 0, 0)),
         }
     }
 
@@ -292,6 +297,22 @@ impl Shadow {
                 bytes += self.update_free(at, to);
             }
             return bytes;
+        }
+        // Large ranges are taken once per frame: the lists of a frame ask for
+        // the same buffers over and over (the world's 174 MB one 152 times),
+        // and each ask otherwise runs a `GetWriteWatch` over it. Small ranges
+        // stay exact, so the title's per-list writes still land.
+        const LARGE: usize = 1 << 20;
+        if to - from >= LARGE {
+            let frame = crate::queue::presented();
+            let mut touched = self.touched.lock().unwrap_or_else(|e| e.into_inner());
+            if touched.0 != frame {
+                *touched = (frame, from, to);
+            } else if from >= touched.1 && to <= touched.2 {
+                return 0;
+            } else {
+                *touched = (frame, touched.1.min(from), touched.2.max(to));
+            }
         }
         self.update_free(from, to)
     }
